@@ -1,0 +1,191 @@
+Name:          ceph
+Version:       0.20
+Release:       1%{?dist}
+Summary:       User space components of the Ceph file system
+License:       LGPLv2
+Group:         System Environment/Base
+URL:           http://ceph.newdream.net/
+
+Source:        http://ceph.newdream.net/download/%{name}-%{version}.tar.gz
+Patch0:        ceph-init-fix.patch
+BuildRequires: fuse-devel, libtool, libtool-ltdl-devel, boost-devel, 
+BuildRequires: libedit-devel, fuse-devel, git, perl, perl-devel, gdbm,
+BuildRequires: openssl-devel, libatomic_ops-devel
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+Requires(post): chkconfig
+Requires(preun): chkconfig
+Requires(preun): initscripts
+
+%description
+Ceph is a distributed network file system designed to provide excellent
+performance, reliability, and scalability.
+
+%package       fuse
+Summary:       Ceph fuse-based client
+Group:         System Environment/Base
+Requires:      %{name} = %{version}-%{release}
+BuildRequires: fuse-devel
+%description   fuse
+FUSE based client for Ceph distributed network file system
+
+%package     devel
+Summary:     Ceph headers
+Group:       Development/Libraries
+License:     LGPLv2
+Requires:    %{name} = %{version}-%{release}
+%description devel
+This package contains the headers needed to develop programs that use Ceph.
+
+%prep
+%setup -q
+%patch0 -p1 -b .init
+chmod 0644 src/common/Mutex.h
+
+%build
+./autogen.sh
+%configure --without-hadoop --without-debug
+make CFLAGS="$RPM_OPT_FLAGS"
+
+%install
+rm -rf $RPM_BUILD_ROOT
+make install DESTDIR=$RPM_BUILD_ROOT
+find $RPM_BUILD_ROOT -type f -name "*.la" -exec rm -f {} ';'
+find $RPM_BUILD_ROOT -type f -name "*.a" -exec rm -f {} ';'
+install -D src/init-ceph $RPM_BUILD_ROOT%{_initddir}/ceph
+chmod 0644 $RPM_BUILD_ROOT%{_sysconfdir}/ceph/sample.ceph.conf
+
+# remove debug binaries
+rm -f $RPM_BUILD_ROOT%{_bindir}/dumpjournal
+rm -f $RPM_BUILD_ROOT%{_bindir}/dupstore
+rm -f $RPM_BUILD_ROOT%{_bindir}/radosacl
+rm -f $RPM_BUILD_ROOT%{_bindir}/streamtest
+rm -f $RPM_BUILD_ROOT%{_bindir}/test_ioctls
+rm -f $RPM_BUILD_ROOT%{_bindir}/test_trans
+rm -f $RPM_BUILD_ROOT%{_bindir}/testceph
+rm -f $RPM_BUILD_ROOT%{_bindir}/testcrypto
+rm -f $RPM_BUILD_ROOT%{_bindir}/testkeys
+rm -f $RPM_BUILD_ROOT%{_bindir}/testmsgr
+rm -f $RPM_BUILD_ROOT%{_bindir}/testrados
+rm -f $RPM_BUILD_ROOT%{_bindir}/testradospp
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%post
+/sbin/ldconfig
+/sbin/chkconfig --add ceph
+
+%preun
+if [ $1 = 0 ] ; then
+    /sbin/service ceph stop >/dev/null 2>&1
+    /sbin/chkconfig --del ceph
+fi
+
+%postun
+/sbin/ldconfig
+if [ "$1" -ge "1" ] ; then
+    /sbin/service ceph condrestart >/dev/null 2>&1 || :
+fi
+
+%files
+%defattr(-,root,root,-)
+%doc README COPYING
+%{_bindir}/ceph
+%{_bindir}/cconf
+%{_bindir}/crushtool
+%{_bindir}/monmaptool
+%{_bindir}/osdmaptool
+%{_bindir}/cauthtool
+%{_bindir}/csyn
+%{_bindir}/crun
+%{_bindir}/cmon
+%{_bindir}/cmds
+%{_bindir}/cosd
+%{_bindir}/mkmonfs
+%{_bindir}/rados
+%{_bindir}/rbdtool
+%{_bindir}/psim
+%{_initddir}/ceph
+%{_libdir}/libceph.so.*
+%{_libdir}/libcrush.so.*
+%{_libdir}/librados.so.*
+%{_sbindir}/mkcephfs
+/sbin/mount.ceph
+%{_libdir}/ceph
+%config(noreplace) %{_sysconfdir}/ceph/sample.ceph.conf
+%config(noreplace) %{_sysconfdir}/ceph/sample.fetch_config
+%{_mandir}/man8/cmon.8*
+%{_mandir}/man8/cmds.8*
+%{_mandir}/man8/cosd.8*
+%{_mandir}/man8/mkcephfs.8*
+%{_mandir}/man8/mkmonfs.8*
+%{_mandir}/man8/crun.8*
+%{_mandir}/man8/csyn.8*
+%{_mandir}/man8/crushtool.8*
+%{_mandir}/man8/osdmaptool.8*
+%{_mandir}/man8/monmaptool.8*
+%{_mandir}/man8/cconf.8*
+%{_mandir}/man8/ceph.8*
+%{_mandir}/man8/mount.ceph.8*
+%{_mandir}/man8/radosgw.8*
+%{_mandir}/man8/radosgw_admin.8*
+%{_mandir}/man8/rados.8*
+%{_mandir}/man8/rbdtool.8*
+%{_mandir}/man8/cauthtool.8*
+
+%files fuse
+%defattr(-,root,root,-)
+%doc COPYING
+%{_bindir}/cfuse
+%{_mandir}/man8/cfuse.8*
+
+%files devel
+%defattr(-,root,root,-)
+%doc COPYING
+%{_includedir}/ceph/libceph.h
+%{_includedir}/crush/crush.h
+%{_includedir}/crush/hash.h
+%{_includedir}/crush/mapper.h
+%{_includedir}/crush/types.h
+%{_includedir}/rados/librados.h
+%{_includedir}/rados/librados.hpp
+%{_includedir}/rados/buffer.h
+%{_includedir}/rados/atomic.h
+%{_includedir}/rados/page.h
+%{_includedir}/rados/crc32c.h
+%{_includedir}/rados/Spinlock.h
+%{_includedir}/rados/assert.h
+%{_libdir}/libceph.so
+%{_libdir}/libcrush.so
+%{_libdir}/librados.so
+
+%changelog
+* Wed May  5 2010 Josef Bacik <josef@toxicpanda.com> 0.20-1
+- update to 0.20
+- disable hadoop building
+- remove all the test binaries properly
+
+* Fri Apr 30 2010 Sage Weil <sage@newdream.net> 0.19.1-5
+- Remove java deps (no need to build hadoop by default)
+- Include all required librados helpers
+- Include fetch_config sample
+- Include rbdtool
+- Remove misc debugging, test binaries
+
+* Thu Apr 30 2010 Josef Bacik <josef@toxicpanda.com> 0.19.1-4
+- Add java-devel and java tricks to get hadoop to build
+
+* Mon Apr 26 2010 Josef Bacik <josef@toxicpanda.com> 0.19.1-3
+- Move the rados and cauthtool man pages into the base package
+
+* Sun Apr 25 2010 Jonathan Dieter <jdieter@lesbg.com> 0.19.1-2
+- Add missing libhadoopcephfs.so* to file list
+- Add COPYING to all subpackages
+- Fix ownership of /usr/lib[64]/ceph
+- Enhance description of fuse client
+
+* Tue Apr 20 2010 Josef Bacik <josef@toxicpanda.com> 0.19.1-1
+- Update to 0.19.1
+
+* Mon Feb  8 2010 Josef Bacik <josef@toxicpanda.com> 0.18-1
+- Initial spec file creation, based on the template provided in the ceph src
