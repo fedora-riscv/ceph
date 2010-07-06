@@ -1,5 +1,5 @@
 Name:          ceph
-Version:       0.20
+Version:       0.20.2
 Release:       1%{?dist}
 Summary:       User space components of the Ceph file system
 License:       LGPLv2
@@ -160,6 +160,9 @@ fi
 %{_libdir}/librados.so
 
 %changelog
+* Tue Jul  6 2010 Josef Bacik <josef@toxicpanda.com> 0.20.2-1
+- update to 0.20.2
+
 * Wed May  5 2010 Josef Bacik <josef@toxicpanda.com> 0.20-1
 - update to 0.20
 - disable hadoop building
