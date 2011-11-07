@@ -1,6 +1,6 @@
 Name:          ceph
-Version:       0.31
-Release:       4%{?dist}
+Version:       0.37
+Release:       1%{?dist}
 Summary:       User space components of the Ceph file system
 License:       LGPLv2
 Group:         System Environment/Base
@@ -8,7 +8,7 @@ URL:           http://ceph.newdream.net/
 
 Source:        http://ceph.newdream.net/download/%{name}-%{version}.tar.gz
 Patch0:        ceph-init-fix.patch
-Patch1:        ceph-compilefix.patch
+Patch1:        ceph.logrotate.patch
 BuildRequires: fuse-devel, libtool, libtool-ltdl-devel, boost-devel, 
 BuildRequires: libedit-devel, fuse-devel, git, perl, gdbm,
 # google-perftools is not available on these:
@@ -78,7 +78,7 @@ file system.
 %prep
 %setup -q
 %patch0 -p1 -b .init
-%patch1 -p1 -b .compilefix
+%patch1 -p0 
 
 %build
 ./autogen.sh
@@ -88,7 +88,7 @@ file system.
 --without-tcmalloc \
 %endif
 --without-hadoop --with-radosgw --with-gtk2 
-make CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS"
+make %{?_smp_mflags} CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS"
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -101,7 +101,8 @@ install -m 0644 -D src/logrotate.conf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/lib/ceph/tmp/
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/log/ceph/
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/log/ceph/stat
-
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/ceph
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/bash_completion.d
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -124,61 +125,65 @@ fi
 %files
 %defattr(-,root,root,-)
 %doc README COPYING
+%dir %{_sysconfdir}/ceph
 %{_bindir}/ceph
 %{_bindir}/cephfs
-%{_bindir}/cconf
-%{_bindir}/cclsinfo
+%{_bindir}/ceph-conf
+%{_bindir}/ceph-clsinfo
 %{_bindir}/crushtool
 %{_bindir}/monmaptool
 %{_bindir}/osdmaptool
-%{_bindir}/cauthtool
-%{_bindir}/csyn
-%{_bindir}/crun
-%{_bindir}/cmon
-%{_bindir}/cmds
-%{_bindir}/cosd
-%{_bindir}/crbdnamer
+%{_bindir}/ceph-authtool
+%{_bindir}/ceph-syn
+%{_bindir}/ceph-run
+%{_bindir}/ceph-mon
+%{_bindir}/ceph-mds
+%{_bindir}/ceph-osd
+%{_bindir}/ceph-rbdnamer
 %{_bindir}/librados-config
 %{_bindir}/rados
 %{_bindir}/rbd
-%{_bindir}/cdebugpack
+%{_bindir}/ceph-debugpack
 %{_bindir}/ceph-coverage
 %{_initrddir}/ceph
-%{_libdir}/libceph.so.*
+%{_libdir}/libcephfs.so.*
 %{_libdir}/librados.so.*
 %{_libdir}/librbd.so.*
 %{_libdir}/librgw.so.*
 %{_libdir}/rados-classes/libcls_rbd.so.*
+%{_libdir}/rados-classes/libcls_rgw.so*
 /sbin/mkcephfs
 /sbin/mount.ceph
 %{_libdir}/ceph
 %{_docdir}/ceph/sample.ceph.conf
 %{_docdir}/ceph/sample.fetch_config
 %config(noreplace) %{_sysconfdir}/logrotate.d/ceph
-%{_mandir}/man8/cmon.8*
-%{_mandir}/man8/cmds.8*
-%{_mandir}/man8/cosd.8*
+%config(noreplace) %{_sysconfdir}/bash_completion.d/rados
+%config(noreplace) %{_sysconfdir}/bash_completion.d/ceph
+%config(noreplace) %{_sysconfdir}/bash_completion.d/rbd
+%{_mandir}/man8/ceph-mon.8*
+%{_mandir}/man8/ceph-mds.8*
+%{_mandir}/man8/ceph-osd.8*
 %{_mandir}/man8/mkcephfs.8*
-%{_mandir}/man8/crun.8*
-%{_mandir}/man8/csyn.8*
+%{_mandir}/man8/ceph-run.8*
+%{_mandir}/man8/ceph-syn.8*
 %{_mandir}/man8/crushtool.8*
 %{_mandir}/man8/osdmaptool.8*
 %{_mandir}/man8/monmaptool.8*
-%{_mandir}/man8/cconf.8*
+%{_mandir}/man8/ceph-conf.8*
 %{_mandir}/man8/ceph.8*
 %{_mandir}/man8/cephfs.8*
 %{_mandir}/man8/mount.ceph.8*
 %{_mandir}/man8/radosgw.8*
-%{_mandir}/man8/radosgw_admin.8*
+%{_mandir}/man8/radosgw-admin.8*
 %{_mandir}/man8/rados.8*
 %{_mandir}/man8/rbd.8*
-%{_mandir}/man8/cauthtool.8*
-%{_mandir}/man8/cdebugpack.8*
-%{_mandir}/man8/cclsinfo.8.gz
-%{python_sitelib}/rados.py
-%{python_sitelib}/rados.pyc
-%{python_sitelib}/rados.pyo
+%{_mandir}/man8/ceph-authtool.8*
+%{_mandir}/man8/ceph-debugpack.8*
+%{_mandir}/man8/ceph-clsinfo.8.gz
+%{python_sitelib}/rados.py*
 %{python_sitelib}/rgw.py*
+%{python_sitelib}/rbd.py*
 %dir %{_localstatedir}/lib/ceph/
 %dir %{_localstatedir}/lib/ceph/tmp/
 %dir %{_localstatedir}/log/ceph/
@@ -186,13 +191,13 @@ fi
 %files fuse
 %defattr(-,root,root,-)
 %doc COPYING
-%{_bindir}/cfuse
-%{_mandir}/man8/cfuse.8*
+%{_bindir}/ceph-fuse
+%{_mandir}/man8/ceph-fuse.8*
 
 %files devel
 %defattr(-,root,root,-)
 %doc COPYING
-%{_includedir}/ceph/libceph.h
+%{_includedir}/cephfs/libcephfs.h
 %{_includedir}/crush/crush.h
 %{_includedir}/crush/hash.h
 %{_includedir}/crush/mapper.h
@@ -205,7 +210,7 @@ fi
 %{_includedir}/rados/librgw.h
 %{_includedir}/rbd/librbd.h
 %{_includedir}/rbd/librbd.hpp
-%{_libdir}/libceph.so
+%{_libdir}/libcephfs.so
 %{_libdir}/librados.so
 %{_libdir}/librgw.so
 %{_libdir}/librbd.so*
@@ -220,7 +225,8 @@ fi
 %files radosgw
 %defattr(-,root,root,-)
 %{_bindir}/radosgw
-%{_bindir}/radosgw_admin
+%{_bindir}/radosgw-admin
+%{_sysconfdir}/bash_completion.d/radosgw-admin
 
 %files obsync
 %defattr(-,root,root,-)
@@ -228,6 +234,11 @@ fi
 %{_bindir}/boto_tool
 
 %changelog
+* Sat Nov 05 2011 David Nalley <david@gnsa.us> 0.37-1
+- create /etc/ceph - bug 745462
+- upgrading to 0.37, fixing 745460, 691033
+- fixing various logrotate bugs 748930, 747101
+
 * Fri Aug 19 2011 Dan Horák <dan[at]danny.cz> 0.31-4
 - google-perftools not available also on s390(x)
 
