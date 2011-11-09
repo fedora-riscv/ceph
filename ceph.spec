@@ -1,6 +1,6 @@
 Name:          ceph
 Version:       0.37
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       User space components of the Ceph file system
 License:       LGPLv2
 Group:         System Environment/Base
@@ -15,7 +15,7 @@ BuildRequires: libedit-devel, fuse-devel, git, perl, gdbm,
 %ifnarch ppc64 s390 s390x
 BuildRequires: google-perftools-devel
 %endif
-BuildRequires: cryptopp-devel, libatomic_ops-devel
+BuildRequires: cryptopp-devel, libatomic_ops-devel-static
 BuildRequires: pkgconfig, libcurl-devel, keyutils-libs-devel
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires(post): chkconfig, binutils, libedit
@@ -234,6 +234,9 @@ fi
 %{_bindir}/boto_tool
 
 %changelog
+* Wed Nov 09 2011 David Nalley <david@gnsa.us> 0.37-2
+- making ceph spec file comply with static library deps guidelines 609700
+
 * Sat Nov 05 2011 David Nalley <david@gnsa.us> 0.37-1
 - create /etc/ceph - bug 745462
 - upgrading to 0.37, fixing 745460, 691033
