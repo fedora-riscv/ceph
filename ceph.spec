@@ -1,6 +1,6 @@
 Name:          ceph
 Version:       0.39
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       User space components of the Ceph file system
 License:       LGPLv2
 Group:         System Environment/Base
@@ -13,7 +13,7 @@ BuildRequires: fuse-devel, libtool, libtool-ltdl-devel, boost-devel,
 BuildRequires: libedit-devel, fuse-devel, git, perl, gdbm,
 # google-perftools is not available on these:
 %ifnarch ppc64 s390 s390x
-BuildRequires: google-perftools-devel
+BuildRequires: gperftools-devel
 %endif
 BuildRequires: cryptopp-devel, libatomic_ops-devel, gcc-c++
 BuildRequires: pkgconfig, libcurl-devel, keyutils-libs-devel
@@ -235,6 +235,9 @@ fi
 %{_bindir}/boto_tool
 
 %changelog
+* Thu Feb 16 2012 Tom Callaway <spot@fedoraproject.org> 0.39-2
+- rebuild against gperftools
+
 * Sat Dec 03 2011 David Nalley <david@gnsa.us> 0.38-1
 - updating to upstream 0.39
 
