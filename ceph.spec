@@ -1,6 +1,6 @@
 Name:          ceph
-Version:       0.44
-Release:       5%{?dist}
+Version:       0.45
+Release:       1%{?dist}
 Summary:       User space components of the Ceph file system
 License:       LGPLv2
 Group:         System Environment/Base
@@ -9,9 +9,6 @@ URL:           http://ceph.newdream.net/
 Source:        http://ceph.newdream.net/download/%{name}-%{version}.tar.bz2
 Patch0:        ceph-init-fix.patch
 Patch1:        ceph.logrotate.patch
-
-# Upstream patch to make 0.44 build
-Patch2:        0001-Makefile-fix-modules-that-cannot-find-pk11pub.h-when.patch
 
 BuildRequires: fuse-devel, libtool, libtool-ltdl-devel, boost-devel, 
 BuildRequires: libedit-devel, fuse-devel, git, perl, gdbm, libaio-devel,
@@ -84,7 +81,6 @@ file system.
 %setup -q
 %patch0 -p1 -b .init
 %patch1 -p0
-%patch2 -p1 -b .build
 
 %build
 ./autogen.sh
@@ -253,6 +249,9 @@ fi
 %{_bindir}/boto_tool
 
 %changelog
+* Thu Apr 12 2012 Josef Bacik <josef@toxicpanda.com> - 0.45-1
+- updating to upstream 0.45
+
 * Wed Apr  4 2012 Niels de Vos <devos@fedoraproject.org> - 0.44-5
 - Add LDFLAGS=-lpthread on any ARM architecture
 - Add CFLAGS=-DAO_USE_PTHREAD_DEFS on ARMv5tel
