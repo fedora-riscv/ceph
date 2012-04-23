@@ -1,6 +1,6 @@
 Name:          ceph
 Version:       0.45
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       User space components of the Ceph file system
 License:       LGPLv2
 Group:         System Environment/Base
@@ -9,6 +9,8 @@ URL:           http://ceph.newdream.net/
 Source:        http://ceph.newdream.net/download/%{name}-%{version}.tar.bz2
 Patch0:        ceph-init-fix.patch
 Patch1:        ceph.logrotate.patch
+# http://tracker.newdream.net/issues/2329
+Patch2:        ceph-gxx-atomic.patch
 
 BuildRequires: fuse-devel, libtool, libtool-ltdl-devel, boost-devel, 
 BuildRequires: libedit-devel, fuse-devel, git, perl, gdbm, libaio-devel,
@@ -81,6 +83,7 @@ file system.
 %setup -q
 %patch0 -p1 -b .init
 %patch1 -p0
+%patch2 -p1 -b .atomic
 
 %build
 ./autogen.sh
@@ -249,6 +252,9 @@ fi
 %{_bindir}/boto_tool
 
 %changelog
+* Mon Apr 23 2012 Dan Horák <dan[at]danny.cz> - 0.45-2
+- fix detection of C++11 atomic header
+
 * Thu Apr 12 2012 Josef Bacik <josef@toxicpanda.com> - 0.45-1
 - updating to upstream 0.45
 

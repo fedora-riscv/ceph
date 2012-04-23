@@ -1,0 +1,51 @@
+diff -up ceph-0.45/src/leveldb/configure.ac.atomic ceph-0.45/src/leveldb/configure.ac
+--- ceph-0.45/src/leveldb/configure.ac.atomic	2012-04-23 18:56:15.000000000 +0200
++++ ceph-0.45/src/leveldb/configure.ac	2012-04-23 19:33:27.000000000 +0200
+@@ -10,11 +10,11 @@ AC_CONFIG_FILES([
+ ])
+ AC_PROG_RANLIB
+ 
+-AC_MSG_CHECKING(whether compiler supports C++11 cstdatomic)
++AC_MSG_CHECKING(whether compiler supports C++11 atomic)
+ OLD_CXXFLAGS="$CXXFLAGS"
+ CXXFLAGS="$CXXFLAGS -std=c++0x"
+ AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+-#include <cstdatomic>
++#include <atomic>
+ int main() {}
+ ])], [
+      AC_MSG_RESULT(yes)
+diff -up ceph-0.45/src/leveldb/configure.atomic ceph-0.45/src/leveldb/configure
+--- ceph-0.45/src/leveldb/configure.atomic	2012-04-23 18:56:19.000000000 +0200
++++ ceph-0.45/src/leveldb/configure	2012-04-23 18:56:43.000000000 +0200
+@@ -3885,15 +3885,15 @@ else
+ fi
+ 
+ 
+-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether compiler supports C++11 cstdatomic" >&5
+-$as_echo_n "checking whether compiler supports C++11 cstdatomic... " >&6; }
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether compiler supports C++11 atomic" >&5
++$as_echo_n "checking whether compiler supports C++11 atomic... " >&6; }
+ OLD_CXXFLAGS="$CXXFLAGS"
+ CXXFLAGS="$CXXFLAGS -std=c++0x"
+ 
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+-#include <cstdatomic>
++#include <atomic>
+ int main() {}
+ 
+ _ACEOF
+diff -up ceph-0.45/src/leveldb/port/atomic_pointer.h.atomic ceph-0.45/src/leveldb/port/atomic_pointer.h
+--- ceph-0.45/src/leveldb/port/atomic_pointer.h.atomic	2012-04-23 18:56:54.000000000 +0200
++++ ceph-0.45/src/leveldb/port/atomic_pointer.h	2012-04-23 18:57:00.000000000 +0200
+@@ -21,7 +21,7 @@
+ 
+ #include <stdint.h>
+ #ifdef LEVELDB_CSTDATOMIC_PRESENT
+-#include <cstdatomic>
++#include <atomic>
+ #endif
+ #ifdef OS_WIN
+ #include <windows.h>
