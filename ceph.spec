@@ -85,10 +85,8 @@ conjunction with any FastCGI capable web server.
 # libatomic_ops does not have correct asm for ARMv5tel
 EXTRA_CFLAGS="-DAO_USE_PTHREAD_DEFS"
 %endif
-%ifarch %{arm}
 # libatomic_ops seems to fallback on some pthread implementation on ARM
-EXTRA_LDFLAGS="-lpthread"
-%endif
+EXTRA_LDFLAGS="-pthread"
 
 %{configure} --prefix=%{_prefix} --sbindir=%{_sbindir} \
 --localstatedir=%{_localstatedir} --sysconfdir=%{_sysconfdir} \
