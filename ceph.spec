@@ -1,5 +1,5 @@
 Name:          ceph
-Version:       0.61.7
+Version:       0.67.3
 Release:       1%{?dist}
 Summary:       User space components of the Ceph file system
 License:       LGPLv2
@@ -14,7 +14,7 @@ Patch2:        ceph-fix-sbin-target.patch
 BuildRequires: fuse-devel, libtool, libtool-ltdl-devel, boost-devel, 
 BuildRequires: libedit-devel, fuse-devel, git, perl, gdbm, libaio-devel,
 # google-perftools is not available on these:
-%ifnarch ppc ppc64 s390 s390x armv7hl
+%ifnarch ppc ppc64 s390 s390x
 BuildRequires: gperftools-devel
 %endif
 BuildRequires: cryptopp-devel, libatomic_ops-static, gcc-c++
@@ -45,7 +45,7 @@ libcephfs library for Ceph distributed network file system
 %package       fuse
 Summary:       Ceph fuse-based client
 Group:         System Environment/Base
-Requires:      %{name} = %{version}-%{release}
+Requires:      %{name}%{?_isa} = %{version}-%{release}
 BuildRequires: fuse-devel
 %description   fuse
 FUSE based client for Ceph distributed network file system
@@ -54,9 +54,9 @@ FUSE based client for Ceph distributed network file system
 Summary:     Ceph headers
 Group:       Development/Libraries
 License:     LGPLv2
-Requires:    %{name} = %{version}-%{release}
-Requires:    %{name}-libs = %{version}-%{release}
-Requires:    %{name}-libcephfs = %{version}-%{release}
+Requires:    %{name}%{?_isa} = %{version}-%{release}
+Requires:    %{name}-libs%{?_isa} = %{version}-%{release}
+Requires:    %{name}-libcephfs%{?_isa} = %{version}-%{release}
 %description devel
 This package contains the headers needed to develop programs that use Ceph.
 
@@ -90,7 +90,7 @@ EXTRA_LDFLAGS="-pthread"
 
 %{configure} --prefix=%{_prefix} --sbindir=%{_sbindir} \
 --localstatedir=%{_localstatedir} --sysconfdir=%{_sysconfdir} \
-%ifarch ppc ppc64 s390 s390x armv7hl
+%ifarch ppc ppc64 s390 s390x
 --without-tcmalloc \
 %endif
 --with-system-leveldb --without-hadoop --with-radosgw --with-gtk2 \
@@ -98,7 +98,7 @@ CFLAGS="$RPM_OPT_FLAGS $EXTRA_CFLAGS" \
 CXXFLAGS="$RPM_OPT_FLAGS $EXTRA_CFLAGS -fvisibility-inlines-hidden" \
 LDFLAGS="$EXTRA_LDFLAGS"
 
-make %{?_smp_mflags}
+V=1 make %{?_smp_mflags}
 
 %install
 make install DESTDIR=$RPM_BUILD_ROOT
@@ -106,6 +106,8 @@ find $RPM_BUILD_ROOT -type f -name "*.la" -exec rm -f {} ';'
 find $RPM_BUILD_ROOT -type f -name "*.a" -exec rm -f {} ';'
 install -D src/init-ceph $RPM_BUILD_ROOT%{_initrddir}/ceph
 chmod 0644 $RPM_BUILD_ROOT%{_docdir}/ceph/sample.ceph.conf
+rm -rf __tmp_docs ; mkdir __tmp_docs
+mv $RPM_BUILD_ROOT%{_docdir}/ceph/* __tmp_docs
 install -m 0644 -D src/logrotate.conf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/ceph
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/lib/ceph/tmp/
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/log/ceph/
@@ -133,10 +135,8 @@ fi
 %postun libcephfs -p /sbin/ldconfig
 
 %files
-%defattr(-,root,root,-)
-%doc README COPYING
+%doc README COPYING __tmp_docs/sample*
 %dir %{_sysconfdir}/ceph
-%dir %{_docdir}/ceph
 %{_bindir}/ceph
 %{_bindir}/cephfs
 %{_bindir}/ceph-conf
@@ -151,7 +151,6 @@ fi
 %{_bindir}/ceph-mds
 %{_bindir}/ceph-osd
 %{_bindir}/ceph-rbdnamer
-%{_bindir}/librados-config
 %{_bindir}/rados
 %{_bindir}/rbd
 %{_bindir}/ceph-debugpack
@@ -159,6 +158,8 @@ fi
 %{_bindir}/ceph-dencoder
 %{_bindir}/ceph_filestore_dump
 %{_bindir}/ceph_mon_store_converter
+%{_bindir}/ceph-post-file
+%{_bindir}/ceph-rest-api
 %{_initrddir}/ceph
 %{_sbindir}/mkcephfs
 %{_sbindir}/mount.ceph
@@ -196,31 +197,39 @@ fi
 %{_mandir}/man8/ceph-clsinfo.8*
 %{_mandir}/man8/ceph-dencoder.8*
 %{_mandir}/man8/ceph-rbdnamer.8*
+%{_mandir}/man8/ceph-rest-api.8*
+%{_mandir}/man8/ceph-post-file.8*
 %{python_sitelib}/rados.py*
 %{python_sitelib}/rbd.py*
 %{python_sitelib}/cephfs.py*
+%{python_sitelib}/ceph_argparse.py*
+%{python_sitelib}/ceph_rest_api.py*
 %dir %{_localstatedir}/lib/ceph/
 %dir %{_localstatedir}/lib/ceph/tmp/
 %dir %{_localstatedir}/log/ceph/
+%{_datadir}/ceph/id_dsa_drop.ceph.com*
+%{_datadir}/ceph/known_hosts_drop.ceph.com
 
 %files libs
-%defattr(-,root,root,-)
 %doc COPYING
 %{_libdir}/librados.so.*
 %{_libdir}/librbd.so.*
-%{_libdir}/rados-classes/libcls_rbd.so.*
+%dir %{_libdir}/rados-classes
+%{_libdir}/rados-classes/libcls_rbd.so*
 %{_libdir}/rados-classes/libcls_rgw.so*
 %{_libdir}/rados-classes/libcls_lock*
 %{_libdir}/rados-classes/libcls_kvs*
 %{_libdir}/rados-classes/libcls_refcount*
+%{_libdir}/rados-classes/libcls_log*
+%{_libdir}/rados-classes/libcls_replica_log*
+%{_libdir}/rados-classes/libcls_statelog*
+%{_libdir}/rados-classes/libcls_version*
 
 %files libcephfs
-%defattr(-,root,root,-)
 %doc COPYING
 %{_libdir}/libcephfs.so.*
 
 %files fuse
-%defattr(-,root,root,-)
 %doc COPYING
 %{_bindir}/ceph-fuse
 %{_bindir}/rbd-fuse
@@ -229,13 +238,15 @@ fi
 %{_mandir}/man8/rbd-fuse.8*
 
 %files devel
-%defattr(-,root,root,-)
 %doc COPYING
+%dir %{_includedir}/cephfs
 %{_includedir}/cephfs/libcephfs.h
+#%dir %{_includedir}/crush
 #%{_includedir}/crush/crush.h
 #%{_includedir}/crush/hash.h
 #%{_includedir}/crush/mapper.h
 #%{_includedir}/crush/types.h
+%dir %{_includedir}/rados
 %{_includedir}/rados/librados.h
 %{_includedir}/rados/librados.hpp
 %{_includedir}/rados/rados_types.h
@@ -244,24 +255,43 @@ fi
 %{_includedir}/rados/page.h
 %{_includedir}/rados/crc32c.h
 #%{_includedir}/rados/librgw.h
+%dir %{_includedir}/rbd
 %{_includedir}/rbd/librbd.h
 %{_includedir}/rbd/librbd.hpp
 %{_includedir}/rbd/features.h
 %{_libdir}/libcephfs.so
 %{_libdir}/librados.so
 #%{_libdir}/librgw.so
-%{_libdir}/librbd.so*
-%{_libdir}/rados-classes/libcls_rbd.so
+%{_libdir}/librbd.so
+%{_bindir}/librados-config
 %{_mandir}/man8/librados-config.8*
 
 
 %files radosgw
-%defattr(-,root,root,-)
 %{_bindir}/radosgw
 %{_bindir}/radosgw-admin
 %{_sysconfdir}/bash_completion.d/radosgw-admin
 
 %changelog
+* Wed Sep 11 2013 Josef Bacik <josef@toxicpanda.com> - 0.67.3-1
+- update to 0.67.3
+
+* Wed Sep 11 2013 Michael Schwendt <mschwendt@fedoraproject.org> - 0.61.7-3
+- let base package include all its documentation files via %%doc magic,
+  so for Fedora 20 Unversioned Docdirs no files are included accidentally
+- include the sample config files again (instead of just an empty docdir
+  that has been added for #846735)
+- don't include librbd.so.1 also in -devel package (#1003202)
+- move one misplaced rados plugin from -devel into -libs package (#891993)
+- include missing directories in -devel and -libs packages
+- move librados-config into the -devel pkg where its manual page is, too
+- add %%_isa to subpackage dependencies
+- don't use %%defattr anymore
+- add V=1 to make invocation for verbose build output
+
+* Wed Jul 31 2013 Peter Robinson <pbrobinson@fedoraproject.org> 0.61.7-2
+- re-enable tmalloc on arm now gperftools is fixed
+
 * Mon Jul 29 2013 Josef Bacik <josef@toxicpanda.com> - 0.61.7-1
 - Update to 0.61.7
 

@@ -1,11 +1,11 @@
-diff -up ceph-0.61.7/src/Makefile.am.fix-sbin ceph-0.61.7/src/Makefile.am
---- ceph-0.61.7/src/Makefile.am.fix-sbin	2013-07-26 11:52:56.355915758 -0400
-+++ ceph-0.61.7/src/Makefile.am	2013-07-26 11:53:09.502808374 -0400
+diff -up ceph-0.67.3/src/Makefile.am.sbin-fix ceph-0.67.3/src/Makefile.am
+--- ceph-0.67.3/src/Makefile.am.sbin-fix	2013-09-11 13:46:40.061851086 -0400
++++ ceph-0.67.3/src/Makefile.am	2013-09-11 13:46:51.531735427 -0400
 @@ -28,7 +28,7 @@ bin_PROGRAMS =
  bin_DEBUGPROGRAMS =
  sbin_PROGRAMS =
  # like sbin_SCRIPTS but can be used to install to e.g. /usr/sbin
--ceph_sbindir = $(prefix)$(sbindir)
+-ceph_sbindir = $(exec_prefix)$(sbindir)
 +ceph_sbindir = $(sbindir)
  ceph_sbin_SCRIPTS = \
  	ceph-disk \
