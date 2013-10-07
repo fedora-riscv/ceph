@@ -1,6 +1,6 @@
 Name:          ceph
 Version:       0.67.3
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       User space components of the Ceph file system
 License:       LGPLv2
 Group:         System Environment/Base
@@ -10,6 +10,7 @@ Source:        http://ceph.com/download/%{name}-%{version}.tar.bz2
 Patch0:        ceph-init-fix.patch
 Patch1:        ceph-build-support-for-automake-1.12.patch
 Patch2:        ceph-fix-sbin-target.patch
+Patch3:        ceph-non-x86_64.patch
 
 BuildRequires: fuse-devel, libtool, libtool-ltdl-devel, boost-devel, 
 BuildRequires: libedit-devel, fuse-devel, git, perl, gdbm, libaio-devel,
@@ -77,6 +78,7 @@ conjunction with any FastCGI capable web server.
 %patch0 -p1 -b .init
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1 -b .non-x86_64
 
 %build
 ./autogen.sh
@@ -273,6 +275,9 @@ fi
 %{_sysconfdir}/bash_completion.d/radosgw-admin
 
 %changelog
+* Mon Oct 07 2013 Dan Horák <dan[at]danny.cz> - 0.67.3-2
+- fix build on non-x86_64 64-bit arches
+
 * Wed Sep 11 2013 Josef Bacik <josef@toxicpanda.com> - 0.67.3-1
 - update to 0.67.3
 
