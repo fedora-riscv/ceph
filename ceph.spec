@@ -1,27 +1,30 @@
+
+%global _hardened_build 1
+
 Name:          ceph
-Version:       0.67.3
-Release:       2%{?dist}
+Version:       0.80.1
+Release:       1%{?dist}
 Summary:       User space components of the Ceph file system
 License:       LGPLv2
 Group:         System Environment/Base
-URL:           http://ceph.com/
+URL:           https://ceph.com/
 
-Source:        http://ceph.com/download/%{name}-%{version}.tar.bz2
+Source:        https://ceph.com/download/%{name}-%{version}.tar.bz2
 Patch0:        ceph-init-fix.patch
-Patch1:        ceph-build-support-for-automake-1.12.patch
-Patch2:        ceph-fix-sbin-target.patch
-Patch3:        ceph-non-x86_64.patch
+# https://github.com/ceph/ceph/pull/1051
+Patch1:        ceph-fix-sbin-target.patch
 
-BuildRequires: fuse-devel, libtool, libtool-ltdl-devel, boost-devel, 
+BuildRequires: fuse-devel, libtool, libtool-ltdl-devel, boost-devel,
 BuildRequires: libedit-devel, fuse-devel, git, perl, gdbm, libaio-devel,
 # google-perftools is not available on these:
-%ifnarch ppc ppc64 s390 s390x
+%ifnarch ppc ppc64 s390 s390x aarch64
 BuildRequires: gperftools-devel
 %endif
 BuildRequires: cryptopp-devel, libatomic_ops-static, gcc-c++
 BuildRequires: pkgconfig, libcurl-devel, keyutils-libs-devel
 BuildRequires: gtkmm24-devel, gtk2-devel, libuuid, libuuid-devel
-BuildRequires: leveldb-devel, snappy-devel
+BuildRequires: leveldb-devel, snappy-devel, libblkid-devel
+BuildRequires: xfsprogs-devel
 
 Requires(post): chkconfig, binutils, libedit
 Requires(preun): chkconfig
@@ -77,8 +80,6 @@ conjunction with any FastCGI capable web server.
 %setup -q
 %patch0 -p1 -b .init
 %patch1 -p1
-%patch2 -p1
-%patch3 -p1 -b .non-x86_64
 
 %build
 ./autogen.sh
@@ -92,7 +93,7 @@ EXTRA_LDFLAGS="-pthread"
 
 %{configure} --prefix=%{_prefix} --sbindir=%{_sbindir} \
 --localstatedir=%{_localstatedir} --sysconfdir=%{_sysconfdir} \
-%ifarch ppc ppc64 s390 s390x
+%ifarch ppc ppc64 s390 s390x aarch64
 --without-tcmalloc \
 %endif
 --with-system-leveldb --without-hadoop --with-radosgw --with-gtk2 \
@@ -143,10 +144,13 @@ fi
 %{_bindir}/cephfs
 %{_bindir}/ceph-conf
 %{_bindir}/ceph-clsinfo
+%{_bindir}/ceph_filestore_tool
 %{_bindir}/crushtool
 %{_bindir}/monmaptool
 %{_bindir}/osdmaptool
 %{_bindir}/ceph-authtool
+%{_bindir}/ceph-brag
+%{_bindir}/ceph-crush-location
 %{_bindir}/ceph-syn
 %{_bindir}/ceph-run
 %{_bindir}/ceph-mon
@@ -214,16 +218,33 @@ fi
 %doc COPYING
 %{_libdir}/librados.so.*
 %{_libdir}/librbd.so.*
+%dir %{_libdir}/ceph/erasure-code
+# Warning to future maintainers: Note that the libec_ and libcls_ unversioned
+# shared objects are included here in the libs subpackage. These files are
+# plugins that Ceph loads with dlopen(). They belong here in -libs, not
+# -devel.
+# N.B. in 0.80.1 the `make install` installs the erasure-code shared objects
+# in usr/lib*/ceph/erasure-code/...
+%{_libdir}/ceph/erasure-code/libec_example.so*
+%{_libdir}/ceph/erasure-code/libec_fail_to_initialize.so*
+%{_libdir}/ceph/erasure-code/libec_fail_to_register.so*
+%{_libdir}/ceph/erasure-code/libec_hangs.so*
+%{_libdir}/ceph/erasure-code/libec_jerasure.so*
+%{_libdir}/ceph/erasure-code/libec_missing_entry_point.so*
 %dir %{_libdir}/rados-classes
+# See warning note above about unversioned shared objects here. These belong
+# here in -libs (not -devel).
+%{_libdir}/rados-classes/libcls_hello.so*
 %{_libdir}/rados-classes/libcls_rbd.so*
 %{_libdir}/rados-classes/libcls_rgw.so*
-%{_libdir}/rados-classes/libcls_lock*
-%{_libdir}/rados-classes/libcls_kvs*
-%{_libdir}/rados-classes/libcls_refcount*
-%{_libdir}/rados-classes/libcls_log*
-%{_libdir}/rados-classes/libcls_replica_log*
-%{_libdir}/rados-classes/libcls_statelog*
-%{_libdir}/rados-classes/libcls_version*
+%{_libdir}/rados-classes/libcls_lock.so*
+%{_libdir}/rados-classes/libcls_kvs.so*
+%{_libdir}/rados-classes/libcls_refcount.so*
+%{_libdir}/rados-classes/libcls_log.so*
+%{_libdir}/rados-classes/libcls_replica_log.so*
+%{_libdir}/rados-classes/libcls_statelog.so*
+%{_libdir}/rados-classes/libcls_version.so*
+%{_libdir}/rados-classes/libcls_user.so*
 
 %files libcephfs
 %doc COPYING
@@ -241,12 +262,8 @@ fi
 %doc COPYING
 %dir %{_includedir}/cephfs
 %{_includedir}/cephfs/libcephfs.h
-#%dir %{_includedir}/crush
-#%{_includedir}/crush/crush.h
-#%{_includedir}/crush/hash.h
-#%{_includedir}/crush/mapper.h
-#%{_includedir}/crush/types.h
 %dir %{_includedir}/rados
+%{_includedir}/rados/memory.h
 %{_includedir}/rados/librados.h
 %{_includedir}/rados/librados.hpp
 %{_includedir}/rados/rados_types.h
@@ -254,14 +271,12 @@ fi
 %{_includedir}/rados/buffer.h
 %{_includedir}/rados/page.h
 %{_includedir}/rados/crc32c.h
-#%{_includedir}/rados/librgw.h
 %dir %{_includedir}/rbd
 %{_includedir}/rbd/librbd.h
 %{_includedir}/rbd/librbd.hpp
 %{_includedir}/rbd/features.h
 %{_libdir}/libcephfs.so
 %{_libdir}/librados.so
-#%{_libdir}/librgw.so
 %{_libdir}/librbd.so
 %{_bindir}/librados-config
 %{_mandir}/man8/librados-config.8*
@@ -273,6 +288,26 @@ fi
 %{_sysconfdir}/bash_completion.d/radosgw-admin
 
 %changelog
+* Tue May 13 2014 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 0.80.1-1
+- Update to latest stable upstream release, BZ 1095201
+- PIE, _hardened_build, BZ 955174
+
+* Thu Feb 06 2014 Ken Dreyer <ken.dreyer@inktank.com> - 0.72.2-2
+- Move plugins from -devel into -libs package (#891993). Thanks Michael
+  Schwendt.
+
+* Mon Jan 06 2014 Ken Dreyer <ken.dreyer@inktank.com> 0.72.2-1
+- Update to latest stable upstream release
+- Use HTTPS for URLs
+- Submit Automake 1.12 patch upstream
+- Move unversioned shared libs from ceph-libs into ceph-devel
+
+* Wed Dec 18 2013 Marcin Juszkiewicz <mjuszkiewicz@redhat.com> 0.67.3-4
+- build without tcmalloc on aarch64 (no gperftools)
+
+* Sat Nov 30 2013 Peter Robinson <pbrobinson@fedoraproject.org> 0.67.3-3
+- gperftools not currently available on aarch64
+
 * Mon Oct 07 2013 Dan Horák <dan[at]danny.cz> - 0.67.3-2
 - fix build on non-x86_64 64-bit arches
 
