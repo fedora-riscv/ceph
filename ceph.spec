@@ -3,7 +3,7 @@
 
 Name:          ceph
 Version:       0.80.1
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       User space components of the Ceph file system
 License:       LGPLv2
 Group:         System Environment/Base
@@ -24,7 +24,9 @@ BuildRequires: cryptopp-devel, libatomic_ops-static, gcc-c++
 BuildRequires: pkgconfig, libcurl-devel, keyutils-libs-devel
 BuildRequires: gtkmm24-devel, gtk2-devel, libuuid, libuuid-devel
 BuildRequires: leveldb-devel, snappy-devel, libblkid-devel
+%if ( ! (0%{?rhel} && 0%{?rhel} <= 6 ) )
 BuildRequires: xfsprogs-devel
+%endif
 
 Requires(post): chkconfig, binutils, libedit
 Requires(preun): chkconfig
@@ -93,6 +95,9 @@ EXTRA_LDFLAGS="-pthread"
 
 %{configure} --prefix=%{_prefix} --sbindir=%{_sbindir} \
 --localstatedir=%{_localstatedir} --sysconfdir=%{_sysconfdir} \
+%if ( 0%{?rhel} && 0%{?rhel} <= 6 )
+--without-libxfs \
+%endif
 %ifarch ppc ppc64 s390 s390x aarch64
 --without-tcmalloc \
 %endif
@@ -175,6 +180,7 @@ fi
 %{_sbindir}/ceph-disk
 %{_sbindir}/ceph-disk-udev
 %{_libdir}/ceph
+%exclude %{_libdir}/ceph/erasure-code
 %config(noreplace) %{_sysconfdir}/logrotate.d/ceph
 %config(noreplace) %{_sysconfdir}/bash_completion.d/rados
 %config(noreplace) %{_sysconfdir}/bash_completion.d/ceph
@@ -288,6 +294,10 @@ fi
 %{_sysconfdir}/bash_completion.d/radosgw-admin
 
 %changelog
+* Wed May 14 2014 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 0.80.1-2
+- build epel-6
+- exclude %%{_libdir}/ceph/erasure-code in base package
+
 * Tue May 13 2014 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 0.80.1-1
 - Update to latest stable upstream release, BZ 1095201
 - PIE, _hardened_build, BZ 955174
