@@ -2,14 +2,14 @@
 %global _hardened_build 1
 
 Name:          ceph
-Version:       0.80.1
-Release:       2%{?dist}
+Version:       0.81.0
+Release:       1%{?dist}
 Summary:       User space components of the Ceph file system
 License:       LGPLv2
 Group:         System Environment/Base
 URL:           https://ceph.com/
 
-Source:        https://ceph.com/download/%{name}-%{version}.tar.bz2
+Source:        https://ceph.com/download/%{name}-0.81.tar.bz2
 Patch0:        ceph-init-fix.patch
 # https://github.com/ceph/ceph/pull/1051
 Patch1:        ceph-fix-sbin-target.patch
@@ -17,13 +17,14 @@ Patch1:        ceph-fix-sbin-target.patch
 BuildRequires: fuse-devel, libtool, libtool-ltdl-devel, boost-devel,
 BuildRequires: libedit-devel, fuse-devel, git, perl, gdbm, libaio-devel,
 # google-perftools is not available on these:
-%ifnarch ppc ppc64 s390 s390x aarch64
+%ifnarch ppc s390 s390x
 BuildRequires: gperftools-devel
 %endif
 BuildRequires: cryptopp-devel, libatomic_ops-static, gcc-c++
 BuildRequires: pkgconfig, libcurl-devel, keyutils-libs-devel
 BuildRequires: gtkmm24-devel, gtk2-devel, libuuid, libuuid-devel
 BuildRequires: leveldb-devel, snappy-devel, libblkid-devel
+BuildRequires: libudev-devel
 %if ( ! (0%{?rhel} && 0%{?rhel} <= 6 ) )
 BuildRequires: xfsprogs-devel
 %endif
@@ -79,7 +80,7 @@ implemented as a FastCGI module using libfcgi, and can be used in
 conjunction with any FastCGI capable web server.
 
 %prep
-%setup -q
+%setup -q -n ceph-0.81
 %patch0 -p1 -b .init
 %patch1 -p1
 
@@ -98,7 +99,7 @@ EXTRA_LDFLAGS="-pthread"
 %if ( 0%{?rhel} && 0%{?rhel} <= 6 )
 --without-libxfs \
 %endif
-%ifarch ppc ppc64 s390 s390x aarch64
+%ifarch ppc s390 s390x
 --without-tcmalloc \
 %endif
 --with-system-leveldb --without-hadoop --with-radosgw --with-gtk2 \
@@ -172,7 +173,6 @@ fi
 %{_bindir}/ceph-post-file
 %{_bindir}/ceph-rest-api
 %{_initrddir}/ceph
-%{_sbindir}/mkcephfs
 %{_sbindir}/mount.ceph
 %{_sbindir}/ceph-disk-activate
 %{_sbindir}/ceph-disk-prepare
@@ -188,7 +188,6 @@ fi
 %{_mandir}/man8/ceph-mon.8*
 %{_mandir}/man8/ceph-mds.8*
 %{_mandir}/man8/ceph-osd.8*
-%{_mandir}/man8/mkcephfs.8*
 %{_mandir}/man8/ceph-run.8*
 %{_mandir}/man8/ceph-syn.8*
 %{_mandir}/man8/crushtool.8*
@@ -294,6 +293,18 @@ fi
 %{_sysconfdir}/bash_completion.d/radosgw-admin
 
 %changelog
+* Thu Jun 5 2014 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 0.81.0-1
+- ceph-0.81.0
+
+* Wed Jun  4 2014 Peter Robinson <pbrobinson@fedoraproject.org> 0.80.1-5
+- gperftools now available on aarch64/ppc64
+
+* Fri May 23 2014 Petr Machata <pmachata@redhat.com> - 0.80.1-4
+- Rebuild for boost 1.55.0
+
+* Fri May 23 2014 David Tardon <dtardon@redhat.com> - 0.80.1-3
+- rebuild for boost 1.55.0
+
 * Wed May 14 2014 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 0.80.1-2
 - build epel-6
 - exclude %%{_libdir}/ceph/erasure-code in base package
