@@ -17,7 +17,7 @@ Patch1:        ceph-fix-sbin-target.patch
 BuildRequires: fuse-devel, libtool, libtool-ltdl-devel, boost-devel,
 BuildRequires: libedit-devel, fuse-devel, git, perl, gdbm, libaio-devel,
 # google-perftools is not available on these:
-%ifnarch ppc s390 s390x
+%ifnarch ppc ppc64 s390 s390x
 BuildRequires: gperftools-devel
 %endif
 BuildRequires: cryptopp-devel, libatomic_ops-static, gcc-c++
