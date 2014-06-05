@@ -99,7 +99,7 @@ EXTRA_LDFLAGS="-pthread"
 %if ( 0%{?rhel} && 0%{?rhel} <= 6 )
 --without-libxfs \
 %endif
-%ifarch ppc s390 s390x
+%ifarch ppc ppc64 s390 s390x
 --without-tcmalloc \
 %endif
 --with-system-leveldb --without-hadoop --with-radosgw --with-gtk2 \
