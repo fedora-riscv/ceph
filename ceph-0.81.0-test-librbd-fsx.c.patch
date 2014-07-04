@@ -1,0 +1,11 @@
+--- ceph-0.81/src/test/librbd/fsx.c.orig	2014-07-04 07:23:03.485099589 -0400
++++ ceph-0.81/src/test/librbd/fsx.c	2014-07-04 08:11:04.208099589 -0400
+@@ -1360,7 +1360,7 @@
+ 	int ret, fd;
+ 	struct rbd_ctx cur_ctx = RBD_CTX_INIT;
+ 	struct stat file_info;
+-	char *good_buf, *temp_buf;
++	char *good_buf, *temp_buf = NULL;
+ 
+ 	clone_imagename(imagename, sizeof(imagename), clonenum);
+ 	if ((ret = ops->open(imagename, &cur_ctx)) < 0) {

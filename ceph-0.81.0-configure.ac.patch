@@ -1,0 +1,14 @@
+--- ceph-0.81/configure.ac.orig	2014-07-04 10:00:39.193099589 -0400
++++ ceph-0.81/configure.ac	2014-07-04 10:03:54.739099589 -0400
+@@ -425,9 +425,9 @@
+         # the search path.
+         AS_IF([test "x$with_debug" = "xyes"], [
+         	dir='/usr/share/java'
+-	        junit4_jar=`find $dir -name junit4.jar | head -n 1`
++	        junit4_jar=`find $dir -name junit.jar | head -n 1`
+ 		AS_IF([test -r "$junit4_jar"], [
+-		      EXTRA_CLASSPATH_JAR=`dirname $junit4_jar`/junit4.jar
++		      EXTRA_CLASSPATH_JAR=`dirname $junit4_jar`/junit.jar
+ 		      AC_SUBST(EXTRA_CLASSPATH_JAR)
+ 		      [have_junit4=1]], [
+ 		      AC_MSG_NOTICE([Cannot find junit4.jar (apt-get install junit4)])
