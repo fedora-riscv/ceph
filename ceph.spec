@@ -10,7 +10,7 @@
 #################################################################################
 Name:		ceph
 Version:	0.80.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPL-2.0
@@ -313,6 +313,15 @@ MY_CONF_OPT="$MY_CONF_OPT --with-radosgw"
 
 export RPM_OPT_FLAGS=`echo $RPM_OPT_FLAGS | sed -e 's/i386/i486/'`
 
+%ifarch armv5tel
+# libatomic_ops does not have correct asm for ARMv5tel
+EXTRA_CFLAGS="-DAO_USE_PTHREAD_DEFS"
+%endif
+%ifarch %{arm}
+# libatomic_ops seems to fallback on some pthread implementation on ARM
+EXTRA_LDFLAGS="-lpthread"
+%endif
+
 %{configure}	CPPFLAGS="$java_inc" \
 		--prefix=/usr \
 		--localstatedir=/var \
@@ -325,7 +334,9 @@ export RPM_OPT_FLAGS=`echo $RPM_OPT_FLAGS | sed -e 's/i386/i486/'`
 		--enable-cephfs-java \
 		$MY_CONF_OPT \
 		%{?_with_ocf} \
-		CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS"
+		CFLAGS="$RPM_OPT_FLAGS $EXTRA_CFLAGS" \
+		CXXFLAGS="$RPM_OPT_FLAGS $EXTRA_CFLAGS" \
+		LDFLAGS="$EXTRA_LDFLAGS"
 
 # fix bug in specific version of libedit-devel
 %if 0%{defined suse_version}
@@ -731,6 +742,9 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %files libs-compat
 
 %changelog
+* Sat Aug 16 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-2
+- Add the arm pthread hack
+
 * Fri Aug 15 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-1
 - Bump the Epoch, we need to keep the latest stable, not development, ceph version in fedora
 - Use the upstream spec file with the ceph-libs split
