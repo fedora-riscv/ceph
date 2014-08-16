@@ -10,7 +10,7 @@
 #################################################################################
 Name:		ceph
 Version:	0.80.5
-Release:	5%{?dist}
+Release:	6%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPL-2.0
@@ -214,7 +214,7 @@ Group:		System Environment/Libraries
 License:	LGPL-2.0
 %if 0%{?rhel} || 0%{?centos} || 0%{?fedora}
 Obsoletes:	ceph-libs < 1:0.80.5
-Obsoletes:	libcephfs
+Obsoletes:	ceph-libcephfs < 1:0.80.5
 %endif
 %description -n libcephfs1
 Ceph is a distributed network file system designed to provide excellent
@@ -757,6 +757,9 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %files libs-compat
 
 %changelog
+* Sun Aug 17 2014 Kalev Lember <kalevlember@gmail.com> - 1:0.80.5-6
+- Obsolete ceph-libcephfs
+
 * Sat Aug 16 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-5
 - Do not require xfsprogs/xfsprogs-devel for el6
 - Require gperftools-devel for non-ppc*/s390* architectures only
