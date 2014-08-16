@@ -10,7 +10,7 @@
 #################################################################################
 Name:		ceph
 Version:	0.80.5
-Release:	3%{?dist}
+Release:	4%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPL-2.0
@@ -180,7 +180,7 @@ Summary:	RADOS distributed object store client library
 Group:		System Environment/Libraries
 License:	LGPL-2.0
 %if 0%{?rhel} || 0%{?centos} || 0%{?fedora}
-Obsoletes:	ceph-libs < 0:0.81.0
+Obsoletes:	ceph-libs < 1:0.80.5
 %endif
 %description -n librados2
 RADOS is a reliable, autonomic distributed object storage cluster
@@ -194,7 +194,7 @@ Group:		System Environment/Libraries
 License:	LGPL-2.0
 Requires:	librados2 = %{version}-%{release}
 %if 0%{?rhel} || 0%{?centos} || 0%{?fedora}
-Obsoletes:	ceph-libs < 0:0.81.0
+Obsoletes:	ceph-libs < 1:0.80.5
 %endif
 %description -n librbd1
 RBD is a block device striped across multiple distributed objects in
@@ -207,7 +207,7 @@ Summary:	Ceph distributed file system client library
 Group:		System Environment/Libraries
 License:	LGPL-2.0
 %if 0%{?rhel} || 0%{?centos} || 0%{?fedora}
-Obsoletes:	ceph-libs < 0:0.81.0
+Obsoletes:	ceph-libs < 1:0.80.5
 Obsoletes:	libcephfs
 %endif
 %description -n libcephfs1
@@ -275,7 +275,7 @@ This package contains the Java libraries for the Ceph File System.
 Summary:	Meta package to include ceph libraries.
 Group:		System Environment/Libraries
 License:	LGPL-2.0
-Obsoletes:	ceph-libs < 0:0.81.0
+Obsoletes:	ceph-libs < 1:0.80.5
 Requires:	librados2 = %{version}-%{release}
 Requires:	librbd1 = %{version}-%{release}
 Requires:	libcephfs1 = %{version}-%{release}
@@ -742,6 +742,9 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %files libs-compat
 
 %changelog
+* Sat Aug 16 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-4
+- Use the proper version name in Obsoletes
+
 * Fri Aug 15 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-3
 - Add the arm pthread hack
 
