@@ -10,7 +10,7 @@
 #################################################################################
 Name:		ceph
 Version:	0.80.5
-Release:	4%{?dist}
+Release:	5%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPL-2.0
@@ -19,15 +19,17 @@ URL:		http://ceph.com/
 Source0:	http://ceph.com/download/%{name}-%{version}.tar.bz2
 Patch0:		ceph-google-gperftools.patch
 Patch1:		ceph-no-format-security.patch
-Requires:	librbd1 = %{version}-%{release}
-Requires:	librados2 = %{version}-%{release}
-Requires:	libcephfs1 = %{version}-%{release}
-Requires:	ceph-common = %{version}-%{release}
+Requires:	librbd1 = %{epoch}:%{version}-%{release}
+Requires:	librados2 = %{epoch}:%{version}-%{release}
+Requires:	libcephfs1 = %{epoch}:%{version}-%{release}
+Requires:	ceph-common = %{epoch}:%{version}-%{release}
 Requires:	python
 Requires:	python-argparse
 Requires:	python-ceph
 Requires:	python-requests
+%if ! ( 0%{?rhel} && 0%{?rhel} <= 6 )
 Requires:	xfsprogs
+%endif
 Requires:	cryptsetup
 Requires:	parted
 Requires:	util-linux
@@ -54,7 +56,9 @@ BuildRequires:	libuuid-devel
 BuildRequires:	libblkid-devel >= 2.17
 BuildRequires:	libudev-devel
 BuildRequires:	leveldb-devel > 1.2
+%if ! ( 0%{?rhel} && 0%{?rhel} <= 6 )
 BuildRequires:	xfsprogs-devel
+%endif
 BuildRequires:	yasm
 %if 0%{?rhel} || 0%{?centos} || 0%{?fedora}
 BuildRequires:	snappy-devel
@@ -90,7 +94,9 @@ Requires:	gdisk
 Requires(post):	chkconfig
 Requires(preun):chkconfig
 Requires(preun):initscripts
+%ifnarch ppc ppc64 s390 s390x
 BuildRequires:	gperftools-devel
+%endif
 %endif
 
 %description
@@ -105,9 +111,9 @@ block and file system storage.
 %package -n ceph-common
 Summary:	Ceph Common
 Group:		System Environment/Base
-Requires:	librbd1 = %{version}-%{release}
-Requires:	librados2 = %{version}-%{release}
-Requires:	python-ceph = %{version}-%{release}
+Requires:	librbd1 = %{epoch}:%{version}-%{release}
+Requires:	librados2 = %{epoch}:%{version}-%{release}
+Requires:	python-ceph = %{epoch}:%{version}-%{release}
 Requires:	python-requests
 Requires:	redhat-lsb-core
 %description -n ceph-common
@@ -116,7 +122,7 @@ common utilities to mount and interact with a ceph storage cluster
 %package fuse
 Summary:	Ceph fuse-based client
 Group:		System Environment/Base
-Requires:	%{name}
+Requires:	%{name} = %{epoch}:%{version}-%{release}
 BuildRequires:	fuse-devel
 %description fuse
 FUSE based client for Ceph distributed network file system
@@ -124,9 +130,9 @@ FUSE based client for Ceph distributed network file system
 %package -n rbd-fuse
 Summary:	Ceph fuse-based client
 Group:		System Environment/Base
-Requires:	%{name}
-Requires:	librados2 = %{version}-%{release}
-Requires:	librbd1 = %{version}-%{release}
+Requires:	%{name} = %{epoch}:%{version}-%{release}
+Requires:	librados2 = %{epoch}:%{version}-%{release}
+Requires:	librbd1 = %{epoch}:%{version}-%{release}
 BuildRequires:	fuse-devel
 %description -n rbd-fuse
 FUSE based client to map Ceph rbd images to files
@@ -135,11 +141,11 @@ FUSE based client to map Ceph rbd images to files
 Summary:	Ceph headers
 Group:		Development/Libraries
 License:	LGPL-2.0
-Requires:	%{name} = %{version}-%{release}
-Requires:	librados2 = %{version}-%{release}
-Requires:	librbd1 = %{version}-%{release}
-Requires:	libcephfs1 = %{version}-%{release}
-Requires:	libcephfs_jni1 = %{version}-%{release}
+Requires:	%{name} = %{epoch}:%{version}-%{release}
+Requires:	librados2 = %{epoch}:%{version}-%{release}
+Requires:	librbd1 = %{epoch}:%{version}-%{release}
+Requires:	libcephfs1 = %{epoch}:%{version}-%{release}
+Requires:	libcephfs_jni1 = %{epoch}:%{version}-%{release}
 %description devel
 This package contains libraries and headers needed to develop programs
 that use Ceph.
@@ -147,8 +153,8 @@ that use Ceph.
 %package radosgw
 Summary:	Rados REST gateway
 Group:		Development/Libraries
-Requires:	ceph-common = %{version}-%{release}
-Requires:	librados2 = %{version}-%{release}
+Requires:	ceph-common = %{epoch}:%{version}-%{release}
+Requires:	librados2 = %{epoch}:%{version}-%{release}
 %if 0%{defined suse_version}
 BuildRequires:	libexpat-devel
 BuildRequires:	FastCGI-devel
@@ -167,7 +173,7 @@ conjunction with any FastCGI capable web server.
 Summary:	OCF-compliant resource agents for Ceph daemons
 Group:		System Environment/Base
 License:	LGPL-2.0
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{epoch}:%{version}-%{release}
 Requires:	resource-agents
 %description resource-agents
 Resource agents for monitoring and managing Ceph daemons
@@ -192,7 +198,7 @@ store using a simple file-like interface.
 Summary:	RADOS block device client library
 Group:		System Environment/Libraries
 License:	LGPL-2.0
-Requires:	librados2 = %{version}-%{release}
+Requires:	librados2 = %{epoch}:%{version}-%{release}
 %if 0%{?rhel} || 0%{?centos} || 0%{?fedora}
 Obsoletes:	ceph-libs < 1:0.80.5
 %endif
@@ -220,8 +226,8 @@ POSIX-like interface.
 Summary:	Python libraries for the Ceph distributed filesystem
 Group:		System Environment/Libraries
 License:	LGPL-2.0
-Requires:	librados2 = %{version}-%{release}
-Requires:	librbd1 = %{version}-%{release}
+Requires:	librados2 = %{epoch}:%{version}-%{release}
+Requires:	librbd1 = %{epoch}:%{version}-%{release}
 Requires:	python-flask
 %if 0%{defined suse_version}
 %py_requires
@@ -234,7 +240,7 @@ object storage.
 Summary:	RESTful benchmark
 Group:		System Environment/Libraries
 License:	LGPL-2.0
-Requires:	ceph-common = %{version}-%{release}
+Requires:	ceph-common = %{epoch}:%{version}-%{release}
 %description -n rest-bench
 RESTful bencher that can be used to benchmark radosgw performance.
 
@@ -242,9 +248,9 @@ RESTful bencher that can be used to benchmark radosgw performance.
 Summary:	Ceph benchmarks and test tools
 Group:		System Environment/Libraries
 License:	LGPL-2.0
-Requires:	librados2 = %{version}-%{release}
-Requires:	librbd1 = %{version}-%{release}
-Requires:	libcephfs1 = %{version}-%{release}
+Requires:	librados2 = %{epoch}:%{version}-%{release}
+Requires:	librbd1 = %{epoch}:%{version}-%{release}
+Requires:	libcephfs1 = %{epoch}:%{version}-%{release}
 %description -n ceph-test
 This package contains Ceph benchmarks and test tools.
 
@@ -253,7 +259,7 @@ Summary:	Java Native Interface library for CephFS Java bindings.
 Group:		System Environment/Libraries
 License:	LGPL-2.0
 Requires:	java
-Requires:	libcephfs1 = %{version}-%{release}
+Requires:	libcephfs1 = %{epoch}:%{version}-%{release}
 BuildRequires:	java-devel
 %description -n libcephfs_jni1
 This package contains the Java Native Interface library for CephFS Java
@@ -264,10 +270,8 @@ Summary:	Java libraries for the Ceph File System.
 Group:		System Environment/Libraries
 License:	LGPL-2.0
 Requires:	java
-Requires:	libcephfs_jni1 = %{version}-%{release}
+Requires:	libcephfs_jni1 = %{epoch}:%{version}-%{release}
 BuildRequires:	java-devel
-Requires:	junit >= 4.0
-BuildRequires:	junit >= 4.0
 %description -n cephfs-java
 This package contains the Java libraries for the Ceph File System.
 
@@ -276,9 +280,9 @@ Summary:	Meta package to include ceph libraries.
 Group:		System Environment/Libraries
 License:	LGPL-2.0
 Obsoletes:	ceph-libs < 1:0.80.5
-Requires:	librados2 = %{version}-%{release}
-Requires:	librbd1 = %{version}-%{release}
-Requires:	libcephfs1 = %{version}-%{release}
+Requires:	librados2 = %{epoch}:%{version}-%{release}
+Requires:	librbd1 = %{epoch}:%{version}-%{release}
+Requires:	libcephfs1 = %{epoch}:%{version}-%{release}
 Provides:	ceph-libs
 
 %description libs-compat
@@ -307,9 +311,19 @@ for i in /usr/{lib64,lib}/jvm/java/include{,/linux}; do
 done
 
 ./autogen.sh
+
+%if ( 0%{?rhel} && 0%{?rhel} <= 6)
+MY_CONF_OPT="--without-libxfs"
+%else
 MY_CONF_OPT=""
+%endif
 
 MY_CONF_OPT="$MY_CONF_OPT --with-radosgw"
+
+# No gperftools on these architectures
+%ifarch ppc ppc64 s390 s390x
+MY_CONF_OPT="$MY_CONF_OPT --without-tcmalloc"
+%endif
 
 export RPM_OPT_FLAGS=`echo $RPM_OPT_FLAGS | sed -e 's/i386/i486/'`
 
@@ -461,10 +475,11 @@ fi
 %{_sbindir}/ceph-disk-udev
 %{_sbindir}/ceph-create-keys
 %{_sbindir}/rcceph
-%{_sbindir}/mkcephfs
 %if 0%{?rhel} >= 7 || 0%{?fedora}
+%{_sbindir}/mkcephfs
 %{_sbindir}/mount.ceph
 %else
+/sbin/mkcephfs
 /sbin/mount.ceph
 %endif
 %dir %{_libdir}/ceph
@@ -742,14 +757,23 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %files libs-compat
 
 %changelog
+* Sat Aug 16 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-5
+- Do not require xfsprogs/xfsprogs-devel for el6
+- Require gperftools-devel for non-ppc*/s390* architectures only
+- Do not require junit -- no need to build libcephfs-test.jar
+- Build without libxfs for el6
+- Build without tcmalloc for ppc*/s390* architectures
+- Location of mkcephfs must depend on a rhel release
+- Use epoch in the Requires fields [1130700]
+
 * Sat Aug 16 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-4
 - Use the proper version name in Obsoletes
 
-* Fri Aug 15 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-3
-- Add the arm pthread hack
-
-* Fri Aug 15 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:0.80.5-2
+* Fri Aug 15 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:0.80.5-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
+* Fri Aug 15 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-2
+- Add the arm pthread hack
 
 * Fri Aug 15 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-1
 - Bump the Epoch, we need to keep the latest stable, not development, ceph version in fedora
