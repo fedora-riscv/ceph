@@ -10,7 +10,7 @@
 #################################################################################
 Name:		ceph
 Version:	0.80.5
-Release:	6%{?dist}
+Release:	8%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPL-2.0
@@ -59,7 +59,8 @@ BuildRequires:	leveldb-devel > 1.2
 %if ! ( 0%{?rhel} && 0%{?rhel} <= 6 )
 BuildRequires:	xfsprogs-devel
 %endif
-BuildRequires:	yasm
+# No yasm dependency for now, it causes selinux issues
+#BuildRequires:	yasm
 %if 0%{?rhel} || 0%{?centos} || 0%{?fedora}
 BuildRequires:	snappy-devel
 %endif
@@ -757,6 +758,13 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %files libs-compat
 
 %changelog
+* Thu Aug 21 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-8
+- Revert the previous change
+- Fix bz 1118504, second attempt (yasm appears to be the package that caused this
+
+* Wed Aug 20 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-7
+- Several more merges from file to try to fix the selinux issue (1118504)
+
 * Sun Aug 17 2014 Kalev Lember <kalevlember@gmail.com> - 1:0.80.5-6
 - Obsolete ceph-libcephfs
 
