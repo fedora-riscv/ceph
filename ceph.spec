@@ -10,7 +10,7 @@
 #################################################################################
 Name:		ceph
 Version:	0.80.5
-Release:	6%{?dist}
+Release:	7%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPL-2.0
@@ -34,8 +34,6 @@ Requires:	cryptsetup
 Requires:	parted
 Requires:	util-linux
 Requires:	hdparm
-# For initscript
-Requires:	redhat-lsb-core
 Requires(post):	binutils
 BuildRequires:	make
 BuildRequires:	gcc-c++
@@ -98,6 +96,11 @@ Requires(preun):initscripts
 BuildRequires:	gperftools-devel
 %endif
 %endif
+
+Obsoletes:	cephfs-java < 1:0.80.5-7
+Obsoletes:	libcephfs_jni1 < 1:0.80.5-7
+Obsoletes:	ceph-test < 1:0.80.5-7
+Obsoletes:	rest-bench < 1:0.80.5-7
 
 %description
 Ceph is a massively scalable, open-source, distributed
@@ -236,45 +239,6 @@ Requires:	python-flask
 This package contains Python libraries for interacting with Cephs RADOS
 object storage.
 
-%package -n rest-bench
-Summary:	RESTful benchmark
-Group:		System Environment/Libraries
-License:	LGPL-2.0
-Requires:	ceph-common = %{epoch}:%{version}-%{release}
-%description -n rest-bench
-RESTful bencher that can be used to benchmark radosgw performance.
-
-%package -n ceph-test
-Summary:	Ceph benchmarks and test tools
-Group:		System Environment/Libraries
-License:	LGPL-2.0
-Requires:	librados2 = %{epoch}:%{version}-%{release}
-Requires:	librbd1 = %{epoch}:%{version}-%{release}
-Requires:	libcephfs1 = %{epoch}:%{version}-%{release}
-%description -n ceph-test
-This package contains Ceph benchmarks and test tools.
-
-%package -n libcephfs_jni1
-Summary:	Java Native Interface library for CephFS Java bindings.
-Group:		System Environment/Libraries
-License:	LGPL-2.0
-Requires:	java
-Requires:	libcephfs1 = %{epoch}:%{version}-%{release}
-BuildRequires:	java-devel
-%description -n libcephfs_jni1
-This package contains the Java Native Interface library for CephFS Java
-bindings.
-
-%package -n cephfs-java
-Summary:	Java libraries for the Ceph File System.
-Group:		System Environment/Libraries
-License:	LGPL-2.0
-Requires:	java
-Requires:	libcephfs_jni1 = %{epoch}:%{version}-%{release}
-BuildRequires:	java-devel
-%description -n cephfs-java
-This package contains the Java libraries for the Ceph File System.
-
 %package libs-compat
 Summary:	Meta package to include ceph libraries.
 Group:		System Environment/Libraries
@@ -312,13 +276,11 @@ done
 
 ./autogen.sh
 
-%if ( 0%{?rhel} && 0%{?rhel} <= 6)
-MY_CONF_OPT="--without-libxfs"
-%else
-MY_CONF_OPT=""
-%endif
+MY_CONF_OPT="--with-radosgw --with-system-leveldb --without-hadoop --with-gtk2"
 
-MY_CONF_OPT="$MY_CONF_OPT --with-radosgw"
+%if ( 0%{?rhel} && 0%{?rhel} <= 6)
+MY_CONF_OPT="$MY_CONF_OPT --without-libxfs"
+%endif
 
 # No gperftools on these architectures
 %ifarch ppc ppc64 s390 s390x
@@ -337,19 +299,15 @@ EXTRA_LDFLAGS="-lpthread"
 %endif
 
 %{configure}	CPPFLAGS="$java_inc" \
-		--prefix=/usr \
-		--localstatedir=/var \
-		--sysconfdir=/etc \
+		--prefix=%{_prefix} \
+		--sbindir=%{_sbindir} \
+		--localstatedir=%{_localstatedir} \
+		--sysconfdir=%{_sysconfdir} \
 		--docdir=%{_docdir}/ceph \
-		--with-nss \
-		--without-cryptopp \
-		--with-rest-bench \
-		--with-debug \
-		--enable-cephfs-java \
 		$MY_CONF_OPT \
 		%{?_with_ocf} \
 		CFLAGS="$RPM_OPT_FLAGS $EXTRA_CFLAGS" \
-		CXXFLAGS="$RPM_OPT_FLAGS $EXTRA_CFLAGS" \
+		CXXFLAGS="$RPM_OPT_FLAGS $EXTRA_CFLAGS -fvisibility-inlines-hidden" \
 		LDFLAGS="$EXTRA_LDFLAGS"
 
 # fix bug in specific version of libedit-devel
@@ -361,7 +319,7 @@ sed -i -e "s/-lcurses/-lncurses/g" src/ocf/Makefile
 sed -i -e "s/-lcurses/-lncurses/g" src/java/Makefile
 %endif
 
-make %{_smp_mflags}
+V=1 make %{_smp_mflags}
 
 %install
 make DESTDIR=$RPM_BUILD_ROOT install
@@ -464,10 +422,11 @@ fi
 %{_bindir}/ceph-osd
 %{_bindir}/ceph-rbdnamer
 %{_bindir}/librados-config
-%{_bindir}/ceph-client-debug
 %{_bindir}/ceph-debugpack
 %{_bindir}/ceph-coverage
 %{_bindir}/ceph_mon_store_converter
+%{_bindir}/ceph_filestore_dump
+%{_bindir}/ceph_filestore_tool
 %{_initrddir}/ceph
 %{_sbindir}/ceph-disk
 %{_sbindir}/ceph-disk-activate
@@ -615,7 +574,7 @@ fi
 %{_libdir}/libcephfs.so
 %{_libdir}/librbd.so
 %{_libdir}/librados.so
-%{_libdir}/libcephfs_jni.so
+#%{_libdir}/libcephfs_jni.so
 
 #################################################################################
 %files radosgw
@@ -711,52 +670,12 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %{python_sitelib}/ceph_argparse.py*
 %{python_sitelib}/ceph_rest_api.py*
 
-#################################################################################
-%files -n rest-bench
-%defattr(-,root,root,-)
-%{_bindir}/rest-bench
-
-#################################################################################
-%files -n ceph-test
-%defattr(-,root,root,-)
-%{_bindir}/ceph_bench_log
-%{_bindir}/ceph_dupstore
-%{_bindir}/ceph_kvstorebench
-%{_bindir}/ceph_multi_stress_watch
-%{_bindir}/ceph_erasure_code
-%{_bindir}/ceph_erasure_code_benchmark
-%{_bindir}/ceph_omapbench
-%{_bindir}/ceph_psim
-%{_bindir}/ceph_radosacl
-%{_bindir}/ceph_rgw_jsonparser
-%{_bindir}/ceph_rgw_multiparser
-%{_bindir}/ceph_scratchtool
-%{_bindir}/ceph_scratchtoolpp
-%{_bindir}/ceph_smalliobench
-%{_bindir}/ceph_smalliobenchdumb
-%{_bindir}/ceph_smalliobenchfs
-%{_bindir}/ceph_smalliobenchrbd
-%{_bindir}/ceph_filestore_dump
-%{_bindir}/ceph_filestore_tool
-%{_bindir}/ceph_streamtest
-%{_bindir}/ceph_test_*
-%{_bindir}/ceph_tpbench
-%{_bindir}/ceph_xattr_bench
-%{_bindir}/ceph-monstore-tool
-%{_bindir}/ceph-osdomap-tool
-%{_bindir}/ceph-kvstore-tool
-
-%files -n libcephfs_jni1
-%defattr(-,root,root,-)
-%{_libdir}/libcephfs_jni.so.*
-
-%files -n cephfs-java
-%defattr(-,root,root,-)
-%{_javadir}/libcephfs.jar
-
 %files libs-compat
 
 %changelog
+* Thu Aug 21 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-7
+- Consolidate build flags to fix 1118504
+
 * Sun Aug 17 2014 Kalev Lember <kalevlember@gmail.com> - 1:0.80.5-6
 - Obsolete ceph-libcephfs
 
