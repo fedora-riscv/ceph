@@ -10,7 +10,7 @@
 #################################################################################
 Name:		ceph
 Version:	0.80.5
-Release:	8%{?dist}
+Release:	9%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPL-2.0
@@ -686,8 +686,17 @@ fi
 
 %post -n librbd1
 /sbin/ldconfig
+# First, cleanup
+rm -f /usr/lib64/qemu/librbd.so.1
+rmdir /usr/lib64/qemu 2>/dev/null || true
+rmdir /usr/lib64/ 2>/dev/null || true
+# If x86_64 and rhel6+, link the library to /usr/lib64/qemu -- rhel hack
+%ifarch x86_64
+%if 0%{?rhel} >= 6
 mkdir -p /usr/lib64/qemu/
 ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
+%endif
+%endif
 
 %postun -n librbd1
 /sbin/ldconfig
@@ -758,6 +767,9 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %files libs-compat
 
 %changelog
+* Wed Sep 3 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-9
+- Symlink librd.so.1 to /usr/lib64/qemu only on rhel6+ x86_64 (1136811)
+
 * Thu Aug 21 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-8
 - Revert the previous change
 - Fix bz 1118504, second attempt (yasm appears to be the package that caused this
