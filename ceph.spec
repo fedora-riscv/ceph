@@ -10,7 +10,7 @@
 #################################################################################
 Name:		ceph
 Version:	0.80.5
-Release:	9%{?dist}
+Release:	10%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPL-2.0
@@ -33,7 +33,9 @@ Requires:	xfsprogs
 Requires:	cryptsetup
 Requires:	parted
 Requires:	util-linux
+%ifnarch s390 s390x
 Requires:	hdparm
+%endif
 # For initscript
 Requires:	redhat-lsb-core
 Requires(post):	binutils
@@ -767,6 +769,9 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %files libs-compat
 
 %changelog
+* Tue Sep 9 2014 Dan Horák <dan[at]danny.cz> - 1:0.80.5-10
+- update Requires for s390(x)
+
 * Wed Sep 3 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-9
 - Symlink librd.so.1 to /usr/lib64/qemu only on rhel6+ x86_64 (1136811)
 
