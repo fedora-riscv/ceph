@@ -9,8 +9,8 @@
 # common
 #################################################################################
 Name:		ceph
-Version:	0.80.6
-Release:	3%{?dist}
+Version:	0.80.7
+Release:	1%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPLv2
@@ -877,6 +877,9 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %files -n python-ceph-compat
 
 %changelog
+* Thu Oct 16 2014 Boris Ranto <branto@redhat.com - 1:0.80.7-1
+- Rebase to latest upstream version
+
 * Sat Oct 11 2014 Boris Ranto <branto@redhat.com> - 1:0.80.6-3
 - Fix a typo in librados-devel vs librados2-devel dependency
 
