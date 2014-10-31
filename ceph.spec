@@ -10,15 +10,16 @@
 #################################################################################
 Name:		ceph
 Version:	0.80.5
-Release:	10%{?dist}
+Release:	11%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
-License:	GPL-2.0
+License:	GPLv2
 Group:		System Environment/Base
 URL:		http://ceph.com/
 Source0:	http://ceph.com/download/%{name}-%{version}.tar.bz2
 Patch0:		ceph-google-gperftools.patch
 Patch1:		ceph-no-format-security.patch
+Patch2:		ceph-remove-systemd-init-detection.patch
 Requires:	librbd1 = %{epoch}:%{version}-%{release}
 Requires:	librados2 = %{epoch}:%{version}-%{release}
 Requires:	libcephfs1 = %{epoch}:%{version}-%{release}
@@ -306,6 +307,7 @@ librbd1 or libcephfs1 instead.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 # Find jni.h
@@ -769,6 +771,9 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %files libs-compat
 
 %changelog
+* Fri Oct 31 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-11
+- Fix bz#1157938
+
 * Tue Sep 9 2014 Dan Horák <dan[at]danny.cz> - 1:0.80.5-10
 - update Requires for s390(x)
 

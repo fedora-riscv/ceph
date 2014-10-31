@@ -1,0 +1,40 @@
+From 369daeeb447154016f774d16f1b618cdaaf575d5 Mon Sep 17 00:00:00 2001
+From: Boris Ranto <branto@redhat.com>
+Date: Fri, 31 Oct 2014 03:27:46 +0100
+Subject: [PATCH] Remove systemd detection in ceph init script, rhbz#1157938
+
+---
+ src/init-ceph.in | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
+
+diff --git a/src/init-ceph.in b/src/init-ceph.in
+index 95723b0..1effb56 100644
+--- a/src/init-ceph.in
++++ b/src/init-ceph.in
+@@ -44,10 +44,6 @@ test -f $LIBDIR/ceph_common.sh || exit 0
+ 
+ EXIT_STATUS=0
+ 
+-# detect systemd
+-SYSTEMD=0
+-grep -qs systemd /proc/1/comm && SYSTEMD=1
+-
+ signal_daemon() {
+     name=$1
+     daemon=$2
+@@ -276,11 +272,7 @@ for name in $what; do
+ 	    [ -n "$wrap" ] && runmode="-f &" && runarg="-f"
+ 	    [ -n "$max_open_files" ] && files="ulimit -n $max_open_files;"
+ 
+-	    if [ $SYSTEMD -eq 1 ]; then
+-		cmd="systemd-run -r bash -c '$files $cmd --cluster $cluster -f'"
+-	    else
+-		cmd="$files $wrap $cmd --cluster $cluster $runmode"
+-	    fi
++	    cmd="$files $wrap $cmd --cluster $cluster $runmode"
+ 
+ 	    if [ $dofsmount -eq 1 ] && [ -n "$fs_devs" ]; then
+ 		get_conf pre_mount "true" "pre mount command"
+-- 
+1.9.3
+
