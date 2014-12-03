@@ -10,7 +10,7 @@
 #################################################################################
 Name:		ceph
 Version:	0.87
-Release:	1%{?dist}
+Release:	2%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPLv2
