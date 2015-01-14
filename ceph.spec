@@ -10,7 +10,7 @@
 #################################################################################
 Name:		ceph
 Version:	0.80.7
-Release:	2%{?dist}
+Release:	3%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPLv2
@@ -20,6 +20,8 @@ Source0:	http://ceph.com/download/%{name}-%{version}.tar.bz2
 Patch0:		ceph-google-gperftools.patch
 Patch1:		ceph-no-format-security.patch
 Patch2:		ceph-common-do-not-unlock-rwlock-on-destruction.patch
+Patch3:		ceph-remove-rados-py-destructor.patch
+Patch4:		ceph-call-rados-shutdown-explicitly.patch
 Requires:	librbd1 = %{epoch}:%{version}-%{release}
 Requires:	librados2 = %{epoch}:%{version}-%{release}
 Requires:	libcephfs1 = %{epoch}:%{version}-%{release}
@@ -392,6 +394,8 @@ python-cephfs instead.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
 
 %build
 # Find jni.h
@@ -879,10 +883,13 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %files -n python-ceph-compat
 
 %changelog
-* Mon Dec 8 2014 Boris Ranto <branto@redhat.com - 1:0.80.7-2
+* Wed Jan 14 2015 Boris Ranto <branto@redhat.com> - 1:0.80.7-3
+- Fix rhbz#1155335 -- /usr/bin/ceph hangs indefinitely
+
+* Mon Dec 8 2014 Boris Ranto <branto@redhat.com> - 1:0.80.7-2
 - Fix rhbz#1144794
 
-* Thu Oct 16 2014 Boris Ranto <branto@redhat.com - 1:0.80.7-1
+* Thu Oct 16 2014 Boris Ranto <branto@redhat.com> - 1:0.80.7-1
 - Rebase to latest upstream version
 
 * Sat Oct 11 2014 Boris Ranto <branto@redhat.com> - 1:0.80.6-3
