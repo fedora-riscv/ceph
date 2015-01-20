@@ -3,7 +3,7 @@
 #################################################################################
 Name:		ceph
 Version:	0.80.5
-Release:	11%{?dist}
+Release:	10%{?dist}
 Epoch:		1
 Summary:	Virtual package that allows clean ceph update path for all epel users
 License:	GPLv2
@@ -17,15 +17,13 @@ Obsoletes:	ceph-radosgw < 1:0.80.5-10
 Obsoletes:	ceph-test < 1:0.80.5-10
 Obsoletes:	cephfs-java < 1:0.80.5-10
 Obsoletes:	libcephfs1 < 1:0.80.5-10
-Obsoletes:	libcephfs_jni1 < 1:0.80.5-10
+Obsoletes:	libcephfs1_jni1 < 1:0.80.5-10
 Obsoletes:	librados2 < 1:0.80.5-10
 Obsoletes:	librbd1 < 1:0.80.5-10
 Obsoletes:	python-ceph < 1:0.80.5-10
 Obsoletes:	rbd-fuse < 1:0.80.5-10
 Obsoletes:	rest-bench < 1:0.80.5-10
 Obsoletes:	ceph-debuginfo < 1:0.80.5-10
-Obsoletes:	ceph-libcephfs < 1:0.80.5-10
-Obsoletes:	ceph-libs < 1:0.80.5-10
 
 %description
 This is an empty virtual package. The sole purpose of this package
@@ -53,10 +51,6 @@ rm -rf $RPM_BUILD_ROOT
 %files
 
 %changelog
-* Mon Jan 19 2015 Boris Ranto <branto@redhat.com> - 1:0.80.5-11
-- Fix a typo libcephfs1_jni1 -> libcephfs_jni1
-- Obsolete ceph-libs and ceph-libcephfs
-
 * Fri Jan 16 2015 Boris Ranto <branto@redhat.com> - 1:0.80.5-10
 - Deprecate the package -- the client part of the package will be provided
 
