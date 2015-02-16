@@ -13,7 +13,7 @@ Name:		ceph
 Version:	0.80.7
 # This should always be lower than 2, we do not want to update over base rhel.
 # Please use 0.x if updating instead.
-Release:	0.4%{?dist}
+Release:	0.5%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPLv2
@@ -201,7 +201,7 @@ Summary:	RADOS headers
 Group:		Development/Libraries
 License:	LGPL-2.0
 Requires:	librados2 = %{epoch}:%{version}
-Obsoletes:	ceph-devel
+Obsoletes:	ceph-devel < 1:0.80.7-0
 %description -n librados2-devel
 This package contains libraries and headers needed to develop programs
 that use RADOS object store.
@@ -211,7 +211,7 @@ Summary:	Python libraries for the RADOS object store
 Group:		System Environment/Libraries
 License:	LGPL-2.0
 Requires:	librados2 = %{epoch}:%{version}
-Obsoletes:	python-ceph
+Obsoletes:	python-ceph < 1:0.80.7-0
 %description -n python-rados
 This package contains Python libraries for interacting with Cephs RADOS
 object store.
@@ -236,7 +236,7 @@ Group:		Development/Libraries
 License:	LGPL-2.0
 Requires:	librbd1 = %{epoch}:%{version}
 Requires:	librados2-devel = %{epoch}:%{version}
-Obsoletes:	ceph-devel
+Obsoletes:	ceph-devel < 1:0.80.7-0
 %description -n librbd1-devel
 This package contains libraries and headers needed to develop programs
 that use RADOS block device.
@@ -247,7 +247,7 @@ Group:		System Environment/Libraries
 License:	LGPL-2.0
 Requires:	librbd1 = %{epoch}:%{version}
 Requires:	python-rados = %{epoch}:%{version}
-Obsoletes:	python-ceph
+Obsoletes:	python-ceph < 1:0.80.7-0
 %description -n python-rbd
 This package contains Python libraries for interacting with Cephs RADOS
 block device.
@@ -272,7 +272,7 @@ Group:		Development/Libraries
 License:	LGPL-2.0
 Requires:	libcephfs1 = %{epoch}:%{version}
 Requires:	librados2-devel = %{epoch}:%{version}
-Obsoletes:	ceph-devel
+Obsoletes:	ceph-devel < 1:0.80.7-0
 %description -n libcephfs1-devel
 This package contains libraries and headers needed to develop programs
 that use Cephs distributed file system.
@@ -283,7 +283,7 @@ Group:		System Environment/Libraries
 License:	LGPL-2.0
 Requires:	libcephfs1 = %{epoch}:%{version}
 Requires:	python-rados = %{epoch}:%{version}
-Obsoletes:	python-ceph
+Obsoletes:	python-ceph < 1:0.80.7-0
 %description -n python-cephfs
 This package contains Python libraries for interacting with Cephs distributed
 file system.
@@ -886,6 +886,9 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %files -n python-ceph-compat
 
 %changelog
+* Wed Apr 01 2015 Ken Dreyer <ktdreyer@ktdreyer.com> - 1:0.80.7-0.5
+- add version numbers to Obsoletes (RHBZ #1193182)
+
 * Tue Jan 20 2015 Boris Ranto <branto@redhat.com> - 1:0.80.7-0.4
 - Revert the deprecation changes
 - Remove release in version comparisons, base rhel packages shall update epel
