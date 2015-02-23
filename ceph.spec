@@ -9,7 +9,7 @@
 # common
 #################################################################################
 Name:		ceph
-Version:	0.80.7
+Version:	0.80.8
 Release:	1%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
@@ -65,8 +65,7 @@ BuildRequires:	leveldb-devel > 1.2
 %if ! ( 0%{?rhel} && 0%{?rhel} <= 6 )
 BuildRequires:	xfsprogs-devel
 %endif
-# No yasm dependency for now, it causes selinux issues
-#BuildRequires:	yasm
+BuildRequires:	yasm
 %if 0%{?rhel} || 0%{?centos} || 0%{?fedora}
 BuildRequires:	snappy-devel
 %endif
@@ -877,6 +876,10 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %files -n python-ceph-compat
 
 %changelog
+* Mon Feb 23 2015 Boris Ranto <branto@redhat.com> - 1:0.80.8-1
+- Rebase to latest upstream firefly version
+- Require yasm, the SELinux yasm issue was fixed in .8 release
+
 * Thu Oct 16 2014 Boris Ranto <branto@redhat.com - 1:0.80.7-1
 - Rebase to latest upstream version
 
