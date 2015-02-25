@@ -9,8 +9,8 @@
 # common
 #################################################################################
 Name:		ceph
-Version:	0.87
-Release:	2%{?dist}
+Version:	0.87.1
+Release:	1%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPLv2
@@ -18,8 +18,6 @@ Group:		System Environment/Base
 URL:		http://ceph.com/
 Source0:	http://ceph.com/download/%{name}-%{version}.tar.bz2
 Patch0:		ceph-google-gperftools.patch
-# Patch1 sent upstream at http://tracker.ceph.com/issues/10688
-Patch1:         ceph-0.87-boost157.patch
 Requires:	librbd1 = %{epoch}:%{version}-%{release}
 Requires:	librados2 = %{epoch}:%{version}-%{release}
 Requires:	libcephfs1 = %{epoch}:%{version}-%{release}
@@ -66,8 +64,7 @@ BuildRequires:	leveldb-devel > 1.2
 %if ! ( 0%{?rhel} && 0%{?rhel} <= 6 )
 BuildRequires:	xfsprogs-devel
 %endif
-# No yasm dependency for now, it causes selinux issues
-#BuildRequires:	yasm
+BuildRequires:	yasm
 %if 0%{?rhel} || 0%{?centos} || 0%{?fedora}
 BuildRequires:	snappy-devel
 %endif
@@ -415,7 +412,6 @@ python-cephfs instead.
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
 
 %build
 # Find jni.h
@@ -922,6 +918,11 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %files -n python-ceph-compat
 
 %changelog
+* Wed Feb 25 2015 Boris Ranto <branto@redhat.com> - 1:0.87.1-1
+- Rebase to latest upstream
+- Remove boost patch, it is in upstream tarball
+- Build with yasm, tarball contains fix for the SELinux issue
+
 * Thu Jan 29 2015 Petr Machata <pmachata@redhat.com> - 1:0.87-2
 - Rebuild for boost 1.57.0
 - Include <boost/optional/optional_io.hpp> instead of
