@@ -5,21 +5,23 @@
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 %endif
 
+%global _hardened_build 1
+
 #################################################################################
 # common
 #################################################################################
 Name:		ceph
 Version:	0.80.8
 Release:	1%{?dist}
-Epoch:		1
+Epoch:		2
 Summary:	User space components of the Ceph file system
 License:	GPLv2
 Group:		System Environment/Base
 URL:		http://ceph.com/
 Source0:	http://ceph.com/download/%{name}-%{version}.tar.bz2
-Patch0:		ceph-google-gperftools.patch
-Patch1:		ceph-no-format-security.patch
-Patch2:		ceph-common-do-not-unlock-rwlock-on-destruction.patch
+Patch1:		0001-gperftools-deprecated-google-includes.patch
+Patch2:		0002-Wno-format-causes-compiler-options-collision.patch
+Patch3:		0003-Backport-pull-request-2937-to-firefly.patch
 Requires:	librbd1 = %{epoch}:%{version}-%{release}
 Requires:	librados2 = %{epoch}:%{version}-%{release}
 Requires:	libcephfs1 = %{epoch}:%{version}-%{release}
@@ -664,7 +666,6 @@ fi
 # Package removal cleanup
 if [ "$1" -eq "0" ] ; then
     rm -rf /var/log/ceph
-    rm -rf /etc/ceph
 fi
 
 #################################################################################
@@ -771,10 +772,6 @@ fi
 
 %post -n librbd1
 /sbin/ldconfig
-# First, cleanup
-rm -f /usr/lib64/qemu/librbd.so.1
-rmdir /usr/lib64/qemu 2>/dev/null || true
-rmdir /usr/lib64/ 2>/dev/null || true
 # If x86_64 and rhel6+, link the library to /usr/lib64/qemu -- rhel hack
 %ifarch x86_64
 %if 0%{?rhel} >= 6
@@ -878,6 +875,12 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %files -n python-ceph-compat
 
 %changelog
+* Wed Mar 4 2015 Boris Ranto <branto@redhat.com> - 1:0.80.8-2
+- Perform a hardened build
+- Use git-formatted patches
+- Do not remove conf files on uninstall
+- Remove the cleanup post-script function
+
 * Mon Feb 23 2015 Boris Ranto <branto@redhat.com> - 1:0.80.8-1
 - Rebase to 0.80.8 release
 - Require yasm, the yasm-related selinux issue was fixed in .8 release
