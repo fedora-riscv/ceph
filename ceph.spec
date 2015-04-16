@@ -22,6 +22,8 @@ Source0:	http://ceph.com/download/%{name}-%{version}.tar.bz2
 %if 0%{?fedora} || 0%{?centos} || 0%{?rhel}
 Patch0:		init-ceph.in-fedora.patch
 %endif
+Patch1:		0001-Disable-erasure_codelib-neon-build.patch
+Patch2:		0002-Add-support-for-PPC-arch.patch
 Requires:	librbd1 = %{epoch}:%{version}-%{release}
 Requires:	librados2 = %{epoch}:%{version}-%{release}
 Requires:	libcephfs1 = %{epoch}:%{version}-%{release}
@@ -426,6 +428,8 @@ python-cephfs instead.
 %if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
 %patch0 -p1 -b .init
 %endif
+%patch1 -p1
+%patch2 -p1
 
 %build
 # Find jni.h
@@ -477,10 +481,6 @@ make %{_smp_mflags}
 make DESTDIR=$RPM_BUILD_ROOT install
 find $RPM_BUILD_ROOT -type f -name "*.la" -exec rm -f {} ';'
 find $RPM_BUILD_ROOT -type f -name "*.a" -exec rm -f {} ';'
-%if ! (0%{?fedora} == 20 || 0%{?rhel} == 6)
-# do not package man page for binary that is not built
-rm -f $RPM_BUILD_ROOT%{_mandir}/man8/rbd-replay-prep.8*
-%endif
 install -D src/init-ceph $RPM_BUILD_ROOT%{_initrddir}/ceph
 install -D src/init-radosgw.sysv $RPM_BUILD_ROOT%{_initrddir}/ceph-radosgw
 install -D src/init-rbdmap $RPM_BUILD_ROOT%{_initrddir}/rbdmap
@@ -893,10 +893,9 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %{_mandir}/man8/rbd-replay-many.8*
 %{_bindir}/rbd-replay
 %{_bindir}/rbd-replay-many
-%if (0%{?fedora} == 20 || 0%{?rhel} == 6)
 %{_mandir}/man8/rbd-replay-prep.8*
 %{_bindir}/rbd-replay-prep
-%endif
+%{_bindir}/ceph_perf_objectstore
 
 #################################################################################
 %files -n libcephfs_jni1
@@ -912,7 +911,6 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %files -n cephfs-java
 %defattr(-,root,root,-)
 %{_javadir}/libcephfs.jar
-%{_javadir}/libcephfs-test.jar
 
 #################################################################################
 %files libs-compat
@@ -932,6 +930,7 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %changelog
 * Tue Apr 14 2015 Boris Ranto <branto@redhat.com> - 1:0.94.1-1
 - Rebase to latest upstream version and sync-up the spec file
+- Add arm compilation patches
 
 * Wed Apr 01 2015 Ken Dreyer <ktdreyer@ktdreyer.com> - 1:0.87.1-3
 - add version numbers to Obsoletes (RHBZ #1193182)
