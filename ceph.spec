@@ -12,7 +12,7 @@
 #################################################################################
 Name:		ceph
 Version:	0.94.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPLv2
@@ -24,6 +24,7 @@ Patch0:		init-ceph.in-fedora.patch
 %endif
 Patch1:		0001-Disable-erasure_codelib-neon-build.patch
 Patch2:		0002-Add-support-for-PPC-arch.patch
+Patch3:		0003-Skip-initialization-if-rtdsc-is-not-implemented.patch
 Requires:	librbd1 = %{epoch}:%{version}-%{release}
 Requires:	librados2 = %{epoch}:%{version}-%{release}
 Requires:	libcephfs1 = %{epoch}:%{version}-%{release}
@@ -430,6 +431,7 @@ python-cephfs instead.
 %endif
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 # Find jni.h
@@ -928,6 +930,9 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+* Mon May 18 2015 Boris Ranto <branto@redhat.com> - 1:0.94.1-2
+- Fix arm linking issue (rhbz#1222286)
+
 * Tue Apr 14 2015 Boris Ranto <branto@redhat.com> - 1:0.94.1-1
 - Rebase to latest upstream version and sync-up the spec file
 - Add arm compilation patches
