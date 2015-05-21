@@ -12,7 +12,7 @@
 #################################################################################
 Name:		ceph
 Version:	0.94.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPLv2
@@ -321,10 +321,6 @@ Summary:	Ceph benchmarks and test tools
 Group:		System Environment/Libraries
 License:	LGPL-2.0
 Requires:	ceph-common = %{epoch}:%{version}-%{release}
-%if (0%{?fedora} >= 20 || 0%{?rhel} == 6)
-BuildRequires:	lttng-ust-devel
-BuildRequires:	libbabeltrace-devel
-%endif
 %description -n ceph-test
 This package contains Ceph benchmarks and test tools.
 
@@ -483,6 +479,9 @@ make %{_smp_mflags}
 make DESTDIR=$RPM_BUILD_ROOT install
 find $RPM_BUILD_ROOT -type f -name "*.la" -exec rm -f {} ';'
 find $RPM_BUILD_ROOT -type f -name "*.a" -exec rm -f {} ';'
+# Do not package man page for binary that is not shipped
+rm -f $RPM_BUILD_ROOT/%{_mandir}/man8/rbd-replay-prep.8*
+# Install init scripts and other files
 install -D src/init-ceph $RPM_BUILD_ROOT%{_initrddir}/ceph
 install -D src/init-radosgw.sysv $RPM_BUILD_ROOT%{_initrddir}/ceph-radosgw
 install -D src/init-rbdmap $RPM_BUILD_ROOT%{_initrddir}/rbdmap
@@ -895,8 +894,6 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %{_mandir}/man8/rbd-replay-many.8*
 %{_bindir}/rbd-replay
 %{_bindir}/rbd-replay-many
-%{_mandir}/man8/rbd-replay-prep.8*
-%{_bindir}/rbd-replay-prep
 %{_bindir}/ceph_perf_objectstore
 
 #################################################################################
@@ -930,6 +927,9 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+* Thu May 21 2015 Boris Ranto <branto@redhat.com> - 1:0.94.1-3
+- Disable lttng support (rhbz#1223319)
+
 * Mon May 18 2015 Boris Ranto <branto@redhat.com> - 1:0.94.1-2
 - Fix arm linking issue (rhbz#1222286)
 
