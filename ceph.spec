@@ -12,7 +12,7 @@
 #################################################################################
 Name:		ceph
 Version:	0.94.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPLv2
@@ -25,6 +25,9 @@ Patch0:		init-ceph.in-fedora.patch
 Patch1:		0001-Disable-erasure_codelib-neon-build.patch
 Patch2:		0002-Add-support-for-PPC-arch.patch
 Patch3:		0003-Skip-initialization-if-rtdsc-is-not-implemented.patch
+# fix build without tcmalloc
+# https://github.com/ceph/rocksdb/pull/5
+Patch10:	ceph-0.94.1-tcmalloc.patch
 Requires:	librbd1 = %{epoch}:%{version}-%{release}
 Requires:	librados2 = %{epoch}:%{version}-%{release}
 Requires:	libcephfs1 = %{epoch}:%{version}-%{release}
@@ -105,7 +108,9 @@ Requires:	gdisk
 Requires(post):	chkconfig
 Requires(preun):chkconfig
 Requires(preun):initscripts
+%ifnarch s390 s390x
 BuildRequires:	gperftools-devel
+%endif
 %endif
 
 %description
@@ -428,6 +433,7 @@ python-cephfs instead.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch10 -p1 -b .tcmalloc
 
 %build
 # Find jni.h
@@ -458,6 +464,9 @@ EXTRA_LDFLAGS="-lpthread"
 		--with-debug \
 		--enable-cephfs-java \
 		--with-librocksdb-static=check \
+%ifarch s390 s390x
+		--without-tcmalloc \
+%endif
 		$MY_CONF_OPT \
 		%{?_with_ocf} \
 		CFLAGS="$RPM_OPT_FLAGS $EXTRA_CFLAGS" \
@@ -927,6 +936,9 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+* Mon Jun 08 2015 Dan Horák <dan[at]danny.cz> - 1:0.94.1-4
+- fix build on s390(x) - no gperftools there
+
 * Thu May 21 2015 Boris Ranto <branto@redhat.com> - 1:0.94.1-3
 - Disable lttng support (rhbz#1223319)
 
