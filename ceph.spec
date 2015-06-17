@@ -12,7 +12,7 @@
 #################################################################################
 Name:		ceph
 Version:	0.94.1
-Release:	4%{?dist}
+Release:	5%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPLv2
@@ -936,6 +936,9 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+* Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:0.94.1-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
 * Mon Jun 08 2015 Dan Horák <dan[at]danny.cz> - 1:0.94.1-4
 - fix build on s390(x) - no gperftools there
 
