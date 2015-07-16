@@ -11,8 +11,8 @@
 # common
 #################################################################################
 Name:		ceph
-Version:	0.94.1
-Release:	5%{?dist}
+Version:	0.94.2
+Release:	1%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPLv2
@@ -23,7 +23,6 @@ Source0:	http://ceph.com/download/%{name}-%{version}.tar.bz2
 Patch0:		init-ceph.in-fedora.patch
 %endif
 Patch1:		0001-Disable-erasure_codelib-neon-build.patch
-Patch2:		0002-Add-support-for-PPC-arch.patch
 Patch3:		0003-Skip-initialization-if-rtdsc-is-not-implemented.patch
 # fix build without tcmalloc
 # https://github.com/ceph/rocksdb/pull/5
@@ -431,7 +430,6 @@ python-cephfs instead.
 %patch0 -p1 -b .init
 %endif
 %patch1 -p1
-%patch2 -p1
 %patch3 -p1
 %patch10 -p1 -b .tcmalloc
 
@@ -936,6 +934,9 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+* Thu Jul 16 2015 Boris Ranto <branto@redhat.com> - 1:0.94.2-1
+- Rebase to latest upstream version
+
 * Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:0.94.1-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
