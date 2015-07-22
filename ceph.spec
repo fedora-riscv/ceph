@@ -603,6 +603,7 @@ fi
 %config %{_sysconfdir}/bash_completion.d/ceph
 %config(noreplace) %{_sysconfdir}/logrotate.d/ceph
 %config(noreplace) %{_sysconfdir}/logrotate.d/radosgw
+%{_mandir}/man8/ceph-disk.8*
 %{_mandir}/man8/ceph-mon.8*
 %{_mandir}/man8/ceph-mds.8*
 %{_mandir}/man8/ceph-osd.8*
@@ -843,8 +844,7 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %{_bindir}/ceph_smalliobenchdumb
 %{_bindir}/ceph_smalliobenchfs
 %{_bindir}/ceph_smalliobenchrbd
-%{_bindir}/ceph_filestore_dump
-%{_bindir}/ceph_filestore_tool
+%{_bindir}/ceph-objectstore-tool
 %{_bindir}/ceph_streamtest
 %{_bindir}/ceph_test_*
 %{_bindir}/ceph_tpbench
