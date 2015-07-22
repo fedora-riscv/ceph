@@ -11,7 +11,7 @@
 # common
 #################################################################################
 Name:		ceph
-Version:	0.80.9
+Version:	0.80.10
 Release:	1%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
@@ -21,7 +21,6 @@ URL:		http://ceph.com/
 Source0:	http://ceph.com/download/%{name}-%{version}.tar.bz2
 Patch1:		0001-gperftools-deprecated-google-includes.patch
 Patch2:		0002-Wno-format-causes-compiler-options-collision.patch
-Patch3:		0003-Backport-pull-request-2937-to-firefly.patch
 Requires:	librbd1 = %{epoch}:%{version}-%{release}
 Requires:	librados2 = %{epoch}:%{version}-%{release}
 Requires:	libcephfs1 = %{epoch}:%{version}-%{release}
@@ -392,7 +391,6 @@ python-cephfs instead.
 %setup -q
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
 
 %build
 # Find jni.h
@@ -875,6 +873,10 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %files -n python-ceph-compat
 
 %changelog
+* Wed Jul 22 2015 Boris Ranto <branto@redhat.com> - 1:0.80.10-1
+- Rebase to 0.80.10
+- Remove hacky 3rd patch, it was back-ported properly to .10
+
 * Wed Mar 11 2015 Boris Ranto <branto@redhat.com> - 1:0.80.9-1
 - Rebase to 0.80.9, .8 contained a regression
 
