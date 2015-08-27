@@ -12,7 +12,7 @@
 #################################################################################
 Name:		ceph
 Version:	0.94.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPLv2
@@ -935,6 +935,9 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+* Thu Aug 27 2015 Jonathan Wakely <jwakely@redhat.com> - 1:0.94.3-2
+- Rebuilt for Boost 1.59
+
 * Thu Aug 27 2015 Boris Ranto <branto@redhat.com> - 1:0.94.3-1
 - Rebase to latest upstream version
 - The boost patch got merged upstream and is already present in the release
