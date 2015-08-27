@@ -11,8 +11,8 @@
 # common
 #################################################################################
 Name:		ceph
-Version:	0.94.2
-Release:	4%{?dist}
+Version:	0.94.3
+Release:	1%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPLv2
@@ -27,9 +27,6 @@ Patch3:		0003-Skip-initialization-if-rtdsc-is-not-implemented.patch
 # fix build without tcmalloc
 # https://github.com/ceph/rocksdb/pull/5
 Patch10:	ceph-0.94.1-tcmalloc.patch
-# Fixes builds against boost 1.58.
-# Upstream commit e7b196a4a091c0ea258866559ba06e7ed0cc4247
-Patch11:        0001-mon-remove-unused-variable.patch
 Requires:	librbd1 = %{epoch}:%{version}-%{release}
 Requires:	librados2 = %{epoch}:%{version}-%{release}
 Requires:	libcephfs1 = %{epoch}:%{version}-%{release}
@@ -435,7 +432,6 @@ python-cephfs instead.
 %patch1 -p1
 %patch3 -p1
 %patch10 -p1 -b .tcmalloc
-%patch11 -p1 -b .boost
 
 %build
 # Find jni.h
@@ -938,6 +934,10 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+* Thu Aug 27 2015 Boris Ranto <branto@redhat.com> - 1:0.94.3-1
+- Rebase to latest upstream version
+- The boost patch got merged upstream and is already present in the release
+
 * Fri Jul 31 2015 Richard W.M. Jones <rjones@redhat.com> - 1:0.94.2-4
 - Fix build against boost 1.58 (http://tracker.ceph.com/issues/11576).
 
