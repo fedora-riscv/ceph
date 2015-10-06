@@ -13,7 +13,7 @@ Name:		ceph
 Version:	0.80.7
 # This should always be lower than 2, we do not want to update over base rhel.
 # Please use 0.x if updating instead.
-Release:	0.5%{?dist}
+Release:	0.6%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPLv2
@@ -206,16 +206,6 @@ Obsoletes:	ceph-devel < 1:0.80.7-0
 This package contains libraries and headers needed to develop programs
 that use RADOS object store.
 
-%package -n python-rados
-Summary:	Python libraries for the RADOS object store
-Group:		System Environment/Libraries
-License:	LGPL-2.0
-Requires:	librados2 = %{epoch}:%{version}
-Obsoletes:	python-ceph < 1:0.80.7-0
-%description -n python-rados
-This package contains Python libraries for interacting with Cephs RADOS
-object store.
-
 %package -n librbd1
 Summary:	RADOS block device client library
 Group:		System Environment/Libraries
@@ -240,17 +230,6 @@ Obsoletes:	ceph-devel < 1:0.80.7-0
 %description -n librbd1-devel
 This package contains libraries and headers needed to develop programs
 that use RADOS block device.
-
-%package -n python-rbd
-Summary:	Python libraries for the RADOS block device
-Group:		System Environment/Libraries
-License:	LGPL-2.0
-Requires:	librbd1 = %{epoch}:%{version}
-Requires:	python-rados = %{epoch}:%{version}
-Obsoletes:	python-ceph < 1:0.80.7-0
-%description -n python-rbd
-This package contains Python libraries for interacting with Cephs RADOS
-block device.
 
 %package -n libcephfs1
 Summary:	Ceph distributed file system client library
@@ -474,6 +453,10 @@ install -m 0644 -D src/logrotate.conf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/
 install -m 0644 -D src/rgw/logrotate.conf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/radosgw
 chmod 0644 $RPM_BUILD_ROOT%{_docdir}/ceph/sample.ceph.conf
 chmod 0644 $RPM_BUILD_ROOT%{_docdir}/ceph/sample.fetch_config
+
+# remove python-rados and python-rbd files to avoid conflicts with base RHEL
+rm -f $RPM_BUILD_ROOT%{python_sitelib}/rados.py*
+rm -f $RPM_BUILD_ROOT%{python_sitelib}/rbd.py*
 
 # udev rules
 %if 0%{?rhel} >= 7 || 0%{?fedora}
@@ -763,11 +746,6 @@ fi
 %{_libdir}/librados.so
 
 #################################################################################
-%files -n python-rados
-%defattr(-,root,root,-)
-%{python_sitelib}/rados.py*
-
-#################################################################################
 %files -n librbd1
 %defattr(-,root,root,-)
 %{_libdir}/librbd.so.*
@@ -802,11 +780,6 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %{_includedir}/rbd/librbd.hpp
 %{_includedir}/rbd/features.h
 %{_libdir}/librbd.so
-
-#################################################################################
-%files -n python-rbd
-%defattr(-,root,root,-)
-%{python_sitelib}/rbd.py*
 
 #################################################################################
 %files -n libcephfs1
@@ -886,6 +859,10 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %files -n python-ceph-compat
 
 %changelog
+* Tue Oct 06 2015 Boris Ranto <branto@redhat.com> - 1:0.80.7-0.6
+- remove python-rados and python-rbd packages to avoid package conflicts
+- see http://tracker.ceph.com/issues/11104#change-59701 for details
+
 * Wed Apr 01 2015 Ken Dreyer <ktdreyer@ktdreyer.com> - 1:0.80.7-0.5
 - add version numbers to Obsoletes (RHBZ #1193182)
 
