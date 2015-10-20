@@ -488,7 +488,7 @@ find $RPM_BUILD_ROOT -type f -name "*.a" -exec rm -f {} ';'
 rm -f $RPM_BUILD_ROOT/%{_mandir}/man8/rbd-replay-prep.8*
 # Install init scripts and other files
 install -D src/init-ceph $RPM_BUILD_ROOT%{_initrddir}/ceph
-install -D src/init-radosgw.sysv $RPM_BUILD_ROOT%{_initrddir}/ceph-radosgw
+install -D src/init-radosgw $RPM_BUILD_ROOT%{_initrddir}/ceph-radosgw
 install -D src/init-rbdmap $RPM_BUILD_ROOT%{_initrddir}/rbdmap
 install -D src/rbdmap $RPM_BUILD_ROOT%{_sysconfdir}/ceph/rbdmap
 mkdir -p $RPM_BUILD_ROOT%{_sbindir}
