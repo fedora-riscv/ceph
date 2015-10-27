@@ -11,7 +11,7 @@
 # common
 #################################################################################
 Name:		ceph
-Version:	0.94.4
+Version:	0.94.5
 Release:	1%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
@@ -933,6 +933,9 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+* Tue Oct 27 2015 Boris Ranto <branto@redhat.com> - 1:0.94.5-1
+- Rebase to latest upstream version
+
 * Tue Oct 20 2015 Boris Ranto <branto@redhat.com> - 1:0.94.4-1
 - Rebase to latest upstream version
 - The rtdsc patch got merged upstream and is already present in the release
