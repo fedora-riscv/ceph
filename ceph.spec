@@ -12,7 +12,7 @@
 #################################################################################
 Name:		ceph
 Version:	0.94.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPLv2
@@ -20,12 +20,13 @@ Group:		System Environment/Base
 URL:		http://ceph.com/
 Source0:	http://ceph.com/download/%{name}-%{version}.tar.bz2
 %if 0%{?fedora} || 0%{?centos} || 0%{?rhel}
-Patch0:		init-ceph.in-fedora.patch
+Patch0000:	init-ceph.in-fedora.patch
 %endif
-Patch1:		0001-Disable-erasure_codelib-neon-build.patch
+Patch0001:	0001-Disable-erasure_codelib-neon-build.patch
+Patch0002:	0002-init-ceph.in-Allow-custom-cluster-names-during-start.patch
 # fix build without tcmalloc
 # https://github.com/ceph/rocksdb/pull/5
-Patch10:	ceph-0.94.1-tcmalloc.patch
+Patch0010:	ceph-0.94.1-tcmalloc.patch
 Requires:	librbd1 = %{epoch}:%{version}-%{release}
 Requires:	librados2 = %{epoch}:%{version}-%{release}
 Requires:	libcephfs1 = %{epoch}:%{version}-%{release}
@@ -429,6 +430,7 @@ python-cephfs instead.
 %patch0 -p1 -b .init
 %endif
 %patch1 -p1
+%patch2 -p1
 %patch10 -p1 -b .tcmalloc
 
 %build
@@ -933,6 +935,9 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+* Wed Dec 09 2015 Boris Ranto <branto@redhat.com> - 1:0.94.5-2
+- Allow setting custom cluster names in init script (#1269436)
+
 * Tue Oct 27 2015 Boris Ranto <branto@redhat.com> - 1:0.94.5-1
 - Rebase to latest upstream version
 
