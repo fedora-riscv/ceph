@@ -11,14 +11,14 @@
 # common
 #################################################################################
 Name:		ceph
-Version:	0.94.5
-Release:	2%{?dist}
+Version:	0.94.6
+Release:	1%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPLv2
 Group:		System Environment/Base
 URL:		http://ceph.com/
-Source0:	http://ceph.com/download/%{name}-%{version}.tar.bz2
+Source0:	http://ceph.com/download/%{name}-%{version}.tar.gz
 %if 0%{?fedora} || 0%{?centos} || 0%{?rhel}
 Patch0000:	init-ceph.in-fedora.patch
 %endif
@@ -935,6 +935,9 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+* Tue Feb 23 2016 Boris Ranto <branto@redhat.com> - 0.94.6-1
+- Rebase to version 0.94.6
+
 * Wed Dec 09 2015 Boris Ranto <branto@redhat.com> - 1:0.94.5-2
 - Allow setting custom cluster names in init script (#1269436)
 
