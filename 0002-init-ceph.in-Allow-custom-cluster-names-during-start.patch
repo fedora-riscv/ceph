@@ -5,24 +5,13 @@ Subject: [PATCH] init-ceph.in: Allow custom cluster names during startup.
 
 Signed-off-by: Richard Chan <richard@treeboxsolutions.com>
 ---
- src/init-ceph.in | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ src/init-ceph.in | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/src/init-ceph.in b/src/init-ceph.in
 index 2ff98c7..245068a 100644
 --- a/src/init-ceph.in
 +++ b/src/init-ceph.in
-@@ -117,6 +117,10 @@ dofsumount=0
- verbose=0
- use_default_conf=1
- 
-+## set variables like cluster or conf
-+[ -e /etc/sysconfig/ceph ] && . /etc/sysconfig/ceph
-+[ -e /etc/default/ceph ] && . /etc/default/ceph
-+
- 
- while echo $1 | grep -q '^-'; do     # FIXME: why not '^-'?
- case $1 in
 @@ -282,7 +286,7 @@ for name in $what; do
  	lockfile=""
      fi
