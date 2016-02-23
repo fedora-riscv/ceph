@@ -13,7 +13,7 @@ Name:		ceph
 Version:	0.80.7
 # This should always be lower than 2, we do not want to update over base rhel.
 # Please use 0.x if updating instead.
-Release:	0.7%{?dist}
+Release:	0.8%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPLv2
@@ -196,6 +196,28 @@ developed as part of the Ceph distributed storage system. This is a
 shared library allowing applications to access the distributed object
 store using a simple file-like interface.
 
+%ifnarch x86_64
+%package -n librados2-devel
+Summary:	RADOS headers
+Group:		Development/Libraries
+License:	LGPL-2.0
+Requires:	librados2 = %{epoch}:%{version}
+Obsoletes:	ceph-devel < 1:0.80.7-0
+%description -n librados2-devel
+This package contains libraries and headers needed to develop programs
+that use RADOS object store.
+
+%package -n python-rados
+Summary:	Python libraries for the RADOS object store
+Group:		System Environment/Libraries
+License:	LGPL-2.0
+Requires:	librados2 = %{epoch}:%{version}
+Obsoletes:	python-ceph < 1:0.80.7-0
+%description -n python-rados
+This package contains Python libraries for interacting with Cephs RADOS
+object store.
+%endif
+
 %package -n librbd1
 Summary:	RADOS block device client library
 Group:		System Environment/Libraries
@@ -209,6 +231,30 @@ RBD is a block device striped across multiple distributed objects in
 RADOS, a reliable, autonomic distributed object storage cluster
 developed as part of the Ceph distributed storage system. This is a
 shared library allowing applications to manage these block devices.
+
+%ifnarch x86_64
+%package -n librbd1-devel
+Summary:	RADOS block device headers
+Group:		Development/Libraries
+License:	LGPL-2.0
+Requires:	librbd1 = %{epoch}:%{version}
+Requires:	librados2-devel = %{epoch}:%{version}
+Obsoletes:	ceph-devel < 1:0.80.7-0
+%description -n librbd1-devel
+This package contains libraries and headers needed to develop programs
+that use RADOS block device.
+
+%package -n python-rbd
+Summary:	Python libraries for the RADOS block device
+Group:		System Environment/Libraries
+License:	LGPL-2.0
+Requires:	librbd1 = %{epoch}:%{version}
+Requires:	python-rados = %{epoch}:%{version}
+Obsoletes:	python-ceph < 1:0.80.7-0
+%description -n python-rbd
+This package contains Python libraries for interacting with Cephs RADOS
+block device.
+%endif
 
 %package -n libcephfs1
 Summary:	Ceph distributed file system client library
@@ -433,6 +479,7 @@ install -m 0644 -D src/rgw/logrotate.conf $RPM_BUILD_ROOT%{_sysconfdir}/logrotat
 chmod 0644 $RPM_BUILD_ROOT%{_docdir}/ceph/sample.ceph.conf
 chmod 0644 $RPM_BUILD_ROOT%{_docdir}/ceph/sample.fetch_config
 
+%ifarch x86_64
 # remove python-rados and python-rbd files to avoid conflicts with base RHEL
 rm -f $RPM_BUILD_ROOT%{python_sitelib}/rados.py*
 rm -f $RPM_BUILD_ROOT%{python_sitelib}/rbd.py*
@@ -442,6 +489,7 @@ rm -rf $RPM_BUILD_ROOT%{_includedir}/rados
 rm -f $RPM_BUILD_ROOT%{_libdir}/librados.so
 rm -rf $RPM_BUILD_ROOT%{_includedir}/rbd
 rm -f $RPM_BUILD_ROOT%{_libdir}/librbd.so
+%endif
 
 # udev rules
 %if 0%{?rhel} >= 7 || 0%{?fedora}
@@ -716,6 +764,27 @@ fi
 %postun -n librados2
 /sbin/ldconfig
 
+%ifnarch x86_64
+#################################################################################
+%files -n librados2-devel
+%defattr(-,root,root,-)
+%dir %{_includedir}/rados
+%{_includedir}/rados/librados.h
+%{_includedir}/rados/librados.hpp
+%{_includedir}/rados/buffer.h
+%{_includedir}/rados/page.h
+%{_includedir}/rados/crc32c.h
+%{_includedir}/rados/rados_types.h
+%{_includedir}/rados/rados_types.hpp
+%{_includedir}/rados/memory.h
+%{_libdir}/librados.so
+
+#################################################################################
+%files -n python-rados
+%defattr(-,root,root,-)
+%{python_sitelib}/rados.py*
+%endif
+
 #################################################################################
 %files -n librbd1
 %defattr(-,root,root,-)
@@ -742,6 +811,22 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 
 %postun -n librbd1
 /sbin/ldconfig
+
+%ifnarch x86_64
+#################################################################################
+%files -n librbd1-devel
+%defattr(-,root,root,-)
+%dir %{_includedir}/rbd
+%{_includedir}/rbd/librbd.h
+%{_includedir}/rbd/librbd.hpp
+%{_includedir}/rbd/features.h
+%{_libdir}/librbd.so
+
+#################################################################################
+%files -n python-rbd
+%defattr(-,root,root,-)
+%{python_sitelib}/rbd.py*
+%endif
 
 #################################################################################
 %files -n libcephfs1
@@ -821,6 +906,10 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %files -n python-ceph-compat
 
 %changelog
+* Wed Feb 24 2016 Boris Ranto <branto@redhat.com> - 1:0.80.7-0.8
+- only remove the {librados2,librbd1}-devel and python-{rados,rbd} on x86_64
+- resolves: rhbz#1299820
+
 * Tue Oct 06 2015 Boris Ranto <branto@redhat.com> - 1:0.80.7-0.7
 - remove librados2-devel and librbd1-devel packages to avoid package conflicts
 
