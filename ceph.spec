@@ -11,7 +11,7 @@
 # common
 #################################################################################
 Name:		ceph
-Version:	0.94.6
+Version:	0.94.7
 Release:	1%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
@@ -19,14 +19,14 @@ License:	GPLv2
 Group:		System Environment/Base
 URL:		http://ceph.com/
 Source0:	http://ceph.com/download/%{name}-%{version}.tar.gz
+Patch1: 0001-Disable-erasure_codelib-neon-build.patch
+Patch2: 0002-init-ceph.in-Allow-custom-cluster-names-during-start.patch
+Patch3: 0003-Apply-ceph-0.94.1-tcmalloc.patch.patch
+Patch4: 0004-Apply-init-ceph.in-fedora.patch.patch
 %if 0%{?fedora} || 0%{?centos} || 0%{?rhel}
-Patch0000:	init-ceph.in-fedora.patch
 %endif
-Patch0001:	0001-Disable-erasure_codelib-neon-build.patch
-Patch0002:	0002-init-ceph.in-Allow-custom-cluster-names-during-start.patch
 # fix build without tcmalloc
 # https://github.com/ceph/rocksdb/pull/5
-Patch0010:	ceph-0.94.1-tcmalloc.patch
 Requires:	librbd1 = %{epoch}:%{version}-%{release}
 Requires:	librados2 = %{epoch}:%{version}-%{release}
 Requires:	libcephfs1 = %{epoch}:%{version}-%{release}
@@ -426,12 +426,12 @@ python-cephfs instead.
 #################################################################################
 %prep
 %setup -q
-%if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
-%patch0 -p1 -b .init
-%endif
 %patch1 -p1
 %patch2 -p1
-%patch10 -p1 -b .tcmalloc
+%patch3 -p1
+%patch4 -p1
+%if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
+%endif
 
 %build
 # Find jni.h
@@ -935,6 +935,13 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+* Mon May 16 2016 Boris Ranto <branto@redhat.com> - 1:0.94.7-1
+- New version (1:0.94.7-1)
+- Disable erasure_codelib neon build
+- init-ceph.in: Allow custom cluster names during startup.
+- Apply 'ceph-0.94.1-tcmalloc.patch'
+- Apply 'init-ceph.in-fedora.patch'
+
 * Tue Feb 23 2016 Boris Ranto <branto@redhat.com> - 0.94.6-1
 - Rebase to version 0.94.6
 
