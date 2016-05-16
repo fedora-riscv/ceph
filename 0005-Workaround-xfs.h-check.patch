@@ -1,0 +1,36 @@
+From d02ac8fd60e692da2257a1d963279091ef47e312 Mon Sep 17 00:00:00 2001
+From: Boris Ranto <branto@redhat.com>
+Date: Mon, 16 May 2016 20:53:28 +0200
+Subject: [PATCH] Workaround xfs.h check
+
+The check for <xfs/xfs.h> in fedora 23 is broken. See e.g.:
+
+http://www.spinics.net/lists/ceph-devel/msg29467.html
+
+This should not be too critical and the package should build just fine
+anyway. Commenting out the bits that check for xfs.h should help us,
+here.
+
+Signed-off-by: Boris Ranto <branto@redhat.com>
+---
+ configure.ac | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index d1f98aa..e068fdb 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -814,8 +814,8 @@ AC_ARG_WITH([libxfs],
+   [with_libxfs=yes])
+ AS_IF([test "x$with_libxfs" != "xno"], [
+   # xfs/xfs.h presence and XFS_XFLAG_EXTSIZE define
+-  AC_CHECK_HEADER([xfs/xfs.h], [], AC_MSG_ERROR(
+-    [xfs/xfs.h not found (--without-libxfs to disable)]))
++  #AC_CHECK_HEADER([xfs/xfs.h], [], AC_MSG_ERROR(
++  #  [xfs/xfs.h not found (--without-libxfs to disable)]))
+   AC_MSG_CHECKING([for XFS_XFLAG_EXTSIZE in xfs/xfs.h])
+   AC_EGREP_CPP([yes_have_xfs_xflag_extsize], [
+     #include <xfs/xfs.h>
+-- 
+2.5.5
+

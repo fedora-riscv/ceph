@@ -12,7 +12,7 @@
 #################################################################################
 Name:		ceph
 Version:	0.94.7
-Release:	1%{?dist}
+Release:	2%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPLv2
@@ -23,6 +23,7 @@ Patch1: 0001-Disable-erasure_codelib-neon-build.patch
 Patch2: 0002-init-ceph.in-Allow-custom-cluster-names-during-start.patch
 Patch3: 0003-Apply-ceph-0.94.1-tcmalloc.patch.patch
 Patch4: 0004-Apply-init-ceph.in-fedora.patch.patch
+Patch5: 0005-Workaround-xfs.h-check.patch
 %if 0%{?fedora} || 0%{?centos} || 0%{?rhel}
 %endif
 # fix build without tcmalloc
@@ -430,6 +431,7 @@ python-cephfs instead.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 %if 0%{?fedora} || 0%{?rhel} || 0%{?centos}
 %endif
 
@@ -935,6 +937,10 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+* Mon May 16 2016 Boris Ranto <branto@redhat.com> - 1:0.94.7-2
+- New release (1:0.94.7-2)
+- Workaround xfs.h check
+
 * Mon May 16 2016 Boris Ranto <branto@redhat.com> - 1:0.94.7-1
 - New version (1:0.94.7-1)
 - Disable erasure_codelib neon build
