@@ -1,0 +1,26 @@
+From ebff005e9998122c9e89052fbca06f4962180240 Mon Sep 17 00:00:00 2001
+From: Boris Ranto <branto@redhat.com>
+Date: Mon, 16 May 2016 15:47:20 +0200
+Subject: [PATCH] Apply 'ceph-0.94.1-tcmalloc.patch'
+
+Signed-off-by: Boris Ranto <branto@redhat.com>
+---
+ src/rocksdb/configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/rocksdb/configure.ac b/src/rocksdb/configure.ac
+index 855c6a8..fe914aa 100644
+--- a/src/rocksdb/configure.ac
++++ b/src/rocksdb/configure.ac
+@@ -19,7 +19,7 @@ AC_CHECK_LIB([snappy], [snappy_compress], [HAVE_LIBSNAPPY=yes], [AC_MSG_FAILURE(
+ AC_CHECK_LIB([z], [gzread], [HAVE_LIBZ=yes], [AC_MSG_FAILURE([libz not found])])
+ AC_CHECK_LIB([bz2], [BZ2_bzCompressInit], [HAVE_LIBBZ2=yes], [AC_MSG_FAILURE([libbz2 not found])])
+ AC_CHECK_LIB([rt], [clock_gettime], [HAVE_LIBRT=yes], [AC_MSG_FAILURE([librt not found])])
+-AC_CHECK_LIB([tcmalloc], [malloc],  [HAVE_LIBTCMALLOC=yes],[AC_MSG_FAILURE([no tcmalloc found ])])
++AC_CHECK_LIB([tcmalloc], [malloc],  [HAVE_LIBTCMALLOC=yes],[AC_MSG_RESULT([no tcmalloc found ])])
+ 
+ OLD_CXXFLAGS="$CXXFLAGS"
+ CXXFLAGS="$CXXFLAGS -std=c++11"
+-- 
+2.5.5
+

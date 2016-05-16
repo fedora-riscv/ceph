@@ -1,0 +1,32 @@
+From ecc0e801e378310dbb0e60ae7eb1f19179bd3e9e Mon Sep 17 00:00:00 2001
+From: Boris Ranto <branto@redhat.com>
+Date: Mon, 16 May 2016 15:48:23 +0200
+Subject: [PATCH] Apply 'init-ceph.in-fedora.patch'
+
+Signed-off-by: Boris Ranto <branto@redhat.com>
+---
+ src/init-ceph.in | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/init-ceph.in b/src/init-ceph.in
+index 1f19ffa..78eaf97 100644
+--- a/src/init-ceph.in
++++ b/src/init-ceph.in
+@@ -1,11 +1,11 @@
+ #!/bin/sh
+ # Start/stop ceph daemons
+-# chkconfig: 2345 60 80
++# chkconfig: - 60 80
+ 
+ ### BEGIN INIT INFO
+ # Provides:          ceph
+-# Default-Start:     2 3 4 5
+-# Default-Stop:      0 1 6
++# Default-Start:
++# Default-Stop:
+ # Required-Start:    $remote_fs $named $network $time
+ # Required-Stop:     $remote_fs $named $network $time
+ # Short-Description: Start Ceph distributed file system daemons at boot time
+-- 
+2.5.5
+

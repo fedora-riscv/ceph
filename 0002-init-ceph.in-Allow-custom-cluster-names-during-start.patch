@@ -1,4 +1,4 @@
-From 344856455c5452d573dd06eb26c52963dfa3105e Mon Sep 17 00:00:00 2001
+From 726127dbd6d51c97495e73c3216c27dd38a31ed3 Mon Sep 17 00:00:00 2001
 From: Anthony Alba <ascanio.alba7@gmail.com>
 Date: Mon, 30 Nov 2015 16:44:31 +0800
 Subject: [PATCH] init-ceph.in: Allow custom cluster names during startup.
@@ -9,10 +9,10 @@ Signed-off-by: Richard Chan <richard@treeboxsolutions.com>
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/src/init-ceph.in b/src/init-ceph.in
-index 2ff98c7..245068a 100644
+index e4cea7e..1f19ffa 100644
 --- a/src/init-ceph.in
 +++ b/src/init-ceph.in
-@@ -282,7 +286,7 @@ for name in $what; do
+@@ -288,7 +288,7 @@ for name in $what; do
  	lockfile=""
      fi
  
@@ -21,7 +21,7 @@ index 2ff98c7..245068a 100644
  
      case "$command" in
  	start)
-@@ -395,8 +399,8 @@ for name in $what; do
+@@ -404,8 +404,8 @@ for name in $what; do
  		# these keys.  it's also true for legacy installs
  		# via mkcephfs, which is fine too; there is no harm
  		# in creating these keys.
@@ -33,5 +33,5 @@ index 2ff98c7..245068a 100644
  		    cmd2="$SBINDIR/ceph-create-keys --cluster $cluster -i $id 2> /dev/null &"
  		    do_cmd "$cmd2"
 -- 
-2.1.0
+2.5.5
 

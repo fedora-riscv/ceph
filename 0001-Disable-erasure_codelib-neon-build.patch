@@ -1,4 +1,4 @@
-From 8b0b78dc06ae1ed1c5f3c7a13271e7037091d0be Mon Sep 17 00:00:00 2001
+From 8ac49f54ad774324c1de344cd18620df7fa52256 Mon Sep 17 00:00:00 2001
 From: Boris Ranto <branto@redhat.com>
 Date: Wed, 15 Apr 2015 14:06:24 +0200
 Subject: [PATCH] Disable erasure_codelib neon build
@@ -25,5 +25,5 @@ index 9ca4fbb..147d57e 100644
  libec_jerasure_sse3_la_SOURCES = ${jerasure_sources}
  libec_jerasure_sse3_la_CFLAGS = ${AM_CFLAGS}  \
 -- 
-2.1.0
+2.5.5
 
