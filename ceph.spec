@@ -13,7 +13,7 @@ Name:		ceph
 Version:	0.80.7
 # This should always be lower than 2, we do not want to update over base rhel.
 # Please use 0.x if updating instead.
-Release:	0.8%{?dist}
+Release:	0.9%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPLv2
@@ -203,6 +203,7 @@ Group:		Development/Libraries
 License:	LGPL-2.0
 Requires:	librados2 = %{epoch}:%{version}
 Obsoletes:	ceph-devel < 1:0.80.7-0
+Provides:	librados-devel = %{epoch}:%{version}
 %description -n librados2-devel
 This package contains libraries and headers needed to develop programs
 that use RADOS object store.
@@ -240,6 +241,7 @@ License:	LGPL-2.0
 Requires:	librbd1 = %{epoch}:%{version}
 Requires:	librados2-devel = %{epoch}:%{version}
 Obsoletes:	ceph-devel < 1:0.80.7-0
+Provides:	librbd-devel = %{epoch}:%{version}
 %description -n librbd1-devel
 This package contains libraries and headers needed to develop programs
 that use RADOS block device.
@@ -277,6 +279,7 @@ License:	LGPL-2.0
 Requires:	libcephfs1 = %{epoch}:%{version}
 Requires:	librados2-devel = %{epoch}:%{version}
 Obsoletes:	ceph-devel < 1:0.80.7-0
+Provides:	libcephfs-devel = %{epoch}:%{version}
 %description -n libcephfs1-devel
 This package contains libraries and headers needed to develop programs
 that use Cephs distributed file system.
@@ -327,6 +330,7 @@ Group:		System Environment/Libraries
 License:	LGPL-2.0
 Requires:	java
 Requires:	libcephfs_jni1 = %{epoch}:%{version}
+Provides:	libcephfs_jni-devel = %{epoch}:%{version}
 %description -n libcephfs_jni1-devel
 This package contains the development files for CephFS Java Native Interface
 library.
@@ -906,6 +910,9 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %files -n python-ceph-compat
 
 %changelog
+* Thu Dec 08 2016 Boris Ranto <branto@redhat.com> - 1:0.80.7-0.9
+- add provides for -devel packages
+
 * Wed Feb 24 2016 Boris Ranto <branto@redhat.com> - 1:0.80.7-0.8
 - only remove the {librados2,librbd1}-devel and python-{rados,rbd} on x86_64
 - resolves: rhbz#1299820
