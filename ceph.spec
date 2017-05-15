@@ -57,7 +57,7 @@
 #################################################################################
 Name:		ceph
 Version:	10.2.7
-Release:	1%{?dist}
+Release:	2%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	LGPL-2.1 and CC-BY-SA-1.0 and GPL-2.0 and BSL-1.0 and GPL-2.0-with-autoconf-exception and BSD-3-Clause and MIT
@@ -1553,6 +1553,9 @@ exit 0
 
 
 %changelog
+* Mon May 15 2017 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:10.2.7-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_27_Mass_Rebuild
+
 * Mon Apr 17 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:10.2.7-2
 - New release (1:10.2.7-1)
 
