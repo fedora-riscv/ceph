@@ -112,7 +112,7 @@ BuildRequires:	libtool
 BuildRequires:	libxml2-devel
 BuildRequires:	make
 BuildRequires:	parted
-BuildRequires:	perl
+BuildRequires:	perl-interpreter
 BuildRequires:	pkgconfig
 BuildRequires:	python
 BuildRequires:	python-devel
