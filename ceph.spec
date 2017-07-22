@@ -84,6 +84,8 @@ ExclusiveArch:  x86_64 aarch64 ppc64 ppc64le
 %else
 ExclusiveArch:  x86_64 aarch64 ppc64le s390x
 %endif
+%else
+ExclusiveArch:  x86_64 aarch64 ppc64 ppc64le s390x
 %endif
 #################################################################################
 # dependencies that apply across all distro families
@@ -1753,7 +1755,7 @@ exit 0
 
 %changelog
 * Fri Jul 21 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.1-1
-- New release (2:12.1.1-1)
+- New release (1:12.1.1-1)
 
 * Fri Jul 21 2017 Kalev Lember <klember@redhat.com> - 1:10.2.7-3
 - Rebuilt for Boost 1.64
