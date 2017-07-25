@@ -1759,7 +1759,7 @@ exit 0
 
 %changelog
 * Sat Jul 22 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.1-2
-- 12.1.1 w/ rocksdb patch (i686), disable ceph_java (armv7hl)
+- 12.1.1 w/ rocksdb patch (i686)
 
 * Sat Jul 22 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.1-1
 - New release (1:12.1.1-1)
