@@ -1,0 +1,13 @@
+--- ceph-12.1.1.orig/src/rocksdb/util/murmurhash.cc	2017-04-27 01:13:46.000000000 +0100
++++ ceph-12.1.1.orig/src/rocksdb/util/murmurhash.cc	2017-07-25 11:37:28.910266684 +0100
+@@ -113,8 +113,8 @@ unsigned int MurmurHash2 ( const void *
+ 
+     switch(len)
+     {
+-    case 3: h ^= data[2] << 16;
+-    case 2: h ^= data[1] << 8;
++    case 3: h ^= data[2] << 16; // fallthrough
++    case 2: h ^= data[1] << 8; // fallthrough
+     case 1: h ^= data[0];
+         h *= m;
+     };

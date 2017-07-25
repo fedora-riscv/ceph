@@ -63,7 +63,7 @@
 #################################################################################
 Name:		ceph
 Version:	12.1.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -78,6 +78,8 @@ Group:		System/Filesystems
 %endif
 URL:		http://ceph.com/
 Source0:	http://download.ceph.com/tarballs/ceph-12.1.1.tar.gz
+# https://bugzilla.redhat.com/show_bug.cgi?id=1474773
+Patch001:	0001-src-rocksdb-util-murmurhash.patch
 %if 0%{?suse_version}
 %if 0%{?is_opensuse}
 ExclusiveArch:	x86_64 aarch64 ppc64 ppc64le
@@ -85,7 +87,9 @@ ExclusiveArch:	x86_64 aarch64 ppc64 ppc64le
 ExclusiveArch:	x86_64 aarch64 ppc64le s390x
 %endif
 %else
-ExcludeArch:	i686 armv7hl ppc64
+# armv7hl https://bugzilla.redhat.com/show_bug.cgi?id=1474772
+#   ppc64 https://bugzilla.redhat.com/show_bug.cgi?id=1474774
+ExcludeArch:	armv7hl ppc64
 %endif
 #################################################################################
 # dependencies that apply across all distro families
@@ -1754,6 +1758,9 @@ exit 0
 
 
 %changelog
+* Sat Jul 22 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.1-2
+- 12.1.1 w/ rocksdb patch (i686), disable ceph_java (armv7hl)
+
 * Sat Jul 22 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.1-1
 - New release (1:12.1.1-1)
 
