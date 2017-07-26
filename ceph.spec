@@ -63,7 +63,7 @@
 #################################################################################
 Name:		ceph
 Version:	12.1.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -1758,6 +1758,9 @@ exit 0
 
 
 %changelog
+* Wed Jul 26 2017 Fedora Release Engineering <releng@fedoraproject.org> - 1:12.1.1-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
+
 * Sat Jul 22 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.1-2
 - 12.1.1 w/ rocksdb patch (i686)
 
