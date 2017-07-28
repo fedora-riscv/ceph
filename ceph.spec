@@ -15,7 +15,11 @@
 # Please submit bugfixes or comments via http://tracker.ceph.com/
 # 
 %bcond_without ocf
+%ifnarch armv7hl
 %bcond_without cephfs_java
+%else
+%bcond_with cephfs_java
+%endif
 %if 0%{?suse_version}
 %bcond_with ceph_test_package
 %else
@@ -28,7 +32,11 @@
 %else
 %bcond_without tcmalloc
 %endif
+%ifnarch armv7hl
 %bcond_with lowmem_builder
+%else
+%bcond_without lowmem_builder
+%endif
 %if 0%{?fedora} || 0%{?rhel}
 %bcond_without selinux
 %endif
@@ -63,7 +71,7 @@
 #################################################################################
 Name:		ceph
 Version:	12.1.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -89,7 +97,7 @@ ExclusiveArch:	x86_64 aarch64 ppc64le s390x
 %else
 # armv7hl https://bugzilla.redhat.com/show_bug.cgi?id=1474772
 #   ppc64 https://bugzilla.redhat.com/show_bug.cgi?id=1474774
-ExcludeArch:	armv7hl ppc64
+ExcludeArch:	ppc64
 %endif
 #################################################################################
 # dependencies that apply across all distro families
@@ -794,7 +802,11 @@ done
 %if %{with lowmem_builder}
 RPM_OPT_FLAGS="$RPM_OPT_FLAGS --param ggc-min-expand=20 --param ggc-min-heapsize=32768"
 %endif
+%ifnarch armv7hl
 export RPM_OPT_FLAGS=`echo $RPM_OPT_FLAGS | sed -e 's/i386/i486/'`
+%else
+export RPM_OPT_FLAGS=`echo $RPM_OPT_FLAGS | sed -e 's/i386/i486/' -e 's/-pipe//g'`
+%endif
 
 export CPPFLAGS="$java_inc"
 export CFLAGS="$RPM_OPT_FLAGS"
@@ -803,8 +815,12 @@ export CXXFLAGS="$RPM_OPT_FLAGS"
 env | sort
 
 %if %{with lowmem_builder}
+%ifnarch armv7hl
 %if 0%{?jobs} > 8
 %define _smp_mflags -j8
+%endif
+%else
+%define _smp_mflags -j1
 %endif
 %endif
 
@@ -844,10 +860,10 @@ cmake .. \
 %endif
 %if %{with lttng}
     -DWITH_LTTNG=ON \
-    -DWTIH_BABELTRACE=ON \
+    -DWITH_BABELTRACE=ON \
 %else
     -DWITH_LTTNG=OFF \
-    -DWTIH_BABELTRACE=OFF \
+    -DWITH_BABELTRACE=OFF \
 %endif
     $CEPH_EXTRA_CMAKE_ARGS \
 %if 0%{with ocf}
@@ -1758,6 +1774,11 @@ exit 0
 
 
 %changelog
+* Fri Jul 28 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.1-4
+- 12.1.1 w/ hacks for armv7hl: low mem, no java jni
+- WTIH_BABELTRACE -> WITH_BABELTRACE for all archs
+- still no fix for ppc64
+
 * Wed Jul 26 2017 Fedora Release Engineering <releng@fedoraproject.org> - 1:12.1.1-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
 
