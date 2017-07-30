@@ -71,7 +71,7 @@
 #################################################################################
 Name:		ceph
 Version:	12.1.1
-Release:	5%{?dist}
+Release:	6%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -95,9 +95,9 @@ ExclusiveArch:	x86_64 aarch64 ppc64 ppc64le
 ExclusiveArch:	x86_64 aarch64 ppc64le s390x
 %endif
 %else
+# armv7hl https://bugzilla.redhat.com/show_bug.cgi?id=1474772
 #   ppc64 https://bugzilla.redhat.com/show_bug.cgi?id=1474774
-# ppc64le https://bugzilla.redhat.com/show_bug.cgi?id=1475636
-ExcludeArch:	ppc64 ppc64le
+ExcludeArch:	ppc64
 %endif
 #################################################################################
 # dependencies that apply across all distro families
@@ -1774,6 +1774,9 @@ exit 0
 
 
 %changelog
+* Sun Jul 30 2017 Florian Weimer <fweimer@redhat.com> - 1:12.1.1-6
+- Reenable ppc64le, with binutils fix for ppc64le (#1475636)
+
 * Fri Jul 28 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.1-5
 - ppc64le disabled until bz #1475636 resolution
 
