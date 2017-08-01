@@ -71,7 +71,7 @@
 #################################################################################
 Name:		ceph
 Version:	12.1.1
-Release:	6%{?dist}
+Release:	7%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -88,6 +88,7 @@ URL:		http://ceph.com/
 Source0:	http://download.ceph.com/tarballs/ceph-12.1.1.tar.gz
 # https://bugzilla.redhat.com/show_bug.cgi?id=1474773
 Patch001:	0001-src-rocksdb-util-murmurhash.patch
+Patch002:	0002-cmake-modules-SIMDExt.cmake.patch
 %if 0%{?suse_version}
 %if 0%{?is_opensuse}
 ExclusiveArch:	x86_64 aarch64 ppc64 ppc64le
@@ -95,9 +96,8 @@ ExclusiveArch:	x86_64 aarch64 ppc64 ppc64le
 ExclusiveArch:	x86_64 aarch64 ppc64le s390x
 %endif
 %else
-# armv7hl https://bugzilla.redhat.com/show_bug.cgi?id=1474772
 #   ppc64 https://bugzilla.redhat.com/show_bug.cgi?id=1474774
-ExcludeArch:	ppc64
+ExcludeArch:   ppc64
 %endif
 #################################################################################
 # dependencies that apply across all distro families
@@ -195,7 +195,7 @@ BuildRequires:	python-prettytable
 BuildRequires:	python-sphinx
 %endif
 # python34-... for RHEL, python3-... for all other supported distros
-%if 0%{?rhel}
+%if ( 0%{?rhel} && 0%{?rhel} <= 7 )
 BuildRequires:	python34-devel
 BuildRequires:	python34-setuptools
 BuildRequires:	python34-Cython
@@ -843,7 +843,7 @@ cmake .. \
     -DWITH_MANPAGE=ON \
     -DWITH_PYTHON3=ON \
     -DWITH_SYSTEMD=ON \
-%if 0%{?rhel} && ! 0%{?centos}
+%if ( ( 0%{?rhel} && 0%{?rhel} <= 7) && ! 0%{?centos} )
     -DWITH_SUBMAN=ON \
 %endif
 %if 0%{with xio}
@@ -1426,7 +1426,7 @@ fi
 %{_udevrulesdir}/95-ceph-osd.rules
 %{_mandir}/man8/ceph-clsinfo.8*
 %{_mandir}/man8/ceph-osd.8*
-%if 0%{?rhel} && ! 0%{?centos}
+%if ( ( 0%{?rhel} && 0%{?rhel} <= 7) && ! 0%{?centos} )
 %attr(0755,-,-) %{_sysconfdir}/cron.hourly/subman
 %endif
 %{_unitdir}/ceph-osd@.service
@@ -1774,6 +1774,10 @@ exit 0
 
 
 %changelog
+* Tue Aug 1 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.1-7
+- python34 and other nits
+- still no fix for ppc64
+
 * Sun Jul 30 2017 Florian Weimer <fweimer@redhat.com> - 1:12.1.1-6
 - Reenable ppc64le, with binutils fix for ppc64le (#1475636)
 
