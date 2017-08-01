@@ -88,7 +88,6 @@ URL:		http://ceph.com/
 Source0:	http://download.ceph.com/tarballs/ceph-12.1.1.tar.gz
 # https://bugzilla.redhat.com/show_bug.cgi?id=1474773
 Patch001:	0001-src-rocksdb-util-murmurhash.patch
-Patch002:	0002-cmake-modules-SIMDExt.cmake.patch
 %if 0%{?suse_version}
 %if 0%{?is_opensuse}
 ExclusiveArch:	x86_64 aarch64 ppc64 ppc64le
