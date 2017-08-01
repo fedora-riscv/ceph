@@ -71,7 +71,7 @@
 #################################################################################
 Name:		ceph
 Version:	12.1.1
-Release:	7%{?dist}
+Release:	8%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -88,15 +88,14 @@ URL:		http://ceph.com/
 Source0:	http://download.ceph.com/tarballs/ceph-12.1.1.tar.gz
 # https://bugzilla.redhat.com/show_bug.cgi?id=1474773
 Patch001:	0001-src-rocksdb-util-murmurhash.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=1474774
+Patch002:	0002-cmake-Support-ppc64.patch
 %if 0%{?suse_version}
 %if 0%{?is_opensuse}
 ExclusiveArch:	x86_64 aarch64 ppc64 ppc64le
 %else
 ExclusiveArch:	x86_64 aarch64 ppc64le s390x
 %endif
-%else
-#   ppc64 https://bugzilla.redhat.com/show_bug.cgi?id=1474774
-ExcludeArch:   ppc64
 %endif
 #################################################################################
 # dependencies that apply across all distro families
@@ -1773,6 +1772,9 @@ exit 0
 
 
 %changelog
+* Tue Aug 1 2017 Boris Ranto <branto@redhat.com> - 1:12.1.1-8
+- Fix ppc64 build
+
 * Tue Aug 1 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.1-7
 - python34 and other nits
 - still no fix for ppc64
