@@ -26,7 +26,6 @@
 %bcond_without ceph_test_package
 %endif
 %bcond_with make_check
-%bcond_with xio
 %ifarch s390 s390x
 %bcond_with tcmalloc
 %else
@@ -70,8 +69,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	12.1.1
-Release:	8%{?dist}
+Version:	12.1.2
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -114,6 +113,18 @@ BuildRequires:	checkpolicy
 BuildRequires:	selinux-policy-devel
 BuildRequires:	/usr/share/selinux/devel/policyhelp
 %endif
+%if 0%{with make_check}
+%if 0%{?fedora} || 0%{?rhel}
+BuildRequires: python-cherrypy
+BuildRequires: python-werkzeug
+%endif
+%if 0%{?suse_version}
+BuildRequires: python-CherryPy
+BuildRequires: python-Werkzeug
+%endif
+BuildRequires: python-pecan
+BuildRequires: socat
+%endif
 BuildRequires:	bc
 BuildRequires:	gperf
 BuildRequires:  cmake
@@ -139,11 +150,8 @@ BuildRequires:	pkgconfig
 BuildRequires:	python
 BuildRequires:	python-devel
 BuildRequires:	python-nose
-BuildRequires:	python-pecan
 BuildRequires:	python-requests
 BuildRequires:	python-virtualenv
-BuildRequires:	python-werkzeug
-BuildRequires:	socat
 BuildRequires:	snappy-devel
 BuildRequires:	udev
 BuildRequires:	util-linux
@@ -171,7 +179,6 @@ BuildRequires:	keyutils-devel
 BuildRequires:  libopenssl-devel
 BuildRequires:  lsb-release
 BuildRequires:  openldap2-devel
-BuildRequires:	python-CherryPy
 BuildRequires:	python-Cython
 BuildRequires:	python-PrettyTable
 BuildRequires:	python-Sphinx
@@ -188,7 +195,6 @@ BuildRequires:  openldap-devel
 BuildRequires:  openssl-devel
 BuildRequires:  redhat-lsb-core
 BuildRequires:	Cython
-BuildRequires:	python-cherrypy
 BuildRequires:	python-prettytable
 BuildRequires:	python-sphinx
 %endif
@@ -222,10 +228,6 @@ BuildRequires:	expat-devel
 #hardened-cc1
 %if 0%{?fedora} || 0%{?rhel}
 BuildRequires:  redhat-rpm-config
-%endif
-# Accelio IB/RDMA
-%if 0%{with xio}
-BuildRequires:  libxio-devel
 %endif
 
 %description
@@ -263,9 +265,6 @@ Requires:      which
 %if 0%{?suse_version}
 Recommends:    ntp-daemon
 %endif
-%if 0%{with xio}
-Requires:      libxio
-%endif
 %description base
 Base is the package that includes all the files shared amongst ceph servers
 
@@ -291,9 +290,6 @@ Requires:	python-requests
 %{?systemd_requires}
 %if 0%{?suse_version}
 Requires(pre):	pwdutils
-%endif
-%if 0%{with xio}
-Requires:       libxio
 %endif
 %description -n ceph-common
 Common utilities to mount and interact with a ceph storage cluster.
@@ -694,6 +690,7 @@ Group:		System/Benchmark
 Requires:	ceph-common
 Requires:	xmlstarlet
 Requires:	jq
+Requires:	socat
 %description -n ceph-test
 This package contains Ceph benchmarks and test tools.
 %endif
@@ -837,15 +834,13 @@ cmake .. \
     -DCMAKE_INSTALL_SYSCONFDIR=%{_sysconfdir} \
     -DCMAKE_INSTALL_MANDIR=%{_mandir} \
     -DCMAKE_INSTALL_DOCDIR=%{_docdir}/ceph \
+    -DCMAKE_INSTALL_INCLUDEDIR=%{_includedir} \
     -DWITH_EMBEDDED=OFF \
     -DWITH_MANPAGE=ON \
     -DWITH_PYTHON3=ON \
     -DWITH_SYSTEMD=ON \
 %if ( ( 0%{?rhel} && 0%{?rhel} <= 7) && ! 0%{?centos} )
     -DWITH_SUBMAN=ON \
-%endif
-%if 0%{with xio}
-    -DWITH_XIO=ON \
 %endif
 %if 0%{without ceph_test_package}
     -DWITH_TESTS=OFF \
@@ -1772,6 +1767,9 @@ exit 0
 
 
 %changelog
+* Thu Aug 3 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.2-1
+- New release (1:12.1.2-1)
+
 * Tue Aug 1 2017 Boris Ranto <branto@redhat.com> - 1:12.1.1-8
 - Fix ppc64 build
 
