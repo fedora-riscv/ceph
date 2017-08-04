@@ -784,7 +784,7 @@ python-rbd, python-rgw or python-cephfs instead.
 # common
 #################################################################################
 %prep
-%autosetup -p1 -n ceph-12.1.1
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 %if 0%{with cephfs_java}
