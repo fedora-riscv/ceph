@@ -84,7 +84,7 @@ License:	LGPL-2.1 and CC-BY-SA-1.0 and GPL-2.0 and BSL-1.0 and BSD-3-Clause and 
 Group:		System/Filesystems
 %endif
 URL:		http://ceph.com/
-Source0:	http://download.ceph.com/tarballs/%{name}-${version}.tar.gz
+Source0:	http://download.ceph.com/tarballs/%{name}-%{version}.tar.gz
 # https://bugzilla.redhat.com/show_bug.cgi?id=1474773
 Patch001:	0001-src-rocksdb-util-murmurhash.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1474774
