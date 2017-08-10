@@ -70,7 +70,7 @@
 #################################################################################
 Name:		ceph
 Version:	12.1.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -89,6 +89,7 @@ Source0:	http://download.ceph.com/tarballs/%{name}-%{version}.tar.gz
 Patch001:	0001-src-rocksdb-util-murmurhash.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1474774
 Patch002:	0002-cmake-Support-ppc64.patch
+Patch003:	0003-src-tools-rbd_mirror.patch
 %if 0%{?suse_version}
 %if 0%{?is_opensuse}
 ExclusiveArch:	x86_64 aarch64 ppc64 ppc64le
@@ -1767,6 +1768,9 @@ exit 0
 
 
 %changelog
+* Thu Aug 10 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.2-2
+- Fix 32-bit alignment
+
 * Thu Aug 3 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.2-1
 - New release (1:12.1.2-1)
 
