@@ -65,12 +65,18 @@
 # disable dwz which compresses the debuginfo
 %global _find_debuginfo_dwz_opts %{nil}
 
+%if ( 0%{?rhel} && 0%{?rhel} < 7 )
+%global _rundir %{_localstatedir}/run
+%else
+%global _rundir /run
+%endif
+
 #################################################################################
 # main package definition
 #################################################################################
 Name:		ceph
 Version:	12.1.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -919,7 +925,7 @@ install -m 0644 -D udev/95-ceph-osd.rules %{buildroot}%{_udevrulesdir}/95-ceph-o
 
 #set up placeholder directories
 mkdir -p %{buildroot}%{_sysconfdir}/ceph
-mkdir -p %{buildroot}%{_localstatedir}/run/ceph
+mkdir -p %{buildroot}%{_rundir}/ceph
 mkdir -p %{buildroot}%{_localstatedir}/log/ceph
 mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/tmp
 mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/mon
@@ -1715,7 +1721,7 @@ fi
 
 rm -f ${FILE_CONTEXT}.pre
 # The fixfiles command won't fix label for /var/run/ceph
-/usr/sbin/restorecon -R /var/run/ceph > /dev/null 2>&1
+/usr/sbin/restorecon -R %{_rundir}/ceph > /dev/null 2>&1
 
 # Start the daemons iff they were running before
 if test $STATUS -eq 0; then
@@ -1751,7 +1757,7 @@ if [ $1 -eq 0 ]; then
     /usr/sbin/fixfiles -C ${FILE_CONTEXT}.pre restore 2> /dev/null
     rm -f ${FILE_CONTEXT}.pre
     # The fixfiles command won't fix label for /var/run/ceph
-    /usr/sbin/restorecon -R /var/run/ceph > /dev/null 2>&1
+    /usr/sbin/restorecon -R %{_rundir}/ceph > /dev/null 2>&1
 
     # Start the daemons if they were running before
     if test $STATUS -eq 0; then
@@ -1768,6 +1774,9 @@ exit 0
 
 
 %changelog
+* Fri Aug 11 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.2-3
+- rebuild with librpm.so.7
+
 * Thu Aug 10 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.2-2
 - Fix 32-bit alignment
 
