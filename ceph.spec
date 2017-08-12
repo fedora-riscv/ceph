@@ -13,7 +13,9 @@
 # This file is under the GNU Lesser General Public License, version 2.1
 #
 # Please submit bugfixes or comments via http://tracker.ceph.com/
-# 
+#
+%global _hardened_build 1
+
 %bcond_without ocf
 %ifnarch armv7hl
 %bcond_without cephfs_java
@@ -75,8 +77,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	12.1.2
-Release:	3%{?dist}
+Version:	12.1.3
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -95,7 +97,6 @@ Source0:	http://download.ceph.com/tarballs/%{name}-%{version}.tar.gz
 Patch001:	0001-src-rocksdb-util-murmurhash.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1474774
 Patch002:	0002-cmake-Support-ppc64.patch
-Patch003:	0003-src-tools-rbd_mirror.patch
 %if 0%{?suse_version}
 %if 0%{?is_opensuse}
 ExclusiveArch:	x86_64 aarch64 ppc64 ppc64le
@@ -191,7 +192,7 @@ BuildRequires:	python-PrettyTable
 BuildRequires:	python-Sphinx
 BuildRequires:  rdma-core-devel
 %endif
-%if 0%{?fedora} || 0%{?rhel} 
+%if 0%{?fedora} || 0%{?rhel}
 Requires:	systemd
 BuildRequires:  boost-random
 BuildRequires:	btrfs-progs
@@ -937,6 +938,7 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/bootstrap-osd
 mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/bootstrap-mds
 mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/bootstrap-rgw
 mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/bootstrap-mgr
+mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/bootstrap-rbd
 
 %if 0%{?suse_version}
 # create __pycache__ directories and their contents
@@ -960,6 +962,8 @@ rm -rf %{buildroot}
 %{_libexecdir}/systemd/system-preset/50-ceph.preset
 %{_sbindir}/ceph-create-keys
 %{_sbindir}/ceph-disk
+%{_sbindir}/ceph-volume
+%{_sbindir}/ceph-volume-systemd
 %{_sbindir}/rcceph
 %dir %{_libexecdir}/ceph
 %{_libexecdir}/ceph/ceph_common.sh
@@ -988,9 +992,13 @@ rm -rf %{buildroot}
 %config %{_sysconfdir}/sysconfig/SuSEfirewall2.d/services/ceph-osd-mds
 %endif
 %{_unitdir}/ceph-disk@.service
+%{_unitdir}/ceph-volume@.service
 %{_unitdir}/ceph.target
 %{python_sitelib}/ceph_detect_init*
 %{python_sitelib}/ceph_disk*
+%dir %{python_sitelib}/ceph_volume
+%{python_sitelib}/ceph_volume/*
+%{python_sitelib}/ceph_volume-*
 %{_mandir}/man8/ceph-deploy.8*
 %{_mandir}/man8/ceph-detect-init.8*
 %{_mandir}/man8/ceph-create-keys.8*
@@ -1005,6 +1013,7 @@ rm -rf %{buildroot}
 %attr(750,ceph,ceph) %dir %{_localstatedir}/lib/ceph/bootstrap-mds
 %attr(750,ceph,ceph) %dir %{_localstatedir}/lib/ceph/bootstrap-rgw
 %attr(750,ceph,ceph) %dir %{_localstatedir}/lib/ceph/bootstrap-mgr
+%attr(750,ceph,ceph) %dir %{_localstatedir}/lib/ceph/bootstrap-rbd
 
 %post base
 /sbin/ldconfig
@@ -1027,6 +1036,7 @@ fi
 %endif
 %if 0%{?fedora} || 0%{?rhel}
 %systemd_preun ceph-disk@\*.service ceph.target
+%systemd_preun ceph-volume@\*.service ceph.target
 %endif
 
 %postun base
@@ -1047,7 +1057,7 @@ if [ $FIRST_ARG -ge 1 ] ; then
     source $SYSCONF_CEPH
   fi
   if [ "X$CEPH_AUTO_RESTART_ON_UPGRADE" = "Xyes" ] ; then
-    /usr/bin/systemctl try-restart ceph-disk@\*.service > /dev/null 2>&1 || :
+    /usr/bin/systemctl try-restart ceph-disk@\*.service ceph-volume@\*.service > /dev/null 2>&1 || :
   fi
 fi
 
@@ -1774,6 +1784,9 @@ exit 0
 
 
 %changelog
+* Sat Aug 12 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.3-1
+- New release (1:12.1.3-1)
+
 * Fri Aug 11 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.2-3
 - rebuild with librpm.so.7
 
@@ -2135,7 +2148,7 @@ exit 0
 
 * Fri Sep 07 2012 David Nalley <david@gnsa.us> - 0.51-1
 - Updating to 0.51
-- Updated url and source url. 
+- Updated url and source url.
 
 * Wed Jul 18 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.46-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
