@@ -36,7 +36,15 @@
 %ifnarch armv7hl
 %bcond_with lowmem_builder
 %else
+%if 0%{?rhel}
+%ifnarch ppc64le
+%bcond_with lowmem_builder
+%else
 %bcond_without lowmem_builder
+%endif
+%else
+%bcond_without lowmem_builder
+%endif
 %endif
 %if 0%{?fedora} || 0%{?rhel}
 %bcond_without selinux
@@ -78,12 +86,12 @@
 #################################################################################
 Name:		ceph
 Version:	12.1.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
 
-# define %_epoch_prefix macro which will expand to the empty string if %epoch is undefined
+# define %%_epoch_prefix macro which will expand to the empty string if %%epoch is undefined
 %global _epoch_prefix %{?epoch:%{epoch}:}
 
 Summary:	User space components of the Ceph file system
@@ -1784,6 +1792,9 @@ exit 0
 
 
 %changelog
+* Thu Aug 17 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.4-2
+- fix %%epoch in comment, ppc64le lowmem_builder
+
 * Wed Aug 16 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.4-1
 - New release (1:12.1.4-1)
 
