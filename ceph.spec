@@ -20,6 +20,7 @@ License:	GPLv2
 Group:		System Environment/Base
 URL:		http://ceph.com/
 Source0:	http://ceph.com/download/%{name}-%{version}.tar.bz2
+Source1:	README.deprecated
 Patch0:		ceph-google-gperftools.patch
 Patch1:		ceph-no-format-security.patch
 Patch2:		ceph-common-do-not-unlock-rwlock-on-destruction.patch
@@ -482,6 +483,7 @@ install -m 0644 -D src/logrotate.conf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/
 install -m 0644 -D src/rgw/logrotate.conf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/radosgw
 chmod 0644 $RPM_BUILD_ROOT%{_docdir}/ceph/sample.ceph.conf
 chmod 0644 $RPM_BUILD_ROOT%{_docdir}/ceph/sample.fetch_config
+install %{SOURCE1} $RPM_BUILD_ROOT%{_docdir}/ceph
 
 %ifarch x86_64
 # remove python-rados and python-rbd files to avoid conflicts with base RHEL
@@ -566,6 +568,7 @@ fi
 %defattr(-,root,root,-)
 %docdir %{_docdir}
 %dir %{_docdir}/ceph
+%{_docdir}/ceph/README.deprecated
 %{_docdir}/ceph/sample.ceph.conf
 %{_docdir}/ceph/sample.fetch_config
 %{_bindir}/cephfs
