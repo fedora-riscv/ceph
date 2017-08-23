@@ -886,7 +886,6 @@ cmake .. \
 %else
     -DWITH_RADOSGW_BEAST_FRONTEND=OFF \
 %endif
-# RDMA is no longer built on 32-bit ARM: see #1484155
 %ifnarch %{arm}
     -DWITH_RDMA=OFF \
 %endif
