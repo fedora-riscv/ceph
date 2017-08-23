@@ -86,7 +86,7 @@
 #################################################################################
 Name:		ceph
 Version:	12.1.4
-Release:	2%{?dist}
+Release:	3%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -206,7 +206,10 @@ BuildRequires:  boost-random
 BuildRequires:	btrfs-progs
 BuildRequires:	nss-devel
 BuildRequires:	keyutils-libs-devel
+# RDMA is no longer built on 32-bit ARM: see #1484155
+%ifnarch %{arm}
 BuildRequires:	libibverbs-devel
+%endif
 BuildRequires:  openldap-devel
 BuildRequires:  openssl-devel
 BuildRequires:  redhat-lsb-core
@@ -882,6 +885,10 @@ cmake .. \
     -DWITH_RADOSGW_BEAST_FRONTEND=ON \
 %else
     -DWITH_RADOSGW_BEAST_FRONTEND=OFF \
+%endif
+# RDMA is no longer built on 32-bit ARM: see #1484155
+%ifnarch %{arm}
+    -DWITH_RDMA=OFF \
 %endif
     -DBOOST_J=%{_smp_ncpus}
 
@@ -1792,6 +1799,9 @@ exit 0
 
 
 %changelog
+* Tue Aug 22 2017 Adam Williamson <awilliam@redhat.com> - 1:12.1.4-3
+- Disable RDMA support on 32-bit ARM (#1484155)
+
 * Thu Aug 17 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.4-2
 - fix %%epoch in comment, ppc64le lowmem_builder
 
