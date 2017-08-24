@@ -198,10 +198,7 @@ BuildRequires:  openldap2-devel
 BuildRequires:	python-Cython
 BuildRequires:	python-PrettyTable
 BuildRequires:	python-Sphinx
-# RDMA is no longer built on 32-bit ARM: see #1484155
-%ifnarch %{arm}
 BuildRequires:  rdma-core-devel
-%endif
 %endif
 %if 0%{?fedora} || 0%{?rhel}
 Requires:	systemd
@@ -209,6 +206,10 @@ BuildRequires:  boost-random
 BuildRequires:	btrfs-progs
 BuildRequires:	nss-devel
 BuildRequires:	keyutils-libs-devel
+# RDMA is no longer built on 32-bit ARM: see #1484155
+%ifnarch %{arm}
+BuildRequires:	rdma-core-devel
+%endif
 BuildRequires:  openldap-devel
 BuildRequires:  openssl-devel
 BuildRequires:  redhat-lsb-core
