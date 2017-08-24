@@ -86,7 +86,7 @@
 #################################################################################
 Name:		ceph
 Version:	12.1.4
-Release:	3%{?dist}
+Release:	4%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -198,7 +198,10 @@ BuildRequires:  openldap2-devel
 BuildRequires:	python-Cython
 BuildRequires:	python-PrettyTable
 BuildRequires:	python-Sphinx
+# RDMA is no longer built on 32-bit ARM: see #1484155
+%ifnarch %{arm}
 BuildRequires:  rdma-core-devel
+%endif
 %endif
 %if 0%{?fedora} || 0%{?rhel}
 Requires:	systemd
@@ -206,10 +209,6 @@ BuildRequires:  boost-random
 BuildRequires:	btrfs-progs
 BuildRequires:	nss-devel
 BuildRequires:	keyutils-libs-devel
-# RDMA is no longer built on 32-bit ARM: see #1484155
-%ifnarch %{arm}
-BuildRequires:	libibverbs-devel
-%endif
 BuildRequires:  openldap-devel
 BuildRequires:  openssl-devel
 BuildRequires:  redhat-lsb-core
@@ -1798,6 +1797,9 @@ exit 0
 
 
 %changelog
+* Thu Aug 24 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.4-4
+- libibverbs(-devel) is superceded by rdma-core(-devel)
+
 * Tue Aug 22 2017 Adam Williamson <awilliam@redhat.com> - 1:12.1.4-3
 - Disable RDMA support on 32-bit ARM (#1484155)
 
