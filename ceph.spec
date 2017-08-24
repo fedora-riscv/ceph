@@ -86,7 +86,7 @@
 #################################################################################
 Name:		ceph
 Version:	12.1.4
-Release:	4%{?dist}
+Release:	5%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -1798,6 +1798,9 @@ exit 0
 
 
 %changelog
+* Thu Aug 24 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.4-5
+- libibverbs(-devel) is superceded by rdma-core(-devel), again
+
 * Thu Aug 24 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.4-4
 - libibverbs(-devel) is superceded by rdma-core(-devel)
 
