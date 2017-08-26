@@ -13,7 +13,7 @@ Name:		ceph
 Version:	0.80.7
 # This should always be lower than 2, we do not want to update over base rhel.
 # Please use 0.x if updating instead.
-Release:	0.9%{?dist}
+Release:	0.10%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	GPLv2
@@ -913,6 +913,9 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %files -n python-ceph-compat
 
 %changelog
+* Sat Aug 16 2017 Kaleb S. KEITHLEY <kkeithley[at]redhat.com> - 1:0.80.7-0.10
+- add README.deprecated, prepare for retirement in epel
+
 * Thu Dec 08 2016 Boris Ranto <branto@redhat.com> - 1:0.80.7-0.9
 - add provides for -devel packages
 
