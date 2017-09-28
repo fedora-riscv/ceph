@@ -85,7 +85,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	12.2.0
+Version:	12.2.1
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
@@ -372,6 +372,7 @@ Summary:	Ceph fuse-based client
 %if 0%{?suse_version}
 Group:		System/Filesystems
 %endif
+Requires:	fuse
 %description fuse
 FUSE based client for Ceph distributed network file system
 
@@ -1570,10 +1571,7 @@ fi
 %{_libdir}/librbd_tp.so.*
 %endif
 
-%post -n librbd1
-/sbin/ldconfig
-mkdir -p /usr/lib64/qemu/
-ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
+%post -n librbd1 -p /sbin/ldconfig
 
 %postun -n librbd1 -p /sbin/ldconfig
 
@@ -1801,6 +1799,9 @@ exit 0
 
 
 %changelog
+* Wed Sep 27 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.1-1
+- New release (1:12.2.1-1)
+
 * Tue Aug 29 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.0-1
 - New release (1:12.2.0-1)
 
