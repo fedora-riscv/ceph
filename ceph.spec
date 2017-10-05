@@ -86,7 +86,7 @@
 #################################################################################
 Name:		ceph
 Version:	12.2.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -467,6 +467,7 @@ Group:		System/Libraries
 %endif
 %if 0%{?rhel} || 0%{?fedora}
 Obsoletes:	ceph-libs < %{_epoch_prefix}%{version}-%{release}
+Obsoletes:	ceph-libs-compat < %{_epoch_prefix}%{version}-%{release}
 %endif
 %description -n librados2
 RADOS is a reliable, autonomic distributed object storage cluster
@@ -591,6 +592,7 @@ Requires(post): coreutils
 %endif
 %if 0%{?rhel} || 0%{?fedora}
 Obsoletes:	ceph-libs < %{_epoch_prefix}%{version}-%{release}
+Obsoletes:	ceph-libs-compat < %{_epoch_prefix}%{version}-%{release}
 %endif
 %description -n librbd1
 RBD is a block device striped across multiple distributed objects in
@@ -643,6 +645,7 @@ Group:		System/Libraries
 Obsoletes:	libcephfs1
 %if 0%{?rhel} || 0%{?fedora}
 Obsoletes:	ceph-libs < %{_epoch_prefix}%{version}-%{release}
+Obsoletes:	ceph-libs-compat < %{_epoch_prefix}%{version}-%{release}
 Obsoletes:	ceph-libcephfs
 %endif
 %description -n libcephfs2
@@ -1799,6 +1802,9 @@ exit 0
 
 
 %changelog
+* Thu Oct 05 2017 Boris Ranto <branto@redhat.com> - 1:12.2.1-2
+- Obsolete ceph-libs-compat package
+
 * Wed Sep 27 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.1-1
 - New release (1:12.2.1-1)
 
