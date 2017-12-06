@@ -85,8 +85,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	12.2.1
-Release:	2%{?dist}
+Version:	12.2.2
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -127,7 +127,7 @@ BuildRequires:	sharutils
 %if 0%{with selinux}
 BuildRequires:	checkpolicy
 BuildRequires:	selinux-policy-devel
-BuildRequires:	/usr/share/selinux/devel/policyhelp
+BuildRequires:	selinux-policy-doc
 %endif
 %if 0%{with make_check}
 %if 0%{?fedora} || 0%{?rhel}
@@ -137,6 +137,7 @@ BuildRequires: python-werkzeug
 %if 0%{?suse_version}
 BuildRequires: python-CherryPy
 BuildRequires: python-Werkzeug
+BuildRequires: python-numpy-devel
 %endif
 BuildRequires: python-pecan
 BuildRequires: socat
@@ -928,6 +929,7 @@ mkdir -p %{buildroot}%{_sbindir}
 install -m 0644 -D src/logrotate.conf %{buildroot}%{_sysconfdir}/logrotate.d/ceph
 chmod 0644 %{buildroot}%{_docdir}/ceph/sample.ceph.conf
 install -m 0644 -D COPYING %{buildroot}%{_docdir}/ceph/COPYING
+install -m 0644 -D src/90-ceph-osd.conf %{buildroot}%{_sysctldir}/90-ceph-osd.conf
 
 # firewall templates and /sbin/mount.ceph symlink
 %if 0%{?suse_version}
@@ -1457,18 +1459,25 @@ fi
 %{_udevrulesdir}/95-ceph-osd.rules
 %{_mandir}/man8/ceph-clsinfo.8*
 %{_mandir}/man8/ceph-osd.8*
+%{_mandir}/man8/ceph-bluestore-tool.8*
 %if ( ( 0%{?rhel} && 0%{?rhel} <= 7) && ! 0%{?centos} )
 %attr(0755,-,-) %{_sysconfdir}/cron.hourly/subman
 %endif
 %{_unitdir}/ceph-osd@.service
 %{_unitdir}/ceph-osd.target
 %attr(750,ceph,ceph) %dir %{_localstatedir}/lib/ceph/osd
+%config(noreplace) %{_sysctldir}/90-ceph-osd.conf
 
 %post osd
 %if 0%{?suse_version}
 if [ $1 -eq 1 ] ; then
   /usr/bin/systemctl preset ceph-osd@\*.service ceph-osd.target >/dev/null 2>&1 || :
 fi
+%if 0%{?sysctl_apply}
+    %sysctl_apply 90-ceph-osd.conf
+%else
+    /usr/lib/systemd/systemd-sysctl %{_sysctldir}/90-ceph-osd.conf > /dev/null 2>&1 || :
+%endif
 %endif
 %if 0%{?fedora} || 0%{?rhel}
 %systemd_post ceph-osd@\*.service ceph-osd.target
@@ -1802,6 +1811,9 @@ exit 0
 
 
 %changelog
+* Tue Dec 5 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.2-1
+- New release (1:12.2.2-1)
+
 * Thu Oct 05 2017 Boris Ranto <branto@redhat.com> - 1:12.2.1-2
 - Obsolete ceph-libs-compat package
 
