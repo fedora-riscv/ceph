@@ -1,0 +1,39 @@
+From 7001040df1194b802e7ac523aa4325a414ae89b3 Mon Sep 17 00:00:00 2001
+From: Boris Ranto <branto@redhat.com>
+Date: Fri, 8 Dec 2017 00:21:38 +0100
+Subject: [PATCH] librbd: Conditionally import TrimRequest.cc
+
+We include TrimRequest.cc in librbd tests at two places:
+ - operation/test_mock_TrimRequest.cc
+ - operation/test_mock_ResizeRequest.cc
+
+That causes linking errors when doing the builds because some of the
+structures are defined twice.
+
+Signed-off-by: Boris Ranto <branto@redhat.com>
+---
+ src/librbd/operation/TrimRequest.cc | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/librbd/operation/TrimRequest.cc b/src/librbd/operation/TrimRequest.cc
+index 28f2deb..415f98c 100644
+--- a/src/librbd/operation/TrimRequest.cc
++++ b/src/librbd/operation/TrimRequest.cc
+@@ -1,6 +1,9 @@
+ // -*- mode:C++; tab-width:8; c-basic-offset:2; indent-tabs-mode:t -*-
+ // vim: ts=8 sw=2 smarttab
+ 
++#ifndef CEPH_LIBRBD_OPERATION_TRIM_REQUEST_CC
++#define CEPH_LIBRBD_OPERATION_TRIM_REQUEST_CC
++
+ #include "librbd/operation/TrimRequest.h"
+ #include "librbd/AsyncObjectThrottle.h"
+ #include "librbd/ExclusiveLock.h"
+@@ -363,3 +366,4 @@ void TrimRequest<I>::send_finish(int r) {
+ } // namespace librbd
+ 
+ template class librbd::operation::TrimRequest<librbd::ImageCtx>;
++#endif
+-- 
+2.9.5
+

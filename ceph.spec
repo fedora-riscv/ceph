@@ -105,6 +105,7 @@ Source0:	http://download.ceph.com/tarballs/%{name}-%{version}.tar.gz
 Patch001:	0001-src-rocksdb-util-murmurhash.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1474774
 Patch002:	0002-cmake-Support-ppc64.patch
+Patch003:	0003-librbd-Conditionally-import-TrimRequest.cc.patch
 %if 0%{?suse_version}
 %if 0%{?is_opensuse}
 ExclusiveArch:	x86_64 aarch64 ppc64 ppc64le
@@ -1813,6 +1814,7 @@ exit 0
 %changelog
 * Tue Dec 5 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.2-1
 - New release (1:12.2.2-1)
+- Fix build error on arm
 
 * Thu Oct 05 2017 Boris Ranto <branto@redhat.com> - 1:12.2.1-2
 - Obsolete ceph-libs-compat package
