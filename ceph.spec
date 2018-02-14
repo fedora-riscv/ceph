@@ -966,9 +966,6 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/bootstrap-rbd
 %py3_compile %{buildroot}%{python3_sitelib}
 %endif
 
-%clean
-rm -rf %{buildroot}
-
 #################################################################################
 # files and systemd scriptlets
 #################################################################################
