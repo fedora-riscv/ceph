@@ -86,7 +86,7 @@
 #################################################################################
 Name:		ceph
 Version:	12.2.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -272,6 +272,8 @@ Requires:      librgw2 = %{_epoch_prefix}%{version}-%{release}
 %if 0%{with selinux}
 Requires:      ceph-selinux = %{_epoch_prefix}%{version}-%{release}
 %endif
+Requires(post):/sbin/ldconfig
+Requires(postun):/sbin/ldconfig
 Requires:      python
 Requires:      python-requests
 Requires:      python-setuptools
@@ -1526,6 +1528,7 @@ fi
 
 %endif
 
+%ldconfig_scriptlets -n librados2
 %files -n librados2
 %{_libdir}/librados.so.*
 %dir %{_libdir}/ceph
@@ -1533,10 +1536,6 @@ fi
 %if %{with lttng}
 %{_libdir}/librados_tp.so.*
 %endif
-
-%post -n librados2 -p /sbin/ldconfig
-
-%postun -n librados2 -p /sbin/ldconfig
 
 %files -n librados-devel
 %dir %{_includedir}/rados
@@ -1565,12 +1564,9 @@ fi
 %{python3_sitearch}/rados.cpython*.so
 %{python3_sitearch}/rados-*.egg-info
 
+%ldconfig_scriptlets -n libradosstriper1
 %files -n libradosstriper1
 %{_libdir}/libradosstriper.so.*
-
-%post -n libradosstriper1 -p /sbin/ldconfig
-
-%postun -n libradosstriper1 -p /sbin/ldconfig
 
 %files -n libradosstriper-devel
 %dir %{_includedir}/radosstriper
@@ -1578,15 +1574,12 @@ fi
 %{_includedir}/radosstriper/libradosstriper.hpp
 %{_libdir}/libradosstriper.so
 
+%ldconfig_scriptlets -n librbd1
 %files -n librbd1
 %{_libdir}/librbd.so.*
 %if %{with lttng}
 %{_libdir}/librbd_tp.so.*
 %endif
-
-%post -n librbd1 -p /sbin/ldconfig
-
-%postun -n librbd1 -p /sbin/ldconfig
 
 %files -n librbd-devel
 %dir %{_includedir}/rbd
@@ -1598,12 +1591,9 @@ fi
 %{_libdir}/librbd_tp.so
 %endif
 
+%ldconfig_scriptlets -n librgw2
 %files -n librgw2
 %{_libdir}/librgw.so.*
-
-%post -n librgw2 -p /sbin/ldconfig
-
-%postun -n librgw2 -p /sbin/ldconfig
 
 %files -n librgw-devel
 %dir %{_includedir}/rados
@@ -1627,12 +1617,9 @@ fi
 %{python3_sitearch}/rbd.cpython*.so
 %{python3_sitearch}/rbd-*.egg-info
 
+%ldconfig_scriptlets -n libcephfs2
 %files -n libcephfs2
 %{_libdir}/libcephfs.so.*
-
-%post -n libcephfs2 -p /sbin/ldconfig
-
-%postun -n libcephfs2 -p /sbin/ldconfig
 
 %files -n libcephfs-devel
 %dir %{_includedir}/cephfs
@@ -1695,12 +1682,9 @@ fi
 %endif
 
 %if 0%{with cephfs_java}
+%ldconfig_scriptlets -n libcephfs_jni1
 %files -n libcephfs_jni1
 %{_libdir}/libcephfs_jni.so.*
-
-%post -n libcephfs_jni1 -p /sbin/ldconfig
-
-%postun -n libcephfs_jni1 -p /sbin/ldconfig
 
 %files -n libcephfs_jni-devel
 %{_libdir}/libcephfs_jni.so
@@ -1812,6 +1796,9 @@ exit 0
 
 
 %changelog
+* Thu Feb 15 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.2-2
+- %%ldconfig_scriptlets
+
 * Tue Dec 5 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.2-1
 - New release (1:12.2.2-1)
 - Fix build error on arm
