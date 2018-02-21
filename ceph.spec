@@ -85,8 +85,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	12.2.2
-Release:	2%{?dist}
+Version:	12.2.3
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -106,6 +106,7 @@ Patch001:	0001-src-rocksdb-util-murmurhash.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1474774
 Patch002:	0002-cmake-Support-ppc64.patch
 Patch003:	0003-librbd-Conditionally-import-TrimRequest.cc.patch
+Patch004:	0004-cmake-modules-BuildBoost.cmake.patch
 %if 0%{?suse_version}
 %if 0%{?is_opensuse}
 ExclusiveArch:	x86_64 aarch64 ppc64 ppc64le
@@ -356,11 +357,13 @@ Group:          System/Filesystems
 Requires:       ceph-base = %{_epoch_prefix}%{version}-%{release}
 %if 0%{?fedora} || 0%{?rhel}
 Requires:       python-cherrypy
+Requires:       python-jinja2
 Requires:       python-werkzeug
 Requires:       pyOpenSSL
 %endif
 %if 0%{?suse_version}
-Requires: 	python-CherryPy
+Requires:       python-CherryPy
+Requires:       python-jinja2
 Requires:       python-Werkzeug
 Requires:       python-pyOpenSSL
 %endif
@@ -459,6 +462,7 @@ Requires:	gdisk
 Requires:	gptfdisk
 %endif
 Requires:       parted
+Requires:       lvm2
 %description osd
 ceph-osd is the object storage daemon for the Ceph distributed file
 system.  It is responsible for storing objects on a local file system
@@ -714,7 +718,7 @@ Summary:	Ceph benchmarks and test tools
 %if 0%{?suse_version}
 Group:		System/Benchmark
 %endif
-Requires:	ceph-common
+Requires:	ceph-common = %{_epoch_prefix}%{version}-%{release}
 Requires:	xmlstarlet
 Requires:	jq
 Requires:	socat
@@ -890,9 +894,9 @@ cmake .. \
     -DWITH_OCF=ON \
 %endif
 %ifarch aarch64 armv7hl mips mipsel ppc ppc64 ppc64le %{ix86} x86_64
-    -DWITH_RADOSGW_BEAST_FRONTEND=ON \
+    -DWITH_BOOST_CONTEXT=ON \
 %else
-    -DWITH_RADOSGW_BEAST_FRONTEND=OFF \
+    -DWITH_BOOST_CONTEXT=OFF \
 %endif
 %ifnarch %{arm}
     -DWITH_RDMA=OFF \
@@ -932,7 +936,7 @@ mkdir -p %{buildroot}%{_sbindir}
 install -m 0644 -D src/logrotate.conf %{buildroot}%{_sysconfdir}/logrotate.d/ceph
 chmod 0644 %{buildroot}%{_docdir}/ceph/sample.ceph.conf
 install -m 0644 -D COPYING %{buildroot}%{_docdir}/ceph/COPYING
-install -m 0644 -D src/90-ceph-osd.conf %{buildroot}%{_sysctldir}/90-ceph-osd.conf
+install -m 0644 -D etc/sysctl/90-ceph-osd.conf %{buildroot}%{_sysctldir}/90-ceph-osd.conf
 
 # firewall templates and /sbin/mount.ceph symlink
 %if 0%{?suse_version}
@@ -980,13 +984,12 @@ rm -rf %{buildroot}
 %{_bindir}/crushtool
 %{_bindir}/monmaptool
 %{_bindir}/osdmaptool
+%{_bindir}/ceph-kvstore-tool
 %{_bindir}/ceph-run
 %{_bindir}/ceph-detect-init
 %{_libexecdir}/systemd/system-preset/50-ceph.preset
 %{_sbindir}/ceph-create-keys
 %{_sbindir}/ceph-disk
-%{_sbindir}/ceph-volume
-%{_sbindir}/ceph-volume-systemd
 %{_sbindir}/rcceph
 %dir %{_libexecdir}/ceph
 %{_libexecdir}/ceph/ceph_common.sh
@@ -1015,7 +1018,6 @@ rm -rf %{buildroot}
 %config %{_sysconfdir}/sysconfig/SuSEfirewall2.d/services/ceph-osd-mds
 %endif
 %{_unitdir}/ceph-disk@.service
-%{_unitdir}/ceph-volume@.service
 %{_unitdir}/ceph.target
 %{python_sitelib}/ceph_detect_init*
 %{python_sitelib}/ceph_disk*
@@ -1026,12 +1028,11 @@ rm -rf %{buildroot}
 %{_mandir}/man8/ceph-detect-init.8*
 %{_mandir}/man8/ceph-create-keys.8*
 %{_mandir}/man8/ceph-disk.8*
-%{_mandir}/man8/ceph-volume.8*
-%{_mandir}/man8/ceph-volume-systemd.8*
 %{_mandir}/man8/ceph-run.8*
 %{_mandir}/man8/crushtool.8*
 %{_mandir}/man8/osdmaptool.8*
 %{_mandir}/man8/monmaptool.8*
+%{_mandir}/man8/ceph-kvstore-tool.8*
 #set up placeholder directories
 %attr(750,ceph,ceph) %dir %{_localstatedir}/lib/ceph/tmp
 %attr(750,ceph,ceph) %dir %{_localstatedir}/lib/ceph/bootstrap-osd
@@ -1045,12 +1046,11 @@ rm -rf %{buildroot}
 %if 0%{?suse_version}
 %fillup_only
 if [ $1 -eq 1 ] ; then
-  /usr/bin/systemctl preset ceph-disk@\*.service ceph.target >/dev/null 2>&1 || :
+/usr/bin/systemctl preset ceph-disk@\*.service ceph.target >/dev/null 2>&1 || :
 fi
 %endif
 %if 0%{?fedora} || 0%{?rhel}
 %systemd_post ceph-disk@\*.service ceph.target
-%systemd_post ceph-volume@\*.service ceph.target
 %endif
 if [ $1 -eq 1 ] ; then
 /usr/bin/systemctl start ceph.target >/dev/null 2>&1 || :
@@ -1062,7 +1062,6 @@ fi
 %endif
 %if 0%{?fedora} || 0%{?rhel}
 %systemd_preun ceph-disk@\*.service ceph.target
-%systemd_preun ceph-volume@\*.service ceph.target
 %endif
 
 %postun base
@@ -1083,7 +1082,7 @@ if [ $FIRST_ARG -ge 1 ] ; then
     source $SYSCONF_CEPH
   fi
   if [ "X$CEPH_AUTO_RESTART_ON_UPGRADE" = "Xyes" ] ; then
-    /usr/bin/systemctl try-restart ceph-disk@\*.service ceph-volume@\*.service > /dev/null 2>&1 || :
+    /usr/bin/systemctl try-restart ceph-disk@\*.service > /dev/null 2>&1 || :
   fi
 fi
 
@@ -1287,6 +1286,7 @@ fi
 %files mon
 %{_bindir}/ceph-mon
 %{_bindir}/ceph-rest-api
+%{_bindir}/ceph-monstore-tool
 %{_mandir}/man8/ceph-mon.8*
 %{_mandir}/man8/ceph-rest-api.8*
 %{python_sitelib}/ceph_rest_api.py*
@@ -1455,26 +1455,32 @@ fi
 %{_bindir}/ceph-clsinfo
 %{_bindir}/ceph-bluestore-tool
 %{_bindir}/ceph-objectstore-tool
+%{_bindir}/ceph-osdomap-tool
 %{_bindir}/ceph-osd
 %{_libexecdir}/ceph/ceph-osd-prestart.sh
+%{_sbindir}/ceph-volume
+%{_sbindir}/ceph-volume-systemd
 %dir %{_udevrulesdir}
 %{_udevrulesdir}/60-ceph-by-parttypeuuid.rules
 %{_udevrulesdir}/95-ceph-osd.rules
 %{_mandir}/man8/ceph-clsinfo.8*
 %{_mandir}/man8/ceph-osd.8*
 %{_mandir}/man8/ceph-bluestore-tool.8*
+%{_mandir}/man8/ceph-volume.8*
+%{_mandir}/man8/ceph-volume-systemd.8*
 %if ( ( 0%{?rhel} && 0%{?rhel} <= 7) && ! 0%{?centos} )
 %attr(0755,-,-) %{_sysconfdir}/cron.hourly/subman
 %endif
 %{_unitdir}/ceph-osd@.service
 %{_unitdir}/ceph-osd.target
+%{_unitdir}/ceph-volume@.service
 %attr(750,ceph,ceph) %dir %{_localstatedir}/lib/ceph/osd
 %config(noreplace) %{_sysctldir}/90-ceph-osd.conf
 
 %post osd
 %if 0%{?suse_version}
 if [ $1 -eq 1 ] ; then
-  /usr/bin/systemctl preset ceph-osd@\*.service ceph-osd.target >/dev/null 2>&1 || :
+  /usr/bin/systemctl preset ceph-osd@\*.service ceph-volume@\*.service ceph-osd.target >/dev/null 2>&1 || :
 fi
 %if 0%{?sysctl_apply}
     %sysctl_apply 90-ceph-osd.conf
@@ -1483,7 +1489,7 @@ fi
 %endif
 %endif
 %if 0%{?fedora} || 0%{?rhel}
-%systemd_post ceph-osd@\*.service ceph-osd.target
+%systemd_post ceph-osd@\*.service ceph-volume@\*.service ceph-osd.target
 %endif
 if [ $1 -eq 1 ] ; then
 /usr/bin/systemctl start ceph-osd.target >/dev/null 2>&1 || :
@@ -1491,20 +1497,20 @@ fi
 
 %preun osd
 %if 0%{?suse_version}
-%service_del_preun ceph-osd@\*.service ceph-osd.target
+%service_del_preun ceph-osd@\*.service ceph-volume@\*.service ceph-osd.target
 %endif
 %if 0%{?fedora} || 0%{?rhel}
-%systemd_preun ceph-osd@\*.service ceph-osd.target
+%systemd_preun ceph-osd@\*.service ceph-volume@\*.service ceph-osd.target
 %endif
 
 %postun osd
 test -n "$FIRST_ARG" || FIRST_ARG=$1
 %if 0%{?suse_version}
 DISABLE_RESTART_ON_UPDATE="yes"
-%service_del_postun ceph-osd@\*.service ceph-osd.target
+%service_del_postun ceph-osd@\*.service ceph-volume@\*.service ceph-osd.target
 %endif
 %if 0%{?fedora} || 0%{?rhel}
-%systemd_postun ceph-osd@\*.service ceph-osd.target
+%systemd_postun ceph-osd@\*.service ceph-volume@\*.service ceph-osd.target
 %endif
 if [ $FIRST_ARG -ge 1 ] ; then
   # Restart on upgrade, but only if "CEPH_AUTO_RESTART_ON_UPGRADE" is set to
@@ -1514,7 +1520,7 @@ if [ $FIRST_ARG -ge 1 ] ; then
     source $SYSCONF_CEPH
   fi
   if [ "X$CEPH_AUTO_RESTART_ON_UPGRADE" = "Xyes" ] ; then
-    /usr/bin/systemctl try-restart ceph-osd@\*.service > /dev/null 2>&1 || :
+    /usr/bin/systemctl try-restart ceph-osd@\*.service ceph-volume@\*.service > /dev/null 2>&1 || :
   fi
 fi
 
@@ -1524,7 +1530,7 @@ fi
 %dir %{_prefix}/lib/ocf
 %dir %{_prefix}/lib/ocf/resource.d
 %dir %{_prefix}/lib/ocf/resource.d/ceph
-%{_prefix}/lib/ocf/resource.d/ceph/rbd
+%attr(0755,-,-) %{_prefix}/lib/ocf/resource.d/ceph/rbd
 
 %endif
 
@@ -1672,9 +1678,6 @@ fi
 %{_bindir}/ceph_tpbench
 %{_bindir}/ceph_xattr_bench
 %{_bindir}/ceph-coverage
-%{_bindir}/ceph-monstore-tool
-%{_bindir}/ceph-osdomap-tool
-%{_bindir}/ceph-kvstore-tool
 %{_bindir}/ceph-debugpack
 %{_mandir}/man8/ceph-debugpack.8*
 %dir %{_libdir}/ceph
@@ -1796,6 +1799,9 @@ exit 0
 
 
 %changelog
+* Wed Feb 21 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.3-1
+- New release (1:12.2.3-1)
+
 * Thu Feb 15 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.2-2
 - %%ldconfig_scriptlets
 
