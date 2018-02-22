@@ -1,0 +1,155 @@
+--- ceph-12.2.3/src/rocksdb/table/block.h.orig	2018-02-22 07:49:38.044899631 -0500
++++ ceph-12.2.3/src/rocksdb/table/block.h	2018-02-22 07:58:55.855899631 -0500
+@@ -65,7 +65,8 @@
+ 
+     // Create bitmap and set all the bits to 0
+     bitmap_ = new std::atomic<uint32_t>[bitmap_size];
+-    memset(bitmap_, 0, bitmap_size * kBytesPersEntry);
++    // memset(bitmap_, 0, bitmap_size * kBytesPersEntry);
++    { unsigned i = 0; for (; i < bitmap_size;) bitmap_[i++] = 0; }
+ 
+     RecordTick(GetStatistics(), READ_AMP_TOTAL_READ_BYTES,
+                num_bits_needed << bytes_per_bit_pow_);
+--- ceph-12.2.3/src/rocksdb/db/c.cc.orig	2018-02-22 08:14:56.033899631 -0500
++++ ceph-12.2.3/src/rocksdb/db/c.cc	2018-02-22 10:06:39.759899631 -0500
+@@ -1322,11 +1322,6 @@
+   b->rep.PutLogData(Slice(blob, len));
+ }
+ 
+-void rocksdb_writebatch_iterate(
+-    rocksdb_writebatch_t* b,
+-    void* state,
+-    void (*put)(void*, const char* k, size_t klen, const char* v, size_t vlen),
+-    void (*deleted)(void*, const char* k, size_t klen)) {
+   class H : public WriteBatch::Handler {
+    public:
+     void* state_;
+@@ -1339,6 +1334,12 @@
+       (*deleted_)(state_, key.data(), key.size());
+     }
+   };
++
++void rocksdb_writebatch_iterate(
++    rocksdb_writebatch_t* b,
++    void* state,
++    void (*put)(void*, const char* k, size_t klen, const char* v, size_t vlen),
++    void (*deleted)(void*, const char* k, size_t klen)) {
+   H handler;
+   handler.state_ = state;
+   handler.put_ = put;
+@@ -1579,18 +1580,6 @@
+     void* state,
+     void (*put)(void*, const char* k, size_t klen, const char* v, size_t vlen),
+     void (*deleted)(void*, const char* k, size_t klen)) {
+-  class H : public WriteBatch::Handler {
+-   public:
+-    void* state_;
+-    void (*put_)(void*, const char* k, size_t klen, const char* v, size_t vlen);
+-    void (*deleted_)(void*, const char* k, size_t klen);
+-    virtual void Put(const Slice& key, const Slice& value) override {
+-      (*put_)(state_, key.data(), key.size(), value.data(), value.size());
+-    }
+-    virtual void Delete(const Slice& key) override {
+-      (*deleted_)(state_, key.data(), key.size());
+-    }
+-  };
+   H handler;
+   handler.state_ = state;
+   handler.put_ = put;
+@@ -2532,13 +2521,9 @@
+   delete filter;
+ }
+ 
+-rocksdb_filterpolicy_t* rocksdb_filterpolicy_create_bloom_format(int bits_per_key, bool original_format) {
+-  // Make a rocksdb_filterpolicy_t, but override all of its methods so
+-  // they delegate to a NewBloomFilterPolicy() instead of user
+-  // supplied C functions.
+-  struct Wrapper : public rocksdb_filterpolicy_t {
++  struct WrapperFP : public rocksdb_filterpolicy_t {
+     const FilterPolicy* rep_;
+-    ~Wrapper() { delete rep_; }
++    ~WrapperFP() { delete rep_; }
+     const char* Name() const override { return rep_->Name(); }
+     void CreateFilter(const Slice* keys, int n,
+                       std::string* dst) const override {
+@@ -2549,11 +2534,16 @@
+     }
+     static void DoNothing(void*) { }
+   };
+-  Wrapper* wrapper = new Wrapper;
++
++rocksdb_filterpolicy_t* rocksdb_filterpolicy_create_bloom_format(int bits_per_key, bool original_format) {
++  // Make a rocksdb_filterpolicy_t, but override all of its methods so
++  // they delegate to a NewBloomFilterPolicy() instead of user
++  // supplied C functions.
++  WrapperFP* wrapper = new WrapperFP;
+   wrapper->rep_ = NewBloomFilterPolicy(bits_per_key, original_format);
+   wrapper->state_ = nullptr;
+   wrapper->delete_filter_ = nullptr;
+-  wrapper->destructor_ = &Wrapper::DoNothing;
++  wrapper->destructor_ = &WrapperFP::DoNothing;
+   return wrapper;
+ }
+ 
+@@ -2889,10 +2879,9 @@
+   delete st;
+ }
+ 
+-rocksdb_slicetransform_t* rocksdb_slicetransform_create_fixed_prefix(size_t prefixLen) {
+-  struct Wrapper : public rocksdb_slicetransform_t {
++  struct WrapperST : public rocksdb_slicetransform_t {
+     const SliceTransform* rep_;
+-    ~Wrapper() { delete rep_; }
++    ~WrapperST() { delete rep_; }
+     const char* Name() const override { return rep_->Name(); }
+     Slice Transform(const Slice& src) const override {
+       return rep_->Transform(src);
+@@ -2903,31 +2892,20 @@
+     bool InRange(const Slice& src) const override { return rep_->InRange(src); }
+     static void DoNothing(void*) { }
+   };
+-  Wrapper* wrapper = new Wrapper;
++
++rocksdb_slicetransform_t* rocksdb_slicetransform_create_fixed_prefix(size_t prefixLen) {
++  WrapperST* wrapper = new WrapperST;
+   wrapper->rep_ = rocksdb::NewFixedPrefixTransform(prefixLen);
+   wrapper->state_ = nullptr;
+-  wrapper->destructor_ = &Wrapper::DoNothing;
++  wrapper->destructor_ = &WrapperST::DoNothing;
+   return wrapper;
+ }
+ 
+ rocksdb_slicetransform_t* rocksdb_slicetransform_create_noop() {
+-  struct Wrapper : public rocksdb_slicetransform_t {
+-    const SliceTransform* rep_;
+-    ~Wrapper() { delete rep_; }
+-    const char* Name() const override { return rep_->Name(); }
+-    Slice Transform(const Slice& src) const override {
+-      return rep_->Transform(src);
+-    }
+-    bool InDomain(const Slice& src) const override {
+-      return rep_->InDomain(src);
+-    }
+-    bool InRange(const Slice& src) const override { return rep_->InRange(src); }
+-    static void DoNothing(void*) { }
+-  };
+-  Wrapper* wrapper = new Wrapper;
++  WrapperST* wrapper = new WrapperST;
+   wrapper->rep_ = rocksdb::NewNoopTransform();
+   wrapper->state_ = nullptr;
+-  wrapper->destructor_ = &Wrapper::DoNothing;
++  wrapper->destructor_ = &WrapperST::DoNothing;
+   return wrapper;
+ }
+ 
+--- ceph-12.2.3/src/rocksdb/memtable/inlineskiplist.h.orig	2018-02-22 10:34:06.918899631 -0500
++++ ceph-12.2.3/src/rocksdb/memtable/inlineskiplist.h	2018-02-22 10:34:44.145899631 -0500
+@@ -279,7 +279,7 @@
+   // next_[0].  This is used for passing data from AllocateKey to Insert.
+   void StashHeight(const int height) {
+     assert(sizeof(int) <= sizeof(next_[0]));
+-    memcpy(&next_[0], &height, sizeof(int));
++    memcpy(static_cast<void*>(&next_[0]), &height, sizeof(int));
+   }
+ 
+   // Retrieves the value passed to StashHeight.  Undefined after a call
