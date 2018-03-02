@@ -85,7 +85,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	12.2.3
+Version:	12.2.4
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
@@ -106,7 +106,6 @@ Patch001:	0001-src-rocksdb-util-murmurhash.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1474774
 Patch002:	0002-cmake-Support-ppc64.patch
 Patch003:	0003-librbd-Conditionally-import-TrimRequest.cc.patch
-Patch004:	0004-cmake-modules-BuildBoost.cmake.patch
 %if 0%{?suse_version}
 %if 0%{?is_opensuse}
 ExclusiveArch:	x86_64 aarch64 ppc64 ppc64le
@@ -1799,6 +1798,10 @@ exit 0
 
 
 %changelog
+* Fri Mar 2 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.4-1
+- New release (1:12.2.4-1)
+- rhbz#1446610, rhbz#1546611, cephbz#23039
+
 * Wed Feb 21 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.3-1
 - New release (1:12.2.3-1)
 
