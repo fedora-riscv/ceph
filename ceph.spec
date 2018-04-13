@@ -86,7 +86,7 @@
 #################################################################################
 Name:		ceph
 Version:	12.2.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -837,6 +837,7 @@ export RPM_OPT_FLAGS=`echo $RPM_OPT_FLAGS | sed -e 's/i386/i486/' -e 's/-pipe//g
 export CPPFLAGS="$java_inc"
 export CFLAGS="$RPM_OPT_FLAGS"
 export CXXFLAGS="$RPM_OPT_FLAGS"
+export LDFLAGS="$RPM_LD_FLAGS"
 
 env | sort
 
@@ -1794,6 +1795,9 @@ exit 0
 
 
 %changelog
+* Fri Apr 13 2018 Rafael dos Santos <rdossant@redhat.com> - 1:12.2.4-2
+- Use standard Fedora linker flags (bug #1547552)
+
 * Fri Mar 2 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.4-1
 - New release (1:12.2.4-1)
 - rhbz#1446610, rhbz#1546611, cephbz#23039
