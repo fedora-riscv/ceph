@@ -85,8 +85,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	12.2.4
-Release:	2%{?dist}
+Version:	12.2.5
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -95,7 +95,7 @@ Epoch:		1
 %global _epoch_prefix %{?epoch:%{epoch}:}
 
 Summary:	User space components of the Ceph file system
-License:	LGPL-2.1 and CC-BY-SA-1.0 and GPL-2.0 and BSL-1.0 and BSD-3-Clause and MIT
+License:	LGPL-2.1 and CC-BY-SA-3.0 and GPL-2.0 and BSL-1.0 and BSD-3-Clause and MIT
 %if 0%{?suse_version}
 Group:		System/Filesystems
 %endif
@@ -141,6 +141,7 @@ BuildRequires: python-CherryPy
 BuildRequires: python-Werkzeug
 BuildRequires: python-numpy-devel
 %endif
+BuildRequires:  python-coverage
 BuildRequires: python-pecan
 BuildRequires: socat
 %endif
@@ -1795,6 +1796,9 @@ exit 0
 
 
 %changelog
+* Fri Apr 27 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.5-1
+- New release (1:12.2.5-1)
+
 * Fri Apr 13 2018 Rafael dos Santos <rdossant@redhat.com> - 1:12.2.4-2
 - Use standard Fedora linker flags (bug #1547552)
 
