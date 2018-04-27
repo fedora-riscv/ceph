@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 SHA512 (ceph-12.2.4.tar.gz) = ce9ec49e8693d11345adb3a219763cc76b626db2c26d8d9ba08ff0a4d6fdeb08739da29bb87ff0946fed8e6fd55c8db0672cb286f7ebb90cf2e11a47042ba5d6
+=======
+SHA512 (ceph-12.2.5.tar.gz) = bd78358590eb077afcc3c1e12864fadee906c95ac8afee25bdca6155f99b75f89d923159fcc13430abba21a89fee3e566177ff5f9ffabdd3b3f220d05602ab86
+>>>>>>> origin/master

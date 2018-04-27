@@ -85,8 +85,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	12.2.4
-Release:	2%{?dist}
+Version:	12.2.5
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -95,7 +95,7 @@ Epoch:		1
 %global _epoch_prefix %{?epoch:%{epoch}:}
 
 Summary:	User space components of the Ceph file system
-License:	LGPL-2.1 and CC-BY-SA-1.0 and GPL-2.0 and BSL-1.0 and BSD-3-Clause and MIT
+License:	LGPL-2.1 and CC-BY-SA-3.0 and GPL-2.0 and BSL-1.0 and BSD-3-Clause and MIT
 %if 0%{?suse_version}
 Group:		System/Filesystems
 %endif
@@ -140,6 +140,7 @@ BuildRequires: python-CherryPy
 BuildRequires: python-Werkzeug
 BuildRequires: python-numpy-devel
 %endif
+BuildRequires:  python-coverage
 BuildRequires: python-pecan
 BuildRequires: socat
 %endif
@@ -972,9 +973,6 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/bootstrap-rbd
 %py3_compile %{buildroot}%{python3_sitelib}
 %endif
 
-%clean
-rm -rf %{buildroot}
-
 #################################################################################
 # files and systemd scriptlets
 #################################################################################
@@ -1042,7 +1040,6 @@ rm -rf %{buildroot}
 %attr(750,ceph,ceph) %dir %{_localstatedir}/lib/ceph/bootstrap-rbd
 
 %post base
-/sbin/ldconfig
 %if 0%{?suse_version}
 %fillup_only
 if [ $1 -eq 1 ] ; then
@@ -1065,7 +1062,6 @@ fi
 %endif
 
 %postun base
-/sbin/ldconfig
 test -n "$FIRST_ARG" || FIRST_ARG=$1
 %if 0%{?suse_version}
 DISABLE_RESTART_ON_UPDATE="yes"
@@ -1799,6 +1795,9 @@ exit 0
 
 
 %changelog
+* Fri Apr 27 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.5-1
+- New release (1:12.2.5-1)
+
 * Fri Apr 13 2018 Rafael dos Santos <rdossant@redhat.com> - 1:12.2.4-2
 - Use standard Fedora linker flags (bug #1547552)
 
@@ -1809,8 +1808,11 @@ exit 0
 * Wed Feb 21 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.3-1
 - New release (1:12.2.3-1)
 
-* Thu Feb 15 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.2-2
-- %%ldconfig_scriptlets
+* Thu Feb 15 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.2-3
+- no ldconfig in F28
+
+* Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1:12.2.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
 
 * Tue Dec 5 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.2-1
 - New release (1:12.2.2-1)
