@@ -1,0 +1,165 @@
+--- ceph-13.1.0/src/mon/LogMonitor.cc.orig	2018-05-08 08:12:50.101933925 -0400
++++ ceph-13.1.0/src/mon/LogMonitor.cc	2018-05-08 08:12:59.470933925 -0400
+@@ -62,7 +62,6 @@
+ {
+   dout(10) << "create_initial -- creating initial map" << dendl;
+   LogEntry e;
+-  memset(&e.who, 0, sizeof(e.who));
+   e.name = g_conf->name;
+   e.stamp = ceph_clock_now();
+   e.prio = CLOG_INFO;
+--- ceph-13.1.0/src/mon/MonMap.h.orig	2018-05-08 08:13:08.173933925 -0400
++++ ceph-13.1.0/src/mon/MonMap.h	2018-05-08 08:13:17.391933925 -0400
+@@ -118,7 +118,6 @@
+ 
+   MonMap()
+     : epoch(0) {
+-    memset(&fsid, 0, sizeof(fsid));
+   }
+ 
+   uuid_d& get_fsid() { return fsid; }
+--- ceph-13.1.0/src/os/filestore/HashIndex.h.orig	2018-05-08 08:13:35.377933925 -0400
++++ ceph-13.1.0/src/os/filestore/HashIndex.h	2018-05-08 08:13:59.853933925 -0400
+@@ -395,7 +395,7 @@
+ 
+   struct CmpPairBitwise {
+     bool operator()(const pair<string, ghobject_t>& l,
+-		    const pair<string, ghobject_t>& r)
++		    const pair<string, ghobject_t>& r) const
+     {
+       if (l.first < r.first)
+ 	return true;
+@@ -408,7 +408,7 @@
+   };
+ 
+   struct CmpHexdigitStringBitwise {
+-    bool operator()(const string& l, const string& r) {
++    bool operator()(const string& l, const string& r) const {
+       return reverse_hexdigit_bits_string(l) < reverse_hexdigit_bits_string(r);
+     }
+   };
+--- ceph-13.1.0/src/os/filestore/LFNIndex.h.orig	2018-05-08 08:14:06.721933925 -0400
++++ ceph-13.1.0/src/os/filestore/LFNIndex.h	2018-05-08 08:14:34.671933925 -0400
+@@ -63,7 +63,7 @@
+       out:					\
+       complete_inject_failure();		\
+       return r;					\
+-    } catch (RetryException) {			\
++    } catch (RetryException&) {			\
+       failed = true;				\
+     } catch (...) {				\
+       ceph_abort();				\
+--- ceph-13.1.0/src/client/Inode.h.orig	2018-05-08 08:08:26.305933925 -0400
++++ ceph-13.1.0/src/client/Inode.h	2018-05-08 08:08:38.029933925 -0400
+@@ -279,7 +279,6 @@
+       _ref(0), ll_ref(0)
+   {
+     memset(&dir_layout, 0, sizeof(dir_layout));
+-    memset(&quota, 0, sizeof(quota));
+   }
+   ~Inode();
+ 
+--- ceph-13.1.0/src/osd/OSDMap.h.orig	2018-05-08 08:14:51.066933925 -0400
++++ ceph-13.1.0/src/osd/OSDMap.h	2018-05-08 08:15:14.148933925 -0400
+@@ -427,7 +427,6 @@
+       encode_features(0),
+       epoch(e), new_pool_max(-1), new_flags(-1), new_max_osd(-1),
+       have_crc(false), full_crc(0), inc_crc(0) {
+-      memset(&fsid, 0, sizeof(fsid));
+     }
+     explicit Incremental(bufferlist &bl) {
+       bufferlist::iterator p = bl.begin();
+@@ -607,7 +606,6 @@
+ 	     cached_up_osd_features(0),
+ 	     crc_defined(false), crc(0),
+ 	     crush(std::make_shared<CrushWrapper>()) {
+-    memset(&fsid, 0, sizeof(fsid));
+   }
+ 
+ private:
+--- ceph-13.1.0/src/common/cmdparse.h.orig	2018-05-08 08:09:17.772933925 -0400
++++ ceph-13.1.0/src/common/cmdparse.h	2018-05-08 08:09:36.500933925 -0400
+@@ -54,7 +54,7 @@
+     try {
+       val = boost::get<T>(cmdmap.find(k)->second);
+       return true;
+-    } catch (boost::bad_get) {
++    } catch (boost::bad_get&) {
+       handle_bad_get(cct, k, typeid(T).name());
+     }
+   }
+--- ceph-13.1.0/src/messages/MClientReply.h.orig	2018-05-08 08:10:22.281933925 -0400
++++ ceph-13.1.0/src/messages/MClientReply.h	2018-05-08 08:10:46.660933925 -0400
+@@ -187,7 +187,7 @@
+     if (features & CEPH_FEATURE_MDS_QUOTA)
+       decode(quota, p);
+     else
+-      memset(&quota, 0, sizeof(quota));
++      quota = quota_info_t{};
+ 
+     if ((features & CEPH_FEATURE_FS_FILE_LAYOUT_V2))
+       decode(layout.pool_ns, p);
+--- ceph-13.1.0/src/messages/MMonSubscribeAck.h.orig	2018-05-08 08:10:58.478933925 -0400
++++ ceph-13.1.0/src/messages/MMonSubscribeAck.h	2018-05-08 08:11:17.484933925 -0400
+@@ -23,7 +23,6 @@
+   
+   MMonSubscribeAck() : Message(CEPH_MSG_MON_SUBSCRIBE_ACK),
+ 		       interval(0) {
+-    memset(&fsid, 0, sizeof(fsid));
+   }
+   MMonSubscribeAck(uuid_d& f, int i) : Message(CEPH_MSG_MON_SUBSCRIBE_ACK),
+ 				       interval(i), fsid(f) { }
+--- ceph-13.1.0/src/mgr/DaemonState.h.orig	2018-05-08 08:12:16.521933925 -0400
++++ ceph-13.1.0/src/mgr/DaemonState.h	2018-05-08 08:12:40.995933925 -0400
+@@ -130,7 +130,7 @@
+       auto p = config_defaults_bl.begin();
+       try {
+ 	decode(config_defaults, p);
+-      } catch (buffer::error e) {
++      } catch (buffer::error& e) {
+       }
+     }
+     return config_defaults;
+--- ceph-13.1.0/cmake/modules/BuildDPDK.cmake.orig	2018-05-08 08:41:02.168933925 -0400
++++ ceph-13.1.0/cmake/modules/BuildDPDK.cmake	2018-05-08 08:41:47.411933925 -0400
+@@ -71,7 +71,7 @@
+     BUILD_IN_SOURCE 1
+     INSTALL_COMMAND "true")
+   ExternalProject_Add_Step(dpdk-ext patch-config
+-    COMMAND ${CMAKE_MODULE_PATH}/patch-dpdk-conf.sh ${dpdk_dir} ${machine}
++    COMMAND ${CMAKE_MODULE_PATH}/patch-dpdk-conf.sh ${dpdk_dir} ${machine} ${arch}
+     DEPENDEES configure
+     DEPENDERS build)
+   # easier to adjust the config
+@@ -86,7 +86,7 @@
+   # target
+   file(MAKE_DIRECTORY ${DPDK_INCLUDE_DIR})
+   foreach(c
+-      pci bus_pci
++      bus_pci pci
+       eal
+       mempool mempool_ring mempool_stack ring)
+     add_library(dpdk::${c} STATIC IMPORTED)
+--- ceph-13.1.0/cmake/modules/patch-dpdk-conf.sh.orig	2018-05-08 08:42:01.089933925 -0400
++++ ceph-13.1.0/cmake/modules/patch-dpdk-conf.sh	2018-05-08 08:43:11.781933925 -0400
+@@ -15,8 +15,12 @@
+ shift
+ machine=$1
+ shift
++arch=$1
++shift
+ 
+ setconf CONFIG_RTE_MACHINE "${machine}"
++setconf CONFIG_RTE_ARCH "${arch}"
++
+ # Disable experimental features
+ setconf CONFIG_RTE_NEXT_ABI n
+ setconf CONFIG_RTE_LIBRTE_MBUF_OFFLOAD n
+@@ -38,6 +42,7 @@
+ setconf CONFIG_RTE_LIBRTE_VMXNET3_PMD n
+ setconf CONFIG_RTE_LIBRTE_PMD_VHOST n
+ setconf CONFIG_RTE_APP_EVENTDEV n
++setconf CONFIG_RTE_MAX_VFIO_GROUPS 64
+ 
+ # no test
+ setconf CONFIG_RTE_APP_TEST n
