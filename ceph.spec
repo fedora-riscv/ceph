@@ -85,7 +85,7 @@
 #################################################################################
 Name:		ceph
 Version:	13.1.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -1870,6 +1870,9 @@ exit 0
 
 
 %changelog
+* Tue Jun 19 2018 Miro Hrončok <mhroncok@redhat.com> - 1:13.1.0-2
+- Rebuilt for Python 3.7
+
 * Tue May 8 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:13.1.0-1
 - New release (1:13.1.0-1)
 
