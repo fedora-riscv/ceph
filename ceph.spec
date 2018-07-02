@@ -86,7 +86,7 @@
 #################################################################################
 Name:		ceph
 Version:	12.2.5
-Release:	2%{?dist}
+Release:	3%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -1796,6 +1796,9 @@ exit 0
 
 
 %changelog
+* Mon Jul 2 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.5-3
+- New release (1:12.2.5-3) w/ python-3.7
+
 * Fri Jun 29 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.5-2
 - New release (1:12.2.5-2)
 
