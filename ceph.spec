@@ -85,8 +85,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	12.2.5
-Release:	3%{?dist}
+Version:	12.2.6
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -190,7 +190,7 @@ BuildRequires:  pkgconfig(systemd)
 BuildRequires:	systemd-rpm-macros
 BuildRequires:	systemd
 %{?systemd_requires}
-PreReq:		%fillup_prereq
+# PreReq:	%%fillup_prereq
 BuildRequires:	net-tools
 BuildRequires:	libbz2-devel
 BuildRequires:  btrfsprogs
@@ -1796,6 +1796,9 @@ exit 0
 
 
 %changelog
+* Wed Jul 11 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.6-1
+- New release (1:12.2.6-1)
+
 * Mon Jul 2 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.5-3
 - New release (1:12.2.5-3) w/ python-3.7
 
