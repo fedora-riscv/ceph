@@ -1798,7 +1798,7 @@ exit 0
 
 
 %changelog
-* Wed Jul 28 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.7-1
+* Wed Jul 18 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.7-1
 - New release (1:12.2.7-1)
 
 * Wed Jul 11 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.6-1
