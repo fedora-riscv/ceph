@@ -85,7 +85,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	12.2.6
+Version:	12.2.7
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
@@ -1490,6 +1490,8 @@ fi
 if [ $1 -eq 1 ] ; then
 /usr/bin/systemctl start ceph-osd.target >/dev/null 2>&1 || :
 fi
+# work around https://tracker.ceph.com/issues/24903
+chown -h ceph:ceph /var/lib/ceph/osd/*/block* 2>&1 > /dev/null || :
 
 %preun osd
 %if 0%{?suse_version}
@@ -1793,8 +1795,10 @@ exit 0
 # We need an empty %%files list for python-ceph-compat, to tell rpmbuild to
 # actually build this meta package.
 
-
 %changelog
+* Wed Jul 18 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.7-1
+- New release (1:12.2.7-1)
+
 * Wed Jul 11 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.6-1
 - New release (1:12.2.6-1)
 
@@ -1915,10 +1919,10 @@ exit 0
 - Use newer -devel package format
 - Sync up the spec file
 
-* Wed Oct 26 2016 Ken Dreyer <ktdreyer@ktdreyer.com> 1:10.2.3-4
+* Wed Oct 26 2016 Ken Dreyer <ktdreyer@ktdreyer.com> - 1:10.2.3-4
 - librgw: add API version defines for librgw and rgw_file
 
-* Wed Oct 26 2016 Ken Dreyer <ktdreyer@ktdreyer.com> 1:10.2.3-3
+* Wed Oct 26 2016 Ken Dreyer <ktdreyer@ktdreyer.com> - 1:10.2.3-3
 - update patches style for rdopkg
 
 * Thu Sep 29 2016 Boris Ranto <branto@redhat.com> - 1:10.2.3-2
