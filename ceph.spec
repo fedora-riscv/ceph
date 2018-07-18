@@ -85,8 +85,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	12.2.6
-Release:	2%{?dist}
+Version:	12.2.7
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -1491,6 +1491,8 @@ fi
 if [ $1 -eq 1 ] ; then
 /usr/bin/systemctl start ceph-osd.target >/dev/null 2>&1 || :
 fi
+# work around https://tracker.ceph.com/issues/24903
+chown -h ceph:ceph /var/lib/ceph/osd/*/block* 2>&1 > /dev/null || :
 
 %preun osd
 %if 0%{?suse_version}
@@ -1796,6 +1798,9 @@ exit 0
 
 
 %changelog
+* Wed Jul 28 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.7-1
+- New release (1:12.2.7-1)
+
 * Thu Jul 12 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1:12.2.6-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
 
@@ -1925,10 +1930,10 @@ exit 0
 - Use newer -devel package format
 - Sync up the spec file
 
-* Wed Oct 26 2016 Ken Dreyer <ktdreyer@ktdreyer.com> 1:10.2.3-4
+* Wed Oct 26 2016 Ken Dreyer <ktdreyer@ktdreyer.com> - 1:10.2.3-4
 - librgw: add API version defines for librgw and rgw_file
 
-* Wed Oct 26 2016 Ken Dreyer <ktdreyer@ktdreyer.com> 1:10.2.3-3
+* Wed Oct 26 2016 Ken Dreyer <ktdreyer@ktdreyer.com> - 1:10.2.3-3
 - update patches style for rdopkg
 
 * Thu Sep 29 2016 Boris Ranto <branto@redhat.com> - 1:10.2.3-2
