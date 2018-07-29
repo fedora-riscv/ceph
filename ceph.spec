@@ -168,7 +168,7 @@ BuildRequires:	parted
 BuildRequires:	perl
 BuildRequires:	pkgconfig
 BuildRequires:	python
-BuildRequires:	python-devel
+BuildRequires:	python2-devel
 BuildRequires:	python-nose
 BuildRequires:	python-requests
 BuildRequires:	python-virtualenv
