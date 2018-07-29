@@ -1018,11 +1018,11 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/bootstrap-rbd
 %endif
 %{_unitdir}/ceph-disk@.service
 %{_unitdir}/ceph.target
-%{python_sitelib}/ceph_detect_init*
-%{python_sitelib}/ceph_disk*
+%{python2_sitelib}/ceph_detect_init*
+%{python2_sitelib}/ceph_disk*
 %dir %{python_sitelib}/ceph_volume
-%{python_sitelib}/ceph_volume/*
-%{python_sitelib}/ceph_volume-*
+%{python2_sitelib}/ceph_volume/*
+%{python2_sitelib}/ceph_volume-*
 %{_mandir}/man8/ceph-deploy.8*
 %{_mandir}/man8/ceph-detect-init.8*
 %{_mandir}/man8/ceph-create-keys.8*
@@ -1139,8 +1139,8 @@ fi
 %config %{_sysconfdir}/bash_completion.d/radosgw-admin
 %config(noreplace) %{_sysconfdir}/ceph/rbdmap
 %{_unitdir}/rbdmap.service
-%{python_sitelib}/ceph_argparse.py*
-%{python_sitelib}/ceph_daemon.py*
+%{python2_sitelib}/ceph_argparse.py*
+%{python2_sitelib}/ceph_daemon.py*
 %dir %{_udevrulesdir}
 %{_udevrulesdir}/50-rbd.rules
 %attr(3770,ceph,ceph) %dir %{_localstatedir}/log/ceph/
@@ -1286,7 +1286,7 @@ fi
 %{_bindir}/ceph-monstore-tool
 %{_mandir}/man8/ceph-mon.8*
 %{_mandir}/man8/ceph-rest-api.8*
-%{python_sitelib}/ceph_rest_api.py*
+%{python2_sitelib}/ceph_rest_api.py*
 %{_unitdir}/ceph-mon@.service
 %{_unitdir}/ceph-mon.target
 %attr(750,ceph,ceph) %dir %{_localstatedir}/lib/ceph/mon
@@ -1635,7 +1635,7 @@ fi
 %files -n python-cephfs
 %{python_sitearch}/cephfs.so
 %{python_sitearch}/cephfs-*.egg-info
-%{python_sitelib}/ceph_volume_client.py*
+%{python2_sitelib}/ceph_volume_client.py*
 
 %files -n python%{python3_pkgversion}-cephfs
 %{python3_sitearch}/cephfs.cpython*.so
