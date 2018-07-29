@@ -1562,8 +1562,8 @@ fi
 %{_mandir}/man8/librados-config.8*
 
 %files -n python-rados
-%{python_sitearch}/rados.so
-%{python_sitearch}/rados-*.egg-info
+%{python2_sitearch}/rados.so
+%{python2_sitearch}/rados-*.egg-info
 
 %files -n python%{python3_pkgversion}-rados
 %{python3_sitearch}/rados.cpython*.so
@@ -1607,16 +1607,16 @@ fi
 %{_libdir}/librgw.so
 
 %files -n python-rgw
-%{python_sitearch}/rgw.so
-%{python_sitearch}/rgw-*.egg-info
+%{python2_sitearch}/rgw.so
+%{python2_sitearch}/rgw-*.egg-info
 
 %files -n python%{python3_pkgversion}-rgw
 %{python3_sitearch}/rgw.cpython*.so
 %{python3_sitearch}/rgw-*.egg-info
 
 %files -n python-rbd
-%{python_sitearch}/rbd.so
-%{python_sitearch}/rbd-*.egg-info
+%{python2_sitearch}/rbd.so
+%{python2_sitearch}/rbd-*.egg-info
 
 %files -n python%{python3_pkgversion}-rbd
 %{python3_sitearch}/rbd.cpython*.so
@@ -1633,8 +1633,8 @@ fi
 %{_libdir}/libcephfs.so
 
 %files -n python-cephfs
-%{python_sitearch}/cephfs.so
-%{python_sitearch}/cephfs-*.egg-info
+%{python2_sitearch}/cephfs.so
+%{python2_sitearch}/cephfs-*.egg-info
 %{python2_sitelib}/ceph_volume_client.py*
 
 %files -n python%{python3_pkgversion}-cephfs
