@@ -85,7 +85,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	12.2.7
+Version:	12.2.8
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
@@ -171,6 +171,7 @@ BuildRequires:	python
 BuildRequires:	python2-devel
 BuildRequires:	python-nose
 BuildRequires:	python-requests
+BuildRequires:	python-six
 BuildRequires:	python-virtualenv
 BuildRequires:	snappy-devel
 BuildRequires:	udev
@@ -326,6 +327,7 @@ Summary:	Ceph Metadata Server Daemon
 Group:		System/Filesystems
 %endif
 Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
+Requires:	python-six
 %description mds
 ceph-mds is the metadata server daemon for the Ceph distributed file system.
 One or more instances of ceph-mds collectively manage the file system
@@ -868,7 +870,6 @@ cmake .. \
     -DCMAKE_INSTALL_MANDIR=%{_mandir} \
     -DCMAKE_INSTALL_DOCDIR=%{_docdir}/ceph \
     -DCMAKE_INSTALL_INCLUDEDIR=%{_includedir} \
-    -DWITH_EMBEDDED=OFF \
     -DWITH_MANPAGE=ON \
     -DWITH_PYTHON3=ON \
     -DWITH_SYSTEMD=ON \
@@ -1492,7 +1493,7 @@ if [ $1 -eq 1 ] ; then
 /usr/bin/systemctl start ceph-osd.target >/dev/null 2>&1 || :
 fi
 # work around https://tracker.ceph.com/issues/24903
-chown -h ceph:ceph /var/lib/ceph/osd/*/block* 2>&1 > /dev/null || :
+chown -f -h ceph:ceph /var/lib/ceph/osd/*/block* 2>&1 > /dev/null || :
 
 %preun osd
 %if 0%{?suse_version}
@@ -1798,6 +1799,9 @@ exit 0
 
 
 %changelog
+* Fri Aug 31 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.8-1
+- New release (1:12.2.8-1)
+
 * Wed Jul 18 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.7-1
 - New release (1:12.2.7-1)
 
