@@ -1,0 +1,11 @@
+--- ceph-13.1.0/src/spdk/lib/blob/blobstore.c.orig	2018-05-08 16:04:30.329933925 -0400
++++ ceph-13.1.0/src/spdk/lib/blob/blobstore.c	2018-05-08 16:04:55.240933925 -0400
+@@ -2947,7 +2947,7 @@
+ 
+ /* START spdk_blob_resize */
+ int
+-spdk_blob_resize(struct spdk_blob *_blob, uint64_t sz)
++spdk_blob_resize(struct spdk_blob *_blob, size_t sz)
+ {
+ 	struct spdk_blob_data	*blob = __blob_to_data(_blob);
+ 	int			rc;
