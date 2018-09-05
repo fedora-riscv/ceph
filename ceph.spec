@@ -85,7 +85,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	12.2.7
+Version:	12.2.8
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
@@ -167,9 +167,10 @@ BuildRequires:	parted
 BuildRequires:	perl
 BuildRequires:	pkgconfig
 BuildRequires:	python
-BuildRequires:	python-devel
+BuildRequires:	python2-devel
 BuildRequires:	python-nose
 BuildRequires:	python-requests
+BuildRequires:	python-six
 BuildRequires:	python-virtualenv
 BuildRequires:	snappy-devel
 BuildRequires:	udev
@@ -325,6 +326,7 @@ Summary:	Ceph Metadata Server Daemon
 Group:		System/Filesystems
 %endif
 Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
+Requires:	python-six
 %description mds
 ceph-mds is the metadata server daemon for the Ceph distributed file system.
 One or more instances of ceph-mds collectively manage the file system
@@ -867,7 +869,6 @@ cmake .. \
     -DCMAKE_INSTALL_MANDIR=%{_mandir} \
     -DCMAKE_INSTALL_DOCDIR=%{_docdir}/ceph \
     -DCMAKE_INSTALL_INCLUDEDIR=%{_includedir} \
-    -DWITH_EMBEDDED=OFF \
     -DWITH_MANPAGE=ON \
     -DWITH_PYTHON3=ON \
     -DWITH_SYSTEMD=ON \
@@ -1017,11 +1018,11 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/bootstrap-rbd
 %endif
 %{_unitdir}/ceph-disk@.service
 %{_unitdir}/ceph.target
-%{python_sitelib}/ceph_detect_init*
-%{python_sitelib}/ceph_disk*
+%{python2_sitelib}/ceph_detect_init*
+%{python2_sitelib}/ceph_disk*
 %dir %{python_sitelib}/ceph_volume
-%{python_sitelib}/ceph_volume/*
-%{python_sitelib}/ceph_volume-*
+%{python2_sitelib}/ceph_volume/*
+%{python2_sitelib}/ceph_volume-*
 %{_mandir}/man8/ceph-deploy.8*
 %{_mandir}/man8/ceph-detect-init.8*
 %{_mandir}/man8/ceph-create-keys.8*
@@ -1138,8 +1139,8 @@ fi
 %config %{_sysconfdir}/bash_completion.d/radosgw-admin
 %config(noreplace) %{_sysconfdir}/ceph/rbdmap
 %{_unitdir}/rbdmap.service
-%{python_sitelib}/ceph_argparse.py*
-%{python_sitelib}/ceph_daemon.py*
+%{python2_sitelib}/ceph_argparse.py*
+%{python2_sitelib}/ceph_daemon.py*
 %dir %{_udevrulesdir}
 %{_udevrulesdir}/50-rbd.rules
 %attr(3770,ceph,ceph) %dir %{_localstatedir}/log/ceph/
@@ -1285,7 +1286,7 @@ fi
 %{_bindir}/ceph-monstore-tool
 %{_mandir}/man8/ceph-mon.8*
 %{_mandir}/man8/ceph-rest-api.8*
-%{python_sitelib}/ceph_rest_api.py*
+%{python2_sitelib}/ceph_rest_api.py*
 %{_unitdir}/ceph-mon@.service
 %{_unitdir}/ceph-mon.target
 %attr(750,ceph,ceph) %dir %{_localstatedir}/lib/ceph/mon
@@ -1491,7 +1492,7 @@ if [ $1 -eq 1 ] ; then
 /usr/bin/systemctl start ceph-osd.target >/dev/null 2>&1 || :
 fi
 # work around https://tracker.ceph.com/issues/24903
-chown -h ceph:ceph /var/lib/ceph/osd/*/block* 2>&1 > /dev/null || :
+chown -f -h ceph:ceph /var/lib/ceph/osd/*/block* 2>&1 > /dev/null || :
 
 %preun osd
 %if 0%{?suse_version}
@@ -1561,8 +1562,8 @@ fi
 %{_mandir}/man8/librados-config.8*
 
 %files -n python-rados
-%{python_sitearch}/rados.so
-%{python_sitearch}/rados-*.egg-info
+%{python2_sitearch}/rados.so
+%{python2_sitearch}/rados-*.egg-info
 
 %files -n python%{python3_pkgversion}-rados
 %{python3_sitearch}/rados.cpython*.so
@@ -1606,16 +1607,16 @@ fi
 %{_libdir}/librgw.so
 
 %files -n python-rgw
-%{python_sitearch}/rgw.so
-%{python_sitearch}/rgw-*.egg-info
+%{python2_sitearch}/rgw.so
+%{python2_sitearch}/rgw-*.egg-info
 
 %files -n python%{python3_pkgversion}-rgw
 %{python3_sitearch}/rgw.cpython*.so
 %{python3_sitearch}/rgw-*.egg-info
 
 %files -n python-rbd
-%{python_sitearch}/rbd.so
-%{python_sitearch}/rbd-*.egg-info
+%{python2_sitearch}/rbd.so
+%{python2_sitearch}/rbd-*.egg-info
 
 %files -n python%{python3_pkgversion}-rbd
 %{python3_sitearch}/rbd.cpython*.so
@@ -1632,9 +1633,9 @@ fi
 %{_libdir}/libcephfs.so
 
 %files -n python-cephfs
-%{python_sitearch}/cephfs.so
-%{python_sitearch}/cephfs-*.egg-info
-%{python_sitelib}/ceph_volume_client.py*
+%{python2_sitearch}/cephfs.so
+%{python2_sitearch}/cephfs-*.egg-info
+%{python2_sitelib}/ceph_volume_client.py*
 
 %files -n python%{python3_pkgversion}-cephfs
 %{python3_sitearch}/cephfs.cpython*.so
@@ -1796,6 +1797,9 @@ exit 0
 # actually build this meta package.
 
 %changelog
+* Fri Aug 31 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.8-1
+- New release (1:12.2.8-1)
+
 * Wed Jul 18 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.7-1
 - New release (1:12.2.7-1)
 
