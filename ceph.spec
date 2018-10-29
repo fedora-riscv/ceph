@@ -63,7 +63,7 @@
 
 %if %{with selinux}
 # get selinux policy version
-%{!?_selinux_policy_version: %global _selinux_policy_version %(sed -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp 2>/dev/null || echo 0.0.0)}
+%{!?_selinux_policy_version: %global _selinux_policy_version 0.0.0}
 %endif
 
 %{!?_udevrulesdir: %global _udevrulesdir /lib/udev/rules.d}
@@ -91,8 +91,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	12.2.8
-Release:	2%{?dist}
+Version:	12.2.9
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -162,7 +162,12 @@ BuildRequires:	fuse-devel
 BuildRequires:	gcc-c++
 BuildRequires:	gdbm
 %if 0%{with tcmalloc}
+%if 0%{?fedora} || 0%{?rhel}
+BuildRequires: gperftools-devel >= 2.6.1
+%endif
+%if 0%{?suse_version}
 BuildRequires:	gperftools-devel >= 2.4
+%endif
 %endif
 BuildRequires:  jq
 BuildRequires:	leveldb-devel > 1.2
@@ -290,6 +295,7 @@ Requires:      python%{_pythonver}-requests
 Requires:      python%{_pythonver}-setuptools
 Requires:      grep
 Requires:      xfsprogs
+Requires:      e2fsprogs
 Requires:      logrotate
 Requires:      util-linux
 Requires:      cryptsetup
