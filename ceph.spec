@@ -114,6 +114,7 @@ Patch002:	0002-cmake-Support-ppc64.patch
 Patch003:	0003-librbd-Conditionally-import-TrimRequest.cc.patch
 Patch005:	0005-src-rocksdb-table-block.h.patch
 Patch006:	0006-f30py3.patch
+Patch007:	0007-src-osd-PrimaryLogPG.cc.patch
 %if 0%{?suse_version}
 %if 0%{?is_opensuse}
 ExclusiveArch:	x86_64 aarch64 ppc64 ppc64le
@@ -1862,6 +1863,9 @@ exit 0
 
 
 %changelog
+* Mon Oct 29 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.9-1
+- New release (1:12.2.9-1)
+
 * Wed Sep 12 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.8-2
 - Fedora 30 python3. Note ceph-mgr subpackage, ceph-detect-init, ceph-disk,
   ceph-volume, and ceph-volume-systemd are missing in this build
