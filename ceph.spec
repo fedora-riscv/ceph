@@ -113,7 +113,6 @@ Patch001:	0001-src-rocksdb-util-murmurhash.patch
 Patch002:	0002-cmake-Support-ppc64.patch
 Patch003:	0003-librbd-Conditionally-import-TrimRequest.cc.patch
 Patch005:	0005-src-rocksdb-table-block.h.patch
-Patch006:	0006-f30py3.patch
 Patch007:	0007-src-osd-PrimaryLogPG.cc.patch
 %if 0%{?suse_version}
 %if 0%{?is_opensuse}
