@@ -1,0 +1,19 @@
+--- ceph-12.2.9/src/osd/PrimaryLogPG.cc.orig	2018-10-29 09:12:57.766116270 -0400
++++ ceph-12.2.9/src/osd/PrimaryLogPG.cc	2018-10-29 09:32:37.146116270 -0400
+@@ -20,6 +20,7 @@
+ #include "PG.h"
+ #include "PrimaryLogPG.h"
+ #include "OSD.h"
++#include <algorithm>
+ #include "OpRequest.h"
+ #include "ScrubStore.h"
+ #include "Session.h"
+@@ -1586,7 +1587,7 @@
+       pg_log.get_log().approx_size() > target) {
+     dout(10) << __func__ << " approx pg log length =  "
+              << pg_log.get_log().approx_size() << dendl;
+-    size_t num_to_trim = std::min(pg_log.get_log().approx_size() - target,
++    size_t num_to_trim = std::min<uint64_t>(pg_log.get_log().approx_size() - target,
+ 				  cct->_conf->osd_pg_log_trim_max);
+     dout(10) << __func__ << " num_to_trim =  " << num_to_trim << dendl;
+     if (num_to_trim < cct->_conf->osd_pg_log_trim_min &&
