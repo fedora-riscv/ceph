@@ -1,7 +1,3 @@
-# This package depends on automagic byte compilation
-# https://fedoraproject.org/wiki/Changes/No_more_automagic_Python_bytecompilation_phase_2
-%global _python_bytecompile_extra 1
-
 # vim: set noexpandtab ts=8 sw=8 :
 #
 # spec file for package ceph
@@ -18,6 +14,9 @@
 #
 # Please submit bugfixes or comments via http://tracker.ceph.com/
 #
+# This package depends on automagic byte compilation
+# https://fedoraproject.org/wiki/Changes/No_more_automagic_Python_bytecompilation_phase_2
+%global _python_bytecompile_extra 1
 %global _hardened_build 1
 %global fixme 0
 
