@@ -1,0 +1,3356 @@
+From fb7dfe3f70c8bb75840446d96734f73bdd515a11 Mon Sep 17 00:00:00 2001
+From: Boris Ranto <branto@redhat.com>
+Date: Tue, 27 Nov 2018 00:43:04 +0100
+Subject: [PATCH 4/4] Rename "include/assert.h"
+
+Backport of 5009d9ecc692076360ff777e47db9902c7bff669 by Brad Hubbard.
+---
+ src/auth/Crypto.cc                                  | 2 +-
+ src/ceph_mds.cc                                     | 2 +-
+ src/ceph_mon.cc                                     | 2 +-
+ src/ceph_osd.cc                                     | 2 +-
+ src/client/Client.cc                                | 2 +-
+ src/client/Inode.h                                  | 2 +-
+ src/client/SyntheticClient.cc                       | 2 +-
+ src/client/barrier.cc                               | 2 +-
+ src/client/fuse_ll.cc                               | 2 +-
+ src/common/Graylog.h                                | 2 +-
+ src/common/Mutex.h                                  | 2 +-
+ src/common/OutputDataSocket.cc                      | 2 +-
+ src/common/Preforker.h                              | 2 +-
+ src/common/RWLock.h                                 | 2 +-
+ src/common/RefCountedObj.h                          | 2 +-
+ src/common/SubProcess.h                             | 2 +-
+ src/common/TextTable.h                              | 2 +-
+ src/common/Throttle.cc                              | 2 +-
+ src/common/admin_socket.cc                          | 2 +-
+ src/common/bit_str.cc                               | 2 +-
+ src/common/bit_vector.hpp                           | 2 +-
+ src/common/bounded_key_counter.h                    | 2 +-
+ src/common/ceph_crypto.h                            | 2 +-
+ src/common/ceph_time.h                              | 2 +-
+ src/common/cmdparse.h                               | 2 +-
+ src/common/convenience.h                            | 2 +-
+ src/common/dout.h                                   | 2 +-
+ src/common/hobject.h                                | 2 +-
+ src/common/mClockPriorityQueue.h                    | 2 +-
+ src/common/mutex_debug.h                            | 2 +-
+ src/common/perf_histogram.h                         | 2 +-
+ src/common/shared_cache.hpp                         | 2 +-
+ src/compressor/Compressor.h                         | 2 +-
+ src/crush/CrushWrapper.h                            | 2 +-
+ src/erasure-code/isa/ErasureCodeIsa.cc              | 2 +-
+ src/erasure-code/lrc/ErasureCodeLrc.cc              | 2 +-
+ src/global/global_init.h                            | 2 +-
+ src/include/Context.h                               | 2 +-
+ src/include/btree_map.h                             | 2 +-
+ src/include/buffer.h                                | 2 +-
+ src/include/{assert.h => ceph_assert.h}             | 4 ++--
+ src/include/denc.h                                  | 2 +-
+ src/include/frag.h                                  | 2 +-
+ src/include/mempool.h                               | 2 +-
+ src/include/xlist.h                                 | 2 +-
+ src/journal/Future.cc                               | 2 +-
+ src/journal/Future.h                                | 2 +-
+ src/journal/FutureImpl.h                            | 2 +-
+ src/journal/JournalMetadata.h                       | 2 +-
+ src/journal/Journaler.h                             | 2 +-
+ src/journal/ObjectPlayer.h                          | 2 +-
+ src/journal/ObjectRecorder.cc                       | 2 +-
+ src/journal/ObjectRecorder.h                        | 2 +-
+ src/krbd.cc                                         | 2 +-
+ src/kv/KineticStore.h                               | 2 +-
+ src/kv/LevelDBStore.cc                              | 2 +-
+ src/kv/LevelDBStore.h                               | 4 ++--
+ src/kv/MemDB.cc                                     | 2 +-
+ src/kv/RocksDBStore.h                               | 2 +-
+ src/libcephfs.cc                                    | 2 +-
+ src/librados/IoCtxImpl.cc                           | 2 +-
+ src/librados/RadosClient.cc                         | 2 +-
+ src/librbd/BlockGuard.h                             | 2 +-
+ src/librbd/LibrbdWriteback.cc                       | 2 +-
+ src/librbd/WatchNotifyTypes.cc                      | 2 +-
+ src/librbd/Watcher.cc                               | 2 +-
+ src/librbd/image/CloneRequest.cc                    | 2 +-
+ src/librbd/image/CreateRequest.cc                   | 2 +-
+ src/librbd/image/OpenRequest.cc                     | 2 +-
+ src/librbd/image/RefreshRequest.cc                  | 2 +-
+ src/librbd/image/SetFlagsRequest.cc                 | 2 +-
+ src/librbd/internal.cc                              | 2 +-
+ src/librbd/io/AsyncOperation.cc                     | 2 +-
+ src/librbd/io/AsyncOperation.h                      | 2 +-
+ src/librbd/journal/CreateRequest.cc                 | 2 +-
+ src/librbd/journal/RemoveRequest.cc                 | 2 +-
+ src/librbd/journal/ResetRequest.cc                  | 2 +-
+ src/librbd/journal/Types.cc                         | 2 +-
+ src/librbd/managed_lock/Utils.cc                    | 2 +-
+ src/librbd/mirroring_watcher/Types.cc               | 2 +-
+ src/librbd/object_map/CreateRequest.cc              | 2 +-
+ src/librbd/object_map/RemoveRequest.cc              | 2 +-
+ src/librbd/trash_watcher/Types.cc                   | 2 +-
+ src/log/Log.cc                                      | 2 +-
+ src/log/LogClock.h                                  | 2 +-
+ src/log/SubsystemMap.h                              | 2 +-
+ src/mds/CDir.cc                                     | 2 +-
+ src/mds/CInode.cc                                   | 2 +-
+ src/mds/MDCache.cc                                  | 2 +-
+ src/mds/MDLog.cc                                    | 2 +-
+ src/mds/MDSCacheObject.h                            | 2 +-
+ src/mds/MDSTable.cc                                 | 2 +-
+ src/mds/Server.cc                                   | 2 +-
+ src/mds/SessionMap.cc                               | 2 +-
+ src/mds/SnapClient.cc                               | 2 +-
+ src/mds/SnapServer.cc                               | 2 +-
+ src/mds/mdstypes.h                                  | 2 +-
+ src/mgr/PyFormatter.h                               | 2 +-
+ src/mgr/PyModule.cc                                 | 2 +-
+ src/mgr/StandbyPyModules.cc                         | 2 +-
+ src/mon/AuthMonitor.cc                              | 2 +-
+ src/mon/ConfigKeyService.cc                         | 2 +-
+ src/mon/Elector.cc                                  | 2 +-
+ src/mon/HealthMonitor.cc                            | 2 +-
+ src/mon/LogMonitor.cc                               | 2 +-
+ src/mon/MDSMonitor.cc                               | 2 +-
+ src/mon/MgrStatMonitor.cc                           | 2 +-
+ src/mon/MonCap.cc                                   | 2 +-
+ src/mon/Monitor.cc                                  | 2 +-
+ src/mon/MonitorDBStore.h                            | 2 +-
+ src/mon/MonmapMonitor.cc                            | 2 +-
+ src/mon/OSDMonitor.cc                               | 2 +-
+ src/mon/OSDMonitor.h                                | 2 +-
+ src/mon/Paxos.cc                                    | 2 +-
+ src/mon/PaxosFSMap.h                                | 2 +-
+ src/mon/PaxosService.cc                             | 2 +-
+ src/msg/Connection.h                                | 2 +-
+ src/msg/DispatchQueue.h                             | 2 +-
+ src/msg/Dispatcher.h                                | 2 +-
+ src/msg/Message.h                                   | 2 +-
+ src/msg/async/AsyncMessenger.h                      | 2 +-
+ src/msg/async/Stack.cc                              | 2 +-
+ src/msg/async/dpdk/DPDK.cc                          | 2 +-
+ src/msg/async/dpdk/DPDKStack.cc                     | 2 +-
+ src/msg/async/dpdk/EventDPDK.cc                     | 2 +-
+ src/msg/async/dpdk/IP.cc                            | 2 +-
+ src/msg/async/dpdk/TCP.cc                           | 2 +-
+ src/msg/async/dpdk/UserspaceEvent.cc                | 2 +-
+ src/msg/async/dpdk/UserspaceEvent.h                 | 2 +-
+ src/msg/async/dpdk/ethernet.h                       | 2 +-
+ src/msg/async/dpdk/net.cc                           | 2 +-
+ src/msg/async/rdma/Infiniband.h                     | 2 +-
+ src/msg/simple/SimpleMessenger.h                    | 2 +-
+ src/msg/xio/XioConnection.cc                        | 2 +-
+ src/msg/xio/XioPortal.h                             | 2 +-
+ src/os/bluestore/Allocator.h                        | 2 +-
+ src/os/bluestore/BlockDevice.h                      | 2 +-
+ src/os/bluestore/BlueFS.cc                          | 2 +-
+ src/os/bluestore/BlueRocksEnv.h                     | 2 +-
+ src/os/bluestore/BlueStore.h                        | 2 +-
+ src/os/filestore/BtrfsFileStoreBackend.cc           | 2 +-
+ src/os/filestore/DBObjectMap.cc                     | 2 +-
+ src/os/filestore/FileJournal.h                      | 2 +-
+ src/os/filestore/FileStore.cc                       | 2 +-
+ src/os/filestore/FileStore.h                        | 2 +-
+ src/os/filestore/JournalThrottle.cc                 | 2 +-
+ src/os/filestore/XfsFileStoreBackend.cc             | 2 +-
+ src/os/filestore/ZFSFileStoreBackend.cc             | 2 +-
+ src/os/filestore/chain_xattr.cc                     | 4 ++--
+ src/os/filestore/chain_xattr.h                      | 2 +-
+ src/os/kstore/KStore.h                              | 2 +-
+ src/os/memstore/MemStore.h                          | 2 +-
+ src/osd/ECUtil.h                                    | 2 +-
+ src/osd/OSD.cc                                      | 2 +-
+ src/osd/OpRequest.cc                                | 2 +-
+ src/osd/PG.h                                        | 2 +-
+ src/osd/PGLog.h                                     | 2 +-
+ src/osd/PrimaryLogPG.cc                             | 2 +-
+ src/osd/PrimaryLogPG.h                              | 2 +-
+ src/osd/mClockOpClassSupport.cc                     | 2 +-
+ src/osdc/Journaler.cc                               | 2 +-
+ src/osdc/ObjectCacher.cc                            | 2 +-
+ src/osdc/Objecter.h                                 | 2 +-
+ src/rbd_replay/ActionTypes.cc                       | 2 +-
+ src/rbd_replay/BufferReader.cc                      | 2 +-
+ src/rbd_replay/rbd_loc.cc                           | 2 +-
+ src/rbd_replay/rbd_replay_debug.hpp                 | 2 +-
+ src/rgw/rgw_asio_client.h                           | 2 +-
+ src/rgw/rgw_cache.h                                 | 2 +-
+ src/rgw/rgw_coroutine.cc                            | 2 +-
+ src/rgw/rgw_cr_rados.h                              | 2 +-
+ src/rgw/rgw_cr_rest.cc                              | 2 +-
+ src/rgw/rgw_cr_rest.h                               | 2 +-
+ src/rgw/rgw_crypt.cc                                | 2 +-
+ src/rgw/rgw_env.cc                                  | 2 +-
+ src/rgw/rgw_file.h                                  | 2 +-
+ src/rgw/rgw_frontend.cc                             | 2 +-
+ src/rgw/rgw_ldap.cc                                 | 2 +-
+ src/rgw/rgw_ldap.h                                  | 2 +-
+ src/rgw/rgw_lib.h                                   | 2 +-
+ src/rgw/rgw_metadata.cc                             | 2 +-
+ src/rgw/rgw_op.cc                                   | 2 +-
+ src/rgw/rgw_op.h                                    | 2 +-
+ src/rgw/rgw_period_history.cc                       | 2 +-
+ src/rgw/rgw_period_history.h                        | 2 +-
+ src/rgw/rgw_process.h                               | 2 +-
+ src/rgw/rgw_realm_watcher.h                         | 2 +-
+ src/rgw/rgw_rest.h                                  | 2 +-
+ src/rgw/rgw_rest_config.cc                          | 2 +-
+ src/rgw/rgw_rest_log.cc                             | 2 +-
+ src/rgw/rgw_rest_metadata.cc                        | 2 +-
+ src/rgw/rgw_rest_opstate.cc                         | 2 +-
+ src/rgw/rgw_rest_realm.cc                           | 2 +-
+ src/rgw/rgw_rest_replica_log.cc                     | 2 +-
+ src/rgw/rgw_rest_s3.cc                              | 2 +-
+ src/rgw/rgw_rest_s3.h                               | 2 +-
+ src/rgw/rgw_rest_swift.cc                           | 2 +-
+ src/rgw/rgw_rest_user.cc                            | 2 +-
+ src/rgw/rgw_sync_log_trim.cc                        | 2 +-
+ src/rgw/rgw_token.cc                                | 2 +-
+ src/rgw/rgw_user.h                                  | 2 +-
+ src/test/encoding/ceph_dencoder.cc                  | 2 +-
+ src/test/fio/fio_ceph_objectstore.cc                | 2 +-
+ src/test/journal/test_Journaler.cc                  | 2 +-
+ src/test/librados_test_stub/LibradosTestStub.cc     | 2 +-
+ src/test/librados_test_stub/TestClassHandler.cc     | 2 +-
+ src/test/librados_test_stub/TestIoCtxImpl.cc        | 2 +-
+ src/test/librados_test_stub/TestMemRadosClient.h    | 2 +-
+ src/test/librados_test_stub/TestRadosClient.cc      | 2 +-
+ src/test/librados_test_stub/TestWatchNotify.cc      | 2 +-
+ src/test/librgw_file_marker.cc                      | 2 +-
+ src/test/librgw_file_nfsns.cc                       | 2 +-
+ src/test/mon/test-mon-msg.cc                        | 2 +-
+ src/test/mon/test_mon_workloadgen.cc                | 2 +-
+ src/test/msgr/test_msgr.cc                          | 2 +-
+ src/test/objectstore/DeterministicOpSequence.cc     | 2 +-
+ src/test/objectstore/TestObjectStoreState.cc        | 2 +-
+ src/test/objectstore/test_idempotent_sequence.cc    | 2 +-
+ src/test/objectstore/test_memstore_clone.cc         | 2 +-
+ src/test/on_exit.cc                                 | 2 +-
+ src/test/osdc/FakeWriteback.cc                      | 2 +-
+ src/test/osdc/MemWriteback.cc                       | 2 +-
+ src/test/rbd_mirror/test_mock_fixture.h             | 2 +-
+ src/test/rgw/test_rgw_crypto.cc                     | 2 +-
+ src/test/signals.cc                                 | 2 +-
+ src/test/test_rgw_token.cc                          | 2 +-
+ src/test/test_trans.cc                              | 2 +-
+ src/tools/crushtool.cc                              | 2 +-
+ src/tools/rbd/Utils.cc                              | 2 +-
+ src/tools/rbd/action/Import.cc                      | 2 +-
+ src/tools/rbd/action/MirrorPool.cc                  | 2 +-
+ src/tools/rbd_mirror/PoolWatcher.h                  | 2 +-
+ src/tools/rbd_mirror/image_deleter/RemoveRequest.cc | 2 +-
+ src/tools/rbd_mirror/image_map/StateTransition.cc   | 2 +-
+ src/tools/rbd_mirror/image_map/Types.cc             | 2 +-
+ src/tools/rbd_mirror/instance_watcher/Types.cc      | 2 +-
+ src/tools/rbd_mirror/leader_watcher/Types.cc        | 2 +-
+ 237 files changed, 240 insertions(+), 240 deletions(-)
+ rename src/include/{assert.h => ceph_assert.h} (97%)
+
+diff --git a/src/auth/Crypto.cc b/src/auth/Crypto.cc
+index 7bb5d05405..ba26bec65d 100644
+--- a/src/auth/Crypto.cc
++++ b/src/auth/Crypto.cc
+@@ -20,7 +20,7 @@
+ # include <openssl/aes.h>
+ #endif
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/Clock.h"
+ #include "common/armor.h"
+ #include "common/ceph_crypto.h"
+diff --git a/src/ceph_mds.cc b/src/ceph_mds.cc
+index 3dea53b7bc..30f5001e8e 100644
+--- a/src/ceph_mds.cc
++++ b/src/ceph_mds.cc
+@@ -47,7 +47,7 @@
+ 
+ #include "perfglue/heap_profiler.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context g_ceph_context
+ #define dout_subsys ceph_subsys_mds
+diff --git a/src/ceph_mon.cc b/src/ceph_mon.cc
+index 297111831d..a2bfc947e7 100644
+--- a/src/ceph_mon.cc
++++ b/src/ceph_mon.cc
+@@ -42,7 +42,7 @@
+ 
+ #include "perfglue/heap_profiler.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_mon
+ 
+diff --git a/src/ceph_osd.cc b/src/ceph_osd.cc
+index d3fe2e15fe..68ee833e1d 100644
+--- a/src/ceph_osd.cc
++++ b/src/ceph_osd.cc
+@@ -44,7 +44,7 @@
+ 
+ #include "perfglue/heap_profiler.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include "common/Preforker.h"
+ 
+diff --git a/src/client/Client.cc b/src/client/Client.cc
+index 910e44d32e..a873a51211 100644
+--- a/src/client/Client.cc
++++ b/src/client/Client.cc
+@@ -93,7 +93,7 @@
+ #include "ObjecterWriteback.h"
+ #include "posix_acl.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/stat.h"
+ 
+ #include "include/cephfs/ceph_statx.h"
+diff --git a/src/client/Inode.h b/src/client/Inode.h
+index ce7b1a6eb6..a8e92378ec 100644
+--- a/src/client/Inode.h
++++ b/src/client/Inode.h
+@@ -6,7 +6,7 @@
+ 
+ #include <numeric>
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/types.h"
+ #include "include/xlist.h"
+ 
+diff --git a/src/client/SyntheticClient.cc b/src/client/SyntheticClient.cc
+index 6979dc7bb9..4f5f0c8492 100644
+--- a/src/client/SyntheticClient.cc
++++ b/src/client/SyntheticClient.cc
+@@ -35,7 +35,7 @@
+ #include <sys/statvfs.h>
+ 
+ #include "common/errno.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/cephfs/ceph_statx.h"
+ 
+ #define dout_context g_ceph_context
+diff --git a/src/client/barrier.cc b/src/client/barrier.cc
+index 3f2937c206..260384499b 100644
+--- a/src/client/barrier.cc
++++ b/src/client/barrier.cc
+@@ -18,7 +18,7 @@
+ #include "include/Context.h"
+ #include "Client.h"
+ #include "barrier.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #undef dout_prefix
+ #define dout_prefix *_dout << "client." << whoami << " "
+diff --git a/src/client/fuse_ll.cc b/src/client/fuse_ll.cc
+index 86f91d31b2..2172e43bfe 100644
+--- a/src/client/fuse_ll.cc
++++ b/src/client/fuse_ll.cc
+@@ -32,7 +32,7 @@
+ #include "Fh.h"
+ #include "ioctl.h"
+ #include "common/config.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/cephfs/ceph_statx.h"
+ 
+ #include "fuse_ll.h"
+diff --git a/src/common/Graylog.h b/src/common/Graylog.h
+index 4f06803855..3853410ac8 100644
+--- a/src/common/Graylog.h
++++ b/src/common/Graylog.h
+@@ -9,7 +9,7 @@
+ #include <boost/iostreams/filter/zlib.hpp>
+ 
+ #include "include/memory.h"
+-#include "include/assert.h"  // boost clobbers this
++#include "include/ceph_assert.h"  // boost clobbers this
+ 
+ struct uuid_d;
+ class LogEntry;
+diff --git a/src/common/Mutex.h b/src/common/Mutex.h
+index 09e8f8cd6c..6a23d7471e 100644
+--- a/src/common/Mutex.h
++++ b/src/common/Mutex.h
+@@ -15,7 +15,7 @@
+ #ifndef CEPH_MUTEX_H
+ #define CEPH_MUTEX_H
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "lockdep.h"
+ #include "common/ceph_context.h"
+ 
+diff --git a/src/common/OutputDataSocket.cc b/src/common/OutputDataSocket.cc
+index bbee667f32..9752ce318c 100644
+--- a/src/common/OutputDataSocket.cc
++++ b/src/common/OutputDataSocket.cc
+@@ -22,7 +22,7 @@
+ #include <sys/un.h>
+ 
+ // re-include our assert to clobber the system one; fix dout:
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_asok
+ #undef dout_prefix
+diff --git a/src/common/Preforker.h b/src/common/Preforker.h
+index 8925d944da..a1ed56800a 100644
+--- a/src/common/Preforker.h
++++ b/src/common/Preforker.h
+@@ -8,7 +8,7 @@
+ #include <unistd.h>
+ #include <sstream>
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/safe_io.h"
+ #include "common/errno.h"
+ 
+diff --git a/src/common/RWLock.h b/src/common/RWLock.h
+index da4baefb83..2ab04e2e09 100644
+--- a/src/common/RWLock.h
++++ b/src/common/RWLock.h
+@@ -19,7 +19,7 @@
+ 
+ #include <pthread.h>
+ #include <string>
+-#include <include/assert.h>
++#include <include/ceph_assert.h>
+ #include "acconfig.h"
+ #include "lockdep.h"
+ #include "common/valgrind.h"
+diff --git a/src/common/RefCountedObj.h b/src/common/RefCountedObj.h
+index 325304c144..f9f25dd3d6 100644
+--- a/src/common/RefCountedObj.h
++++ b/src/common/RefCountedObj.h
+@@ -23,7 +23,7 @@
+ #include <boost/smart_ptr/intrusive_ptr.hpp>
+ 
+ // re-include our assert to clobber the system one; fix dout:
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ struct RefCountedObject {
+ private:
+diff --git a/src/common/SubProcess.h b/src/common/SubProcess.h
+index 8d368d56ca..90e35d8ef2 100644
+--- a/src/common/SubProcess.h
++++ b/src/common/SubProcess.h
+@@ -22,7 +22,7 @@
+ #include <sstream>
+ #include <vector>
+ #include <iostream>
+-#include <include/assert.h>
++#include <include/ceph_assert.h>
+ #include <common/errno.h>
+ #if defined(__FreeBSD__) || defined(__APPLE__)
+ #include <sys/types.h>
+diff --git a/src/common/TextTable.h b/src/common/TextTable.h
+index 7fe3250603..04f04e5b8a 100644
+--- a/src/common/TextTable.h
++++ b/src/common/TextTable.h
+@@ -17,7 +17,7 @@
+ 
+ #include <vector>
+ #include <sstream>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ /**
+  * TextTable:
+diff --git a/src/common/Throttle.cc b/src/common/Throttle.cc
+index 1e9aed5d36..4d05ed35c4 100644
+--- a/src/common/Throttle.cc
++++ b/src/common/Throttle.cc
+@@ -9,7 +9,7 @@
+ 
+ 
+ // re-include our assert to clobber the system one; fix dout:
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_throttle
+ 
+diff --git a/src/common/admin_socket.cc b/src/common/admin_socket.cc
+index d23ca64516..e9d5275ed5 100644
+--- a/src/common/admin_socket.cc
++++ b/src/common/admin_socket.cc
+@@ -24,7 +24,7 @@
+ 
+ 
+ // re-include our assert to clobber the system one; fix dout:
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_asok
+ #undef dout_prefix
+diff --git a/src/common/bit_str.cc b/src/common/bit_str.cc
+index e61e950de5..d5554b92bd 100644
+--- a/src/common/bit_str.cc
++++ b/src/common/bit_str.cc
+@@ -13,7 +13,7 @@
+  */
+ #include "common/bit_str.h"
+ #include "common/Formatter.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ static void _dump_bit_str(
+     uint64_t bits,
+diff --git a/src/common/bit_vector.hpp b/src/common/bit_vector.hpp
+index 88a81296bc..438f7c0d23 100644
+--- a/src/common/bit_vector.hpp
++++ b/src/common/bit_vector.hpp
+@@ -12,7 +12,7 @@
+ #define BIT_VECTOR_HPP
+ 
+ #include "common/Formatter.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/encoding.h"
+ #include <utility>
+ 
+diff --git a/src/common/bounded_key_counter.h b/src/common/bounded_key_counter.h
+index 0109a26ef1..a6c61cdff3 100644
+--- a/src/common/bounded_key_counter.h
++++ b/src/common/bounded_key_counter.h
+@@ -22,7 +22,7 @@
+ #include <tuple>
+ #include <vector>
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ /**
+  * BoundedKeyCounter
+diff --git a/src/common/ceph_crypto.h b/src/common/ceph_crypto.h
+index a5d781eccb..ffdddd8003 100644
+--- a/src/common/ceph_crypto.h
++++ b/src/common/ceph_crypto.h
+@@ -19,7 +19,7 @@
+ // the crypto operations. We don't want to contaminate too much code
+ // with error checking, and just say these really should never fail.
+ // This assert MUST NOT be compiled out, even on non-debug builds.
+-# include "include/assert.h"
++# include "include/ceph_assert.h"
+ 
+ namespace ceph {
+   namespace crypto {
+diff --git a/src/common/ceph_time.h b/src/common/ceph_time.h
+index 4dd83e8acd..893be0fd7b 100644
+--- a/src/common/ceph_time.h
++++ b/src/common/ceph_time.h
+@@ -19,7 +19,7 @@
+ #include <iostream>
+ #include <sys/time.h>
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #if defined(__APPLE__)
+ #include <sys/_types/_timespec.h>
+diff --git a/src/common/cmdparse.h b/src/common/cmdparse.h
+index bcd1943a7f..ae50598bd0 100644
+--- a/src/common/cmdparse.h
++++ b/src/common/cmdparse.h
+@@ -7,7 +7,7 @@
+ #include <stdexcept>
+ #include <ostream>
+ #include <boost/variant.hpp>
+-#include "include/assert.h"	// boost clobbers this
++#include "include/ceph_assert.h"	// boost clobbers this
+ #include "common/Formatter.h"
+ #include "common/BackTrace.h"
+ 
+diff --git a/src/common/convenience.h b/src/common/convenience.h
+index 9dc2ed1b42..7c73d46a6c 100644
+--- a/src/common/convenience.h
++++ b/src/common/convenience.h
+@@ -25,7 +25,7 @@
+ 
+ #include "common/shunique_lock.h"
+ 
+-#include "include/assert.h" // I despise you. Not you the reader, I'm talking
++#include "include/ceph_assert.h" // I despise you. Not you the reader, I'm talking
+                             // to the include file.
+ 
+ 
+diff --git a/src/common/dout.h b/src/common/dout.h
+index df5cd83bf5..4df175e10f 100644
+--- a/src/common/dout.h
++++ b/src/common/dout.h
+@@ -109,7 +109,7 @@ struct is_dynamic<dynamic_marker_t<T>> : public std::true_type {};
+   (cct->_conf->subsys.should_gather((sub), (lvl)))
+ 
+ // NOTE: depend on magic value in _ASSERT_H so that we detect when
+-// /usr/include/assert.h clobbers our fancier version.
++// /usr/include/ceph_assert.h clobbers our fancier version.
+ #define dendl_impl std::flush;				\
+   _ASSERT_H->_log->submit_entry(_dout_e);		\
+     }						\
+diff --git a/src/common/hobject.h b/src/common/hobject.h
+index 24eeb9754e..19b8274c7e 100644
+--- a/src/common/hobject.h
++++ b/src/common/hobject.h
+@@ -19,7 +19,7 @@
+ #include "include/cmp.h"
+ 
+ #include "json_spirit/json_spirit_value.h"
+-#include "include/assert.h"   // spirit clobbers it!
++#include "include/ceph_assert.h"   // spirit clobbers it!
+ 
+ #include "reverse.h"
+ 
+diff --git a/src/common/mClockPriorityQueue.h b/src/common/mClockPriorityQueue.h
+index 6a24dfcb9a..a04ebd356d 100644
+--- a/src/common/mClockPriorityQueue.h
++++ b/src/common/mClockPriorityQueue.h
+@@ -27,7 +27,7 @@
+ 
+ // the following is done to unclobber _ASSERT_H so it returns to the
+ // way ceph likes it
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ 
+ namespace ceph {
+diff --git a/src/common/mutex_debug.h b/src/common/mutex_debug.h
+index 75117c61bd..37581bd3d8 100644
+--- a/src/common/mutex_debug.h
++++ b/src/common/mutex_debug.h
+@@ -20,7 +20,7 @@
+ 
+ #include <pthread.h>
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include "ceph_time.h"
+ #include "likely.h"
+diff --git a/src/common/perf_histogram.h b/src/common/perf_histogram.h
+index 0d5d630542..184b1b984b 100644
+--- a/src/common/perf_histogram.h
++++ b/src/common/perf_histogram.h
+@@ -21,7 +21,7 @@
+ 
+ #include "common/Formatter.h"
+ #include "include/int_types.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ class PerfHistogramCommon {
+ public:
+diff --git a/src/common/shared_cache.hpp b/src/common/shared_cache.hpp
+index 8d923eefc4..e828fcb958 100644
+--- a/src/common/shared_cache.hpp
++++ b/src/common/shared_cache.hpp
+@@ -22,7 +22,7 @@
+ #include "include/unordered_map.h"
+ 
+ // re-include our assert to clobber the system one; fix dout:
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ template <class K, class V, class C = std::less<K>, class H = std::hash<K> >
+ class SharedLRU {
+diff --git a/src/compressor/Compressor.h b/src/compressor/Compressor.h
+index 15914fb307..36174a98d9 100644
+--- a/src/compressor/Compressor.h
++++ b/src/compressor/Compressor.h
+@@ -19,7 +19,7 @@
+ #include <string>
+ #include <string_view>
+ #include <boost/optional.hpp>
+-#include "include/assert.h"    // boost clobbers this
++#include "include/ceph_assert.h"    // boost clobbers this
+ #include "include/buffer.h"
+ #include "include/int_types.h"
+ 
+diff --git a/src/crush/CrushWrapper.h b/src/crush/CrushWrapper.h
+index 5ebf2c8e91..b35b7cdfd4 100644
+--- a/src/crush/CrushWrapper.h
++++ b/src/crush/CrushWrapper.h
+@@ -20,7 +20,7 @@ extern "C" {
+ #include "builder.h"
+ }
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/err.h"
+ #include "include/encoding.h"
+ #include "include/mempool.h"
+diff --git a/src/erasure-code/isa/ErasureCodeIsa.cc b/src/erasure-code/isa/ErasureCodeIsa.cc
+index 46c8e83017..c70a37347c 100644
+--- a/src/erasure-code/isa/ErasureCodeIsa.cc
++++ b/src/erasure-code/isa/ErasureCodeIsa.cc
+@@ -19,7 +19,7 @@
+ #include "common/debug.h"
+ #include "ErasureCodeIsa.h"
+ #include "xor_op.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ using namespace std;
+ 
+ // -----------------------------------------------------------------------------
+diff --git a/src/erasure-code/lrc/ErasureCodeLrc.cc b/src/erasure-code/lrc/ErasureCodeLrc.cc
+index 54b0b3e22f..43aea70b93 100644
+--- a/src/erasure-code/lrc/ErasureCodeLrc.cc
++++ b/src/erasure-code/lrc/ErasureCodeLrc.cc
+@@ -29,7 +29,7 @@
+ #include "ErasureCodeLrc.h"
+ 
+ // re-include our assert to clobber boost's
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context g_ceph_context
+ #define dout_subsys ceph_subsys_osd
+diff --git a/src/global/global_init.h b/src/global/global_init.h
+index 2c4bf2ebbc..fe6f557bb2 100644
+--- a/src/global/global_init.h
++++ b/src/global/global_init.h
+@@ -19,7 +19,7 @@
+ #include <vector>
+ #include <map>
+ #include <boost/intrusive_ptr.hpp>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/code_environment.h"
+ #include "common/common_init.h"
+ 
+diff --git a/src/include/Context.h b/src/include/Context.h
+index 2eb008245c..3f94870838 100644
+--- a/src/include/Context.h
++++ b/src/include/Context.h
+@@ -23,7 +23,7 @@
+ #include <set>
+ #include <memory>
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/memory.h"
+ 
+ #define mydout(cct, v) lgeneric_subdout(cct, context, v)
+diff --git a/src/include/btree_map.h b/src/include/btree_map.h
+index 508aa3914e..b4139f0d62 100644
+--- a/src/include/btree_map.h
++++ b/src/include/btree_map.h
+@@ -6,7 +6,7 @@
+ 
+ #include "include/cpp-btree/btree.h"
+ #include "include/cpp-btree/btree_map.h"
+-#include "include/assert.h"   // cpp-btree uses system assert, blech
++#include "include/ceph_assert.h"   // cpp-btree uses system assert, blech
+ #include "include/encoding.h"
+ 
+ template<class T, class U>
+diff --git a/src/include/buffer.h b/src/include/buffer.h
+index e110b74b2c..daef0e9e9b 100644
+--- a/src/include/buffer.h
++++ b/src/include/buffer.h
+@@ -55,7 +55,7 @@
+ #include "buffer_fwd.h"
+ 
+ #ifdef __CEPH__
+-# include "include/assert.h"
++# include "include/ceph_assert.h"
+ #else
+ # include <assert.h>
+ #endif
+diff --git a/src/include/assert.h b/src/include/ceph_assert.h
+similarity index 97%
+rename from src/include/assert.h
+rename to src/include/ceph_assert.h
+index e950533606..2621fbbfa3 100644
+--- a/src/include/assert.h
++++ b/src/include/ceph_assert.h
+@@ -121,12 +121,12 @@ using namespace ceph;
+ #endif
+ 
+ // make _ASSERT_H something that *must* have a value other than what
+-// /usr/include/assert.h gives it (nothing!), so that we detect when
++// /usr/include/ceph_assert.h gives it (nothing!), so that we detect when
+ // our assert is clobbered.
+ #undef _ASSERT_H
+ #define _ASSERT_H _dout_cct
+ 
+-// make __ASSERT_FUNCTION empty (/usr/include/assert.h makes it a function)
++// make __ASSERT_FUNCTION empty (/usr/include/ceph_assert.h makes it a function)
+ // and make our encoding macros break if it non-empty.
+ #undef __ASSERT_FUNCTION
+ #define __ASSERT_FUNCTION
+diff --git a/src/include/denc.h b/src/include/denc.h
+index b0079f2a23..e7925c4437 100644
+--- a/src/include/denc.h
++++ b/src/include/denc.h
+@@ -40,7 +40,7 @@
+ #include <boost/intrusive/set.hpp>
+ #include <boost/optional.hpp>
+ 
+-#include "include/assert.h"	// boost clobbers this
++#include "include/ceph_assert.h"	// boost clobbers this
+ #include "include/intarith.h"
+ #include "include/int_types.h"
+ #include "include/memory.h"
+diff --git a/src/include/frag.h b/src/include/frag.h
+index 4ca46cd03f..643a405c63 100644
+--- a/src/include/frag.h
++++ b/src/include/frag.h
+@@ -25,7 +25,7 @@
+ 
+ #include "ceph_frag.h"
+ #include "include/encoding.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include "common/dout.h"
+ 
+diff --git a/src/include/mempool.h b/src/include/mempool.h
+index 60f6326d35..624b9be50e 100644
+--- a/src/include/mempool.h
++++ b/src/include/mempool.h
+@@ -28,7 +28,7 @@
+ #include <boost/container/flat_map.hpp>
+ 
+ #include <common/Formatter.h>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/compact_map.h"
+ #include "include/compact_set.h"
+ 
+diff --git a/src/include/xlist.h b/src/include/xlist.h
+index 1d06e55caf..ed9c2c2983 100644
+--- a/src/include/xlist.h
++++ b/src/include/xlist.h
+@@ -15,7 +15,7 @@
+ #ifndef CEPH_XLIST_H
+ #define CEPH_XLIST_H
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include <iterator>
+ #include <cstdlib>
+ #include <ostream>
+diff --git a/src/journal/Future.cc b/src/journal/Future.cc
+index 144f320522..56dd5b8beb 100644
+--- a/src/journal/Future.cc
++++ b/src/journal/Future.cc
+@@ -3,7 +3,7 @@
+ 
+ #include "journal/Future.h"
+ #include "journal/FutureImpl.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ namespace journal {
+ 
+diff --git a/src/journal/Future.h b/src/journal/Future.h
+index 1ddb606563..fef0015651 100644
+--- a/src/journal/Future.h
++++ b/src/journal/Future.h
+@@ -8,7 +8,7 @@
+ #include <string>
+ #include <iosfwd>
+ #include <boost/intrusive_ptr.hpp>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ class Context;
+ 
+diff --git a/src/journal/FutureImpl.h b/src/journal/FutureImpl.h
+index 1c02c9a2d1..948eadb423 100644
+--- a/src/journal/FutureImpl.h
++++ b/src/journal/FutureImpl.h
+@@ -12,7 +12,7 @@
+ #include <map>
+ #include <boost/noncopyable.hpp>
+ #include <boost/intrusive_ptr.hpp>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ class Context;
+ 
+diff --git a/src/journal/JournalMetadata.h b/src/journal/JournalMetadata.h
+index ed063b0237..393d20297d 100644
+--- a/src/journal/JournalMetadata.h
++++ b/src/journal/JournalMetadata.h
+@@ -22,7 +22,7 @@
+ #include <list>
+ #include <map>
+ #include <string>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ class SafeTimer;
+ 
+diff --git a/src/journal/Journaler.h b/src/journal/Journaler.h
+index bd3529d06a..925cac9ae0 100644
+--- a/src/journal/Journaler.h
++++ b/src/journal/Journaler.h
+@@ -14,7 +14,7 @@
+ #include <list>
+ #include <map>
+ #include <string>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ class ContextWQ;
+ class SafeTimer;
+diff --git a/src/journal/ObjectPlayer.h b/src/journal/ObjectPlayer.h
+index a3cbe80733..b9062b832b 100644
+--- a/src/journal/ObjectPlayer.h
++++ b/src/journal/ObjectPlayer.h
+@@ -16,7 +16,7 @@
+ #include <boost/intrusive_ptr.hpp>
+ #include <boost/noncopyable.hpp>
+ #include <boost/unordered_map.hpp>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ class SafeTimer;
+ 
+diff --git a/src/journal/ObjectRecorder.cc b/src/journal/ObjectRecorder.cc
+index 4d79c8969e..bafacf8d78 100644
+--- a/src/journal/ObjectRecorder.cc
++++ b/src/journal/ObjectRecorder.cc
+@@ -4,7 +4,7 @@
+ #include "journal/ObjectRecorder.h"
+ #include "journal/Future.h"
+ #include "journal/Utils.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/Timer.h"
+ #include "cls/journal/cls_journal_client.h"
+ 
+diff --git a/src/journal/ObjectRecorder.h b/src/journal/ObjectRecorder.h
+index 88632b2180..b570dd49fa 100644
+--- a/src/journal/ObjectRecorder.h
++++ b/src/journal/ObjectRecorder.h
+@@ -16,7 +16,7 @@
+ #include <set>
+ #include <boost/intrusive_ptr.hpp>
+ #include <boost/noncopyable.hpp>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ class SafeTimer;
+ 
+diff --git a/src/krbd.cc b/src/krbd.cc
+index 97ba92ac3a..fa781d8d86 100644
+--- a/src/krbd.cc
++++ b/src/krbd.cc
+@@ -33,7 +33,7 @@
+ #include "common/safe_io.h"
+ #include "common/secret.h"
+ #include "common/TextTable.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/stringify.h"
+ #include "include/krbd.h"
+ #include "mon/MonMap.h"
+diff --git a/src/kv/KineticStore.h b/src/kv/KineticStore.h
+index ddeab98daf..215845f235 100644
+--- a/src/kv/KineticStore.h
++++ b/src/kv/KineticStore.h
+@@ -15,7 +15,7 @@
+ #include <errno.h>
+ #include "common/errno.h"
+ #include "common/dout.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/Formatter.h"
+ 
+ #include "common/ceph_context.h"
+diff --git a/src/kv/LevelDBStore.cc b/src/kv/LevelDBStore.cc
+index 7c8b44dc20..71cc4b2366 100644
+--- a/src/kv/LevelDBStore.cc
++++ b/src/kv/LevelDBStore.cc
+@@ -15,7 +15,7 @@ using std::string;
+ #include "common/perf_counters.h"
+ 
+ // re-include our assert to clobber the system one; fix dout:
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context cct
+ #define dout_subsys ceph_subsys_leveldb
+diff --git a/src/kv/LevelDBStore.h b/src/kv/LevelDBStore.h
+index decd07977a..7c99a3dd66 100644
+--- a/src/kv/LevelDBStore.h
++++ b/src/kv/LevelDBStore.h
+@@ -23,14 +23,14 @@
+ #include <errno.h>
+ #include "common/errno.h"
+ #include "common/dout.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/Formatter.h"
+ #include "common/Cond.h"
+ 
+ #include "common/ceph_context.h"
+ 
+ // reinclude our assert to clobber the system one
+-# include "include/assert.h"
++# include "include/ceph_assert.h"
+ 
+ class PerfCounters;
+ 
+diff --git a/src/kv/MemDB.cc b/src/kv/MemDB.cc
+index 438fe095ba..16dc94d4f4 100644
+--- a/src/kv/MemDB.cc
++++ b/src/kv/MemDB.cc
+@@ -22,7 +22,7 @@
+ #include "KeyValueDB.h"
+ #include "MemDB.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/debug.h"
+ #include "common/errno.h"
+ #include "include/compat.h"
+diff --git a/src/kv/RocksDBStore.h b/src/kv/RocksDBStore.h
+index 99d0941e7a..85b40961b2 100644
+--- a/src/kv/RocksDBStore.h
++++ b/src/kv/RocksDBStore.h
+@@ -19,7 +19,7 @@
+ #include <errno.h>
+ #include "common/errno.h"
+ #include "common/dout.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/Formatter.h"
+ #include "common/Cond.h"
+ 
+diff --git a/src/libcephfs.cc b/src/libcephfs.cc
+index a65e763da7..e03799ad10 100644
+--- a/src/libcephfs.cc
++++ b/src/libcephfs.cc
+@@ -29,7 +29,7 @@
+ #include "include/str_list.h"
+ #include "messages/MMonMap.h"
+ #include "msg/Messenger.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "mds/MDSMap.h"
+ 
+ #include "include/cephfs/libcephfs.h"
+diff --git a/src/librados/IoCtxImpl.cc b/src/librados/IoCtxImpl.cc
+index 3dbc8235bb..9ab92b4bca 100644
+--- a/src/librados/IoCtxImpl.cc
++++ b/src/librados/IoCtxImpl.cc
+@@ -19,7 +19,7 @@
+ #include "librados/AioCompletionImpl.h"
+ #include "librados/PoolAsyncCompletionImpl.h"
+ #include "librados/RadosClient.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/valgrind.h"
+ #include "common/EventTrace.h"
+ 
+diff --git a/src/librados/RadosClient.cc b/src/librados/RadosClient.cc
+index 8b0db80692..2c49a07f40 100644
+--- a/src/librados/RadosClient.cc
++++ b/src/librados/RadosClient.cc
+@@ -47,7 +47,7 @@
+ #include "PoolAsyncCompletionImpl.h"
+ #include "RadosClient.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/EventTrace.h"
+ 
+ #define dout_subsys ceph_subsys_rados
+diff --git a/src/librbd/BlockGuard.h b/src/librbd/BlockGuard.h
+index 4c371580c1..e20e8a7560 100644
+--- a/src/librbd/BlockGuard.h
++++ b/src/librbd/BlockGuard.h
+@@ -11,7 +11,7 @@
+ #include <boost/intrusive/set.hpp>
+ #include <deque>
+ #include <list>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_rbd
+ #undef dout_prefix
+diff --git a/src/librbd/LibrbdWriteback.cc b/src/librbd/LibrbdWriteback.cc
+index 082cc22c7d..a8d6ea4c12 100644
+--- a/src/librbd/LibrbdWriteback.cc
++++ b/src/librbd/LibrbdWriteback.cc
+@@ -24,7 +24,7 @@
+ #include "librbd/io/ObjectDispatcher.h"
+ #include "librbd/io/ReadResult.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_rbd
+ #undef dout_prefix
+diff --git a/src/librbd/WatchNotifyTypes.cc b/src/librbd/WatchNotifyTypes.cc
+index f4f80fcbc9..00b77eab79 100644
+--- a/src/librbd/WatchNotifyTypes.cc
++++ b/src/librbd/WatchNotifyTypes.cc
+@@ -3,7 +3,7 @@
+ 
+ #include "cls/rbd/cls_rbd_types.h"
+ #include "common/Formatter.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/stringify.h"
+ #include "librbd/WatchNotifyTypes.h"
+ #include "librbd/watcher/Utils.h"
+diff --git a/src/librbd/Watcher.cc b/src/librbd/Watcher.cc
+index 9a72fc13a7..a9ea866221 100644
+--- a/src/librbd/Watcher.cc
++++ b/src/librbd/Watcher.cc
+@@ -11,7 +11,7 @@
+ #include <boost/bind.hpp>
+ 
+ // re-include our assert to clobber the system one; fix dout:
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_rbd
+ 
+diff --git a/src/librbd/image/CloneRequest.cc b/src/librbd/image/CloneRequest.cc
+index 0fb78ec8e5..df773dab29 100644
+--- a/src/librbd/image/CloneRequest.cc
++++ b/src/librbd/image/CloneRequest.cc
+@@ -5,7 +5,7 @@
+ #include "cls/rbd/cls_rbd_types.h"
+ #include "common/dout.h"
+ #include "common/errno.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "librbd/ImageState.h"
+ #include "librbd/image/CloneRequest.h"
+ #include "librbd/image/CreateRequest.h"
+diff --git a/src/librbd/image/CreateRequest.cc b/src/librbd/image/CreateRequest.cc
+index f53c31bd4b..bfa5b81859 100644
+--- a/src/librbd/image/CreateRequest.cc
++++ b/src/librbd/image/CreateRequest.cc
+@@ -5,7 +5,7 @@
+ #include "common/dout.h"
+ #include "common/errno.h"
+ #include "cls/rbd/cls_rbd_client.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "librbd/Utils.h"
+ #include "common/ceph_context.h"
+ #include "osdc/Striper.h"
+diff --git a/src/librbd/image/OpenRequest.cc b/src/librbd/image/OpenRequest.cc
+index 22f376bc4a..56598f7c19 100644
+--- a/src/librbd/image/OpenRequest.cc
++++ b/src/librbd/image/OpenRequest.cc
+@@ -12,7 +12,7 @@
+ #include "librbd/image/RefreshRequest.h"
+ #include "librbd/image/SetSnapRequest.h"
+ #include <boost/algorithm/string/predicate.hpp>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_rbd
+ #undef dout_prefix
+diff --git a/src/librbd/image/RefreshRequest.cc b/src/librbd/image/RefreshRequest.cc
+index 24a2910caf..9e85abfd50 100644
+--- a/src/librbd/image/RefreshRequest.cc
++++ b/src/librbd/image/RefreshRequest.cc
+@@ -2,7 +2,7 @@
+ // vim: ts=8 sw=2 smarttab
+ 
+ #include <boost/algorithm/string/predicate.hpp>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include "librbd/image/RefreshRequest.h"
+ #include "common/dout.h"
+diff --git a/src/librbd/image/SetFlagsRequest.cc b/src/librbd/image/SetFlagsRequest.cc
+index 7d292107f5..677be41e96 100644
+--- a/src/librbd/image/SetFlagsRequest.cc
++++ b/src/librbd/image/SetFlagsRequest.cc
+@@ -7,7 +7,7 @@
+ #include "cls/rbd/cls_rbd_client.h"
+ #include "librbd/ImageCtx.h"
+ #include "librbd/Utils.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_rbd
+ #undef dout_prefix
+diff --git a/src/librbd/internal.cc b/src/librbd/internal.cc
+index 2ef36f5822..778701104d 100644
+--- a/src/librbd/internal.cc
++++ b/src/librbd/internal.cc
+@@ -56,7 +56,7 @@
+ 
+ #include <boost/scope_exit.hpp>
+ #include <boost/variant.hpp>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_rbd
+ #undef dout_prefix
+diff --git a/src/librbd/io/AsyncOperation.cc b/src/librbd/io/AsyncOperation.cc
+index ca8daa4c09..e890f3ea93 100644
+--- a/src/librbd/io/AsyncOperation.cc
++++ b/src/librbd/io/AsyncOperation.cc
+@@ -5,7 +5,7 @@
+ #include "librbd/ImageCtx.h"
+ #include "common/dout.h"
+ #include "common/WorkQueue.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_rbd
+ #undef dout_prefix
+diff --git a/src/librbd/io/AsyncOperation.h b/src/librbd/io/AsyncOperation.h
+index 5839a6964b..d0e9dbbbfd 100644
+--- a/src/librbd/io/AsyncOperation.h
++++ b/src/librbd/io/AsyncOperation.h
+@@ -4,7 +4,7 @@
+ #ifndef LIBRBD_IO_ASYNC_OPERATION_H
+ #define LIBRBD_IO_ASYNC_OPERATION_H
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/xlist.h"
+ #include <list>
+ 
+diff --git a/src/librbd/journal/CreateRequest.cc b/src/librbd/journal/CreateRequest.cc
+index f29f0da249..57750640f5 100644
+--- a/src/librbd/journal/CreateRequest.cc
++++ b/src/librbd/journal/CreateRequest.cc
+@@ -3,7 +3,7 @@
+ 
+ #include "common/dout.h"
+ #include "common/errno.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "librbd/Utils.h"
+ #include "common/Timer.h"
+ #include "common/WorkQueue.h"
+diff --git a/src/librbd/journal/RemoveRequest.cc b/src/librbd/journal/RemoveRequest.cc
+index aa2d13e865..6ed5f54c3b 100644
+--- a/src/librbd/journal/RemoveRequest.cc
++++ b/src/librbd/journal/RemoveRequest.cc
+@@ -6,7 +6,7 @@
+ #include "common/Timer.h"
+ #include "common/WorkQueue.h"
+ #include "journal/Settings.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "librbd/Utils.h"
+ #include "librbd/journal/RemoveRequest.h"
+ 
+diff --git a/src/librbd/journal/ResetRequest.cc b/src/librbd/journal/ResetRequest.cc
+index 4fb5fa4dd7..9b67f3e452 100644
+--- a/src/librbd/journal/ResetRequest.cc
++++ b/src/librbd/journal/ResetRequest.cc
+@@ -8,7 +8,7 @@
+ #include "common/WorkQueue.h"
+ #include "journal/Journaler.h"
+ #include "journal/Settings.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "librbd/Journal.h"
+ #include "librbd/Utils.h"
+ #include "librbd/journal/CreateRequest.h"
+diff --git a/src/librbd/journal/Types.cc b/src/librbd/journal/Types.cc
+index b5f10e46d2..86d69ee155 100644
+--- a/src/librbd/journal/Types.cc
++++ b/src/librbd/journal/Types.cc
+@@ -2,7 +2,7 @@
+ // vim: ts=8 sw=2 smarttab
+ 
+ #include "librbd/journal/Types.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/stringify.h"
+ #include "include/types.h"
+ #include "common/Formatter.h"
+diff --git a/src/librbd/managed_lock/Utils.cc b/src/librbd/managed_lock/Utils.cc
+index 64210beb74..fe55864287 100644
+--- a/src/librbd/managed_lock/Utils.cc
++++ b/src/librbd/managed_lock/Utils.cc
+@@ -1,7 +1,7 @@
+ // -*- mode:C++; tab-width:8; c-basic-offset:2; indent-tabs-mode:t -*-
+ // vim: ts=8 sw=2 smarttab
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "librbd/managed_lock/Utils.h"
+ #include <sstream>
+ 
+diff --git a/src/librbd/mirroring_watcher/Types.cc b/src/librbd/mirroring_watcher/Types.cc
+index ccfb4d036c..3232becc55 100644
+--- a/src/librbd/mirroring_watcher/Types.cc
++++ b/src/librbd/mirroring_watcher/Types.cc
+@@ -2,7 +2,7 @@
+ // vim: ts=8 sw=2 smarttab
+ 
+ #include "common/Formatter.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/stringify.h"
+ #include "librbd/mirroring_watcher/Types.h"
+ #include "librbd/watcher/Utils.h"
+diff --git a/src/librbd/object_map/CreateRequest.cc b/src/librbd/object_map/CreateRequest.cc
+index 399b5cb25f..de4b48f193 100644
+--- a/src/librbd/object_map/CreateRequest.cc
++++ b/src/librbd/object_map/CreateRequest.cc
+@@ -2,7 +2,7 @@
+ // vim: ts=8 sw=2 smarttab
+ 
+ #include "librbd/object_map/CreateRequest.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/dout.h"
+ #include "common/errno.h"
+ #include "cls/rbd/cls_rbd_client.h"
+diff --git a/src/librbd/object_map/RemoveRequest.cc b/src/librbd/object_map/RemoveRequest.cc
+index fa6c7b4189..21f0a0a776 100644
+--- a/src/librbd/object_map/RemoveRequest.cc
++++ b/src/librbd/object_map/RemoveRequest.cc
+@@ -8,7 +8,7 @@
+ #include "librbd/ImageCtx.h"
+ #include "librbd/ObjectMap.h"
+ #include "librbd/Utils.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_rbd
+ #undef dout_prefix
+diff --git a/src/librbd/trash_watcher/Types.cc b/src/librbd/trash_watcher/Types.cc
+index 3063a666ff..05f4cc4412 100644
+--- a/src/librbd/trash_watcher/Types.cc
++++ b/src/librbd/trash_watcher/Types.cc
+@@ -2,7 +2,7 @@
+ // vim: ts=8 sw=2 smarttab
+ 
+ #include "common/Formatter.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/stringify.h"
+ #include "librbd/trash_watcher/Types.h"
+ #include "librbd/watcher/Utils.h"
+diff --git a/src/log/Log.cc b/src/log/Log.cc
+index 9240751dd1..f062ef52a2 100644
+--- a/src/log/Log.cc
++++ b/src/log/Log.cc
+@@ -12,7 +12,7 @@
+ #include "common/Graylog.h"
+ #include "common/valgrind.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/compat.h"
+ #include "include/on_exit.h"
+ 
+diff --git a/src/log/LogClock.h b/src/log/LogClock.h
+index 14bddbd253..5cd4e77d8f 100644
+--- a/src/log/LogClock.h
++++ b/src/log/LogClock.h
+@@ -9,7 +9,7 @@
+ #include <ctime>
+ #include <sys/time.h>
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/ceph_time.h"
+ 
+ namespace ceph {
+diff --git a/src/log/SubsystemMap.h b/src/log/SubsystemMap.h
+index 934ee66036..5d2f1866e9 100644
+--- a/src/log/SubsystemMap.h
++++ b/src/log/SubsystemMap.h
+@@ -11,7 +11,7 @@
+ #include "common/likely.h"
+ #include "common/subsys_types.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ namespace ceph {
+ namespace logging {
+diff --git a/src/mds/CDir.cc b/src/mds/CDir.cc
+index 0101e33e03..781e24f973 100644
+--- a/src/mds/CDir.cc
++++ b/src/mds/CDir.cc
+@@ -35,7 +35,7 @@
+ #include "osdc/Objecter.h"
+ 
+ #include "common/config.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/compat.h"
+ 
+ #define dout_context g_ceph_context
+diff --git a/src/mds/CInode.cc b/src/mds/CInode.cc
+index 57d91e0d2a..f726398d00 100644
+--- a/src/mds/CInode.cc
++++ b/src/mds/CInode.cc
+@@ -43,7 +43,7 @@
+ 
+ #include "common/config.h"
+ #include "global/global_context.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include "mds/MDSContinuation.h"
+ #include "mds/InoTable.h"
+diff --git a/src/mds/MDCache.cc b/src/mds/MDCache.cc
+index cfab20e09c..2a4c958545 100644
+--- a/src/mds/MDCache.cc
++++ b/src/mds/MDCache.cc
+@@ -106,7 +106,7 @@
+ 
+ 
+ #include "common/config.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context g_ceph_context
+ #define dout_subsys ceph_subsys_mds
+diff --git a/src/mds/MDLog.cc b/src/mds/MDLog.cc
+index 2dbc9935a9..90aa5d138a 100644
+--- a/src/mds/MDLog.cc
++++ b/src/mds/MDLog.cc
+@@ -29,7 +29,7 @@
+ 
+ #include "common/config.h"
+ #include "common/errno.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context g_ceph_context
+ #define dout_subsys ceph_subsys_mds
+diff --git a/src/mds/MDSCacheObject.h b/src/mds/MDSCacheObject.h
+index 28c01df44e..7fb2bff0b4 100644
+--- a/src/mds/MDSCacheObject.h
++++ b/src/mds/MDSCacheObject.h
+@@ -7,7 +7,7 @@
+ 
+ #include "include/Context.h"
+ #include "include/alloc_ptr.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/mempool.h"
+ #include "include/types.h"
+ #include "include/xlist.h"
+diff --git a/src/mds/MDSTable.cc b/src/mds/MDSTable.cc
+index f4104239f6..fe8c0077be 100644
+--- a/src/mds/MDSTable.cc
++++ b/src/mds/MDSTable.cc
+@@ -25,7 +25,7 @@
+ #include "common/errno.h"
+ #include "common/Finisher.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ 
+ #define dout_context g_ceph_context
+diff --git a/src/mds/Server.cc b/src/mds/Server.cc
+index d8b7068b87..a34913d580 100644
+--- a/src/mds/Server.cc
++++ b/src/mds/Server.cc
+@@ -13,7 +13,7 @@
+  */
+ 
+ #include <boost/lexical_cast.hpp>
+-#include "include/assert.h"  // lexical_cast includes system assert.h
++#include "include/ceph_assert.h"  // lexical_cast includes system assert.h
+ 
+ #include <boost/config/warning_disable.hpp>
+ #include <boost/fusion/include/std_pair.hpp>
+diff --git a/src/mds/SessionMap.cc b/src/mds/SessionMap.cc
+index 4327013c57..18e4ab3016 100644
+--- a/src/mds/SessionMap.cc
++++ b/src/mds/SessionMap.cc
+@@ -21,7 +21,7 @@
+ 
+ #include "common/config.h"
+ #include "common/errno.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/stringify.h"
+ 
+ #define dout_context g_ceph_context
+diff --git a/src/mds/SnapClient.cc b/src/mds/SnapClient.cc
+index 82b1111cb2..2daea9e72a 100644
+--- a/src/mds/SnapClient.cc
++++ b/src/mds/SnapClient.cc
+@@ -19,7 +19,7 @@
+ #include "SnapClient.h"
+ 
+ #include "common/config.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context g_ceph_context
+ #define dout_subsys ceph_subsys_mds
+diff --git a/src/mds/SnapServer.cc b/src/mds/SnapServer.cc
+index b7ae4519a1..c92f35db4d 100644
+--- a/src/mds/SnapServer.cc
++++ b/src/mds/SnapServer.cc
+@@ -25,7 +25,7 @@
+ #include "msg/Messenger.h"
+ 
+ #include "common/config.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context g_ceph_context
+ #define dout_subsys ceph_subsys_mds
+diff --git a/src/mds/mdstypes.h b/src/mds/mdstypes.h
+index 61a7a167bb..8498881076 100644
+--- a/src/mds/mdstypes.h
++++ b/src/mds/mdstypes.h
+@@ -28,7 +28,7 @@
+ 
+ #include <boost/spirit/include/qi.hpp>
+ #include <boost/pool/pool.hpp>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include <boost/serialization/strong_typedef.hpp>
+ 
+ #define CEPH_FS_ONDISK_MAGIC "ceph fs volume v011"
+diff --git a/src/mgr/PyFormatter.h b/src/mgr/PyFormatter.h
+index 8b44916a04..217a2fc4dc 100644
+--- a/src/mgr/PyFormatter.h
++++ b/src/mgr/PyFormatter.h
+@@ -25,7 +25,7 @@
+ #include <list>
+ 
+ #include "common/Formatter.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ class PyFormatter : public ceph::Formatter
+ {
+diff --git a/src/mgr/PyModule.cc b/src/mgr/PyModule.cc
+index 65656d0a60..bd94909182 100644
+--- a/src/mgr/PyModule.cc
++++ b/src/mgr/PyModule.cc
+@@ -31,7 +31,7 @@ std::string PyModule::config_prefix = "mgr/";
+ // Courtesy of http://stackoverflow.com/questions/1418015/how-to-get-python-exception-text
+ #include <boost/python.hpp>
+ #include <boost/algorithm/string/predicate.hpp>
+-#include "include/assert.h"  // boost clobbers this
++#include "include/ceph_assert.h"  // boost clobbers this
+ // decode a Python exception into a string
+ std::string handle_pyerror()
+ {
+diff --git a/src/mgr/StandbyPyModules.cc b/src/mgr/StandbyPyModules.cc
+index 4909c5d9d1..c7bd6b5331 100644
+--- a/src/mgr/StandbyPyModules.cc
++++ b/src/mgr/StandbyPyModules.cc
+@@ -20,7 +20,7 @@
+ 
+ 
+ #include <boost/python.hpp>
+-#include "include/assert.h"  // boost clobbers this
++#include "include/ceph_assert.h"  // boost clobbers this
+ 
+ // For ::config_prefix
+ #include "PyModuleRegistry.h"
+diff --git a/src/mon/AuthMonitor.cc b/src/mon/AuthMonitor.cc
+index a25a5fb1c1..fe1fa9448f 100644
+--- a/src/mon/AuthMonitor.cc
++++ b/src/mon/AuthMonitor.cc
+@@ -31,7 +31,7 @@
+ #include "auth/AuthServiceHandler.h"
+ #include "auth/KeyRing.h"
+ #include "include/stringify.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include "mds/MDSAuthCaps.h"
+ #include "osd/OSDCap.h"
+diff --git a/src/mon/ConfigKeyService.cc b/src/mon/ConfigKeyService.cc
+index 848a061f3d..b7cc6d15cd 100644
+--- a/src/mon/ConfigKeyService.cc
++++ b/src/mon/ConfigKeyService.cc
+@@ -23,7 +23,7 @@
+ #include "common/errno.h"
+ #include "include/stringify.h"
+ 
+-#include "include/assert.h" // re-clobber assert()
++#include "include/ceph_assert.h" // re-clobber assert()
+ #define dout_subsys ceph_subsys_mon
+ #undef dout_prefix
+ #define dout_prefix _prefix(_dout, mon, this)
+diff --git a/src/mon/Elector.cc b/src/mon/Elector.cc
+index 0e5bdb4aa1..f5c5e523c3 100644
+--- a/src/mon/Elector.cc
++++ b/src/mon/Elector.cc
+@@ -20,7 +20,7 @@
+ #include "messages/MMonElection.h"
+ 
+ #include "common/config.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_mon
+ #undef dout_prefix
+diff --git a/src/mon/HealthMonitor.cc b/src/mon/HealthMonitor.cc
+index 92d71dd710..bb46bd85b5 100644
+--- a/src/mon/HealthMonitor.cc
++++ b/src/mon/HealthMonitor.cc
+@@ -17,7 +17,7 @@
+ #include <sstream>
+ #include <regex>
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/stringify.h"
+ 
+ #include "mon/Monitor.h"
+diff --git a/src/mon/LogMonitor.cc b/src/mon/LogMonitor.cc
+index 9ed08596ee..bb994c933d 100644
+--- a/src/mon/LogMonitor.cc
++++ b/src/mon/LogMonitor.cc
+@@ -27,7 +27,7 @@
+ #include "common/Graylog.h"
+ #include "common/errno.h"
+ #include "common/strtol.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/str_list.h"
+ #include "include/str_map.h"
+ #include "include/compat.h"
+diff --git a/src/mon/MDSMonitor.cc b/src/mon/MDSMonitor.cc
+index 85598f9077..7222b223b1 100644
+--- a/src/mon/MDSMonitor.cc
++++ b/src/mon/MDSMonitor.cc
+@@ -33,7 +33,7 @@
+ #include "messages/MMonCommand.h"
+ #include "messages/MGenericMessage.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/str_list.h"
+ #include "include/stringify.h"
+ #include "mds/mdstypes.h"
+diff --git a/src/mon/MgrStatMonitor.cc b/src/mon/MgrStatMonitor.cc
+index 9db8ac4e86..ab1a1fc108 100644
+--- a/src/mon/MgrStatMonitor.cc
++++ b/src/mon/MgrStatMonitor.cc
+@@ -11,7 +11,7 @@
+ #include "messages/MStatfsReply.h"
+ #include "messages/MServiceMap.h"
+ 
+-#include "include/assert.h"	// re-clobber assert
++#include "include/ceph_assert.h"	// re-clobber assert
+ 
+ #define dout_subsys ceph_subsys_mon
+ #undef dout_prefix
+diff --git a/src/mon/MonCap.cc b/src/mon/MonCap.cc
+index 6340ad7b14..f54cc0fc5d 100644
+--- a/src/mon/MonCap.cc
++++ b/src/mon/MonCap.cc
+@@ -28,7 +28,7 @@
+ #include <algorithm>
+ #include <regex>
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ static inline bool is_not_alnum_space(char c)
+ {
+diff --git a/src/mon/Monitor.cc b/src/mon/Monitor.cc
+index 8cc63773d9..3812aa13fb 100644
+--- a/src/mon/Monitor.cc
++++ b/src/mon/Monitor.cc
+@@ -81,7 +81,7 @@
+ #include "mon/ConfigKeyService.h"
+ #include "common/config.h"
+ #include "common/cmdparse.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/compat.h"
+ #include "perfglue/heap_profiler.h"
+ 
+diff --git a/src/mon/MonitorDBStore.h b/src/mon/MonitorDBStore.h
+index f1e0efd7da..bf1772dec9 100644
+--- a/src/mon/MonitorDBStore.h
++++ b/src/mon/MonitorDBStore.h
+@@ -23,7 +23,7 @@
+ #include <fstream>
+ #include "kv/KeyValueDB.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/Formatter.h"
+ #include "common/Finisher.h"
+ #include "common/errno.h"
+diff --git a/src/mon/MonmapMonitor.cc b/src/mon/MonmapMonitor.cc
+index a6be9a6d06..caa84363bf 100644
+--- a/src/mon/MonmapMonitor.cc
++++ b/src/mon/MonmapMonitor.cc
+@@ -23,7 +23,7 @@
+ #include "common/config.h"
+ #include "common/cmdparse.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/stringify.h"
+ 
+ #define dout_subsys ceph_subsys_mon
+diff --git a/src/mon/OSDMonitor.cc b/src/mon/OSDMonitor.cc
+index 4915d3b581..d65b1b26cf 100644
+--- a/src/mon/OSDMonitor.cc
++++ b/src/mon/OSDMonitor.cc
+@@ -68,7 +68,7 @@
+ #include "common/Checksummer.h"
+ 
+ #include "include/compat.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/stringify.h"
+ #include "include/util.h"
+ #include "common/cmdparse.h"
+diff --git a/src/mon/OSDMonitor.h b/src/mon/OSDMonitor.h
+index f1864d5a36..32b40696fd 100644
+--- a/src/mon/OSDMonitor.h
++++ b/src/mon/OSDMonitor.h
+@@ -44,7 +44,7 @@ class MOSDMap;
+ #include "mon/MonOpRequest.h"
+ #include <boost/functional/hash.hpp>
+ // re-include our assert to clobber the system one; fix dout:
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ /// information about a particular peer's failure reports for one osd
+ struct failure_reporter_t {
+diff --git a/src/mon/Paxos.cc b/src/mon/Paxos.cc
+index 008642bfa3..7396e6b03a 100644
+--- a/src/mon/Paxos.cc
++++ b/src/mon/Paxos.cc
+@@ -19,7 +19,7 @@
+ 
+ #include "mon/mon_types.h"
+ #include "common/config.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/stringify.h"
+ #include "common/Timer.h"
+ #include "messages/PaxosServiceMessage.h"
+diff --git a/src/mon/PaxosFSMap.h b/src/mon/PaxosFSMap.h
+index e1ee081424..7ef5a27214 100644
+--- a/src/mon/PaxosFSMap.h
++++ b/src/mon/PaxosFSMap.h
+@@ -18,7 +18,7 @@
+ #include "mds/FSMap.h"
+ #include "mds/MDSMap.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ class PaxosFSMap {
+ public:
+diff --git a/src/mon/PaxosService.cc b/src/mon/PaxosService.cc
+index 06075f97cc..37dfcd3bc1 100644
+--- a/src/mon/PaxosService.cc
++++ b/src/mon/PaxosService.cc
+@@ -16,7 +16,7 @@
+ #include "common/Clock.h"
+ #include "common/config.h"
+ #include "include/stringify.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "mon/MonOpRequest.h"
+ 
+ #define dout_subsys ceph_subsys_paxos
+diff --git a/src/msg/Connection.h b/src/msg/Connection.h
+index a19092b93e..d4265fc98b 100644
+--- a/src/msg/Connection.h
++++ b/src/msg/Connection.h
+@@ -20,7 +20,7 @@
+ 
+ #include <boost/intrusive_ptr.hpp>
+ // Because intusive_ptr clobbers our assert...
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include "include/types.h"
+ #include "include/buffer.h"
+diff --git a/src/msg/DispatchQueue.h b/src/msg/DispatchQueue.h
+index 5569881936..e3507e741f 100644
+--- a/src/msg/DispatchQueue.h
++++ b/src/msg/DispatchQueue.h
+@@ -18,7 +18,7 @@
+ #include <atomic>
+ #include <map>
+ #include <boost/intrusive_ptr.hpp>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/xlist.h"
+ #include "common/Mutex.h"
+ #include "common/Cond.h"
+diff --git a/src/msg/Dispatcher.h b/src/msg/Dispatcher.h
+index faab248d60..1aca2d2cc5 100644
+--- a/src/msg/Dispatcher.h
++++ b/src/msg/Dispatcher.h
+@@ -18,7 +18,7 @@
+ 
+ #include <memory>
+ #include "include/buffer_fwd.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ class Messenger;
+ class Message;
+diff --git a/src/msg/Message.h b/src/msg/Message.h
+index d3be1efb98..7eb87d39ae 100644
+--- a/src/msg/Message.h
++++ b/src/msg/Message.h
+@@ -21,7 +21,7 @@
+ #include <boost/intrusive_ptr.hpp>
+ #include <boost/intrusive/list.hpp>
+ // Because intrusive_ptr clobbers our assert...
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include "include/types.h"
+ #include "include/buffer.h"
+diff --git a/src/msg/async/AsyncMessenger.h b/src/msg/async/AsyncMessenger.h
+index 64f2e610ab..c6a4c7b287 100644
+--- a/src/msg/async/AsyncMessenger.h
++++ b/src/msg/async/AsyncMessenger.h
+@@ -35,7 +35,7 @@
+ #include "AsyncConnection.h"
+ #include "Event.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ class AsyncMessenger;
+ 
+diff --git a/src/msg/async/Stack.cc b/src/msg/async/Stack.cc
+index 9eeb9bd910..77e41c3755 100644
+--- a/src/msg/async/Stack.cc
++++ b/src/msg/async/Stack.cc
+@@ -28,7 +28,7 @@
+ #endif
+ 
+ #include "common/dout.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_ms
+ #undef dout_prefix
+diff --git a/src/msg/async/dpdk/DPDK.cc b/src/msg/async/dpdk/DPDK.cc
+index d76101cb2f..94f9ead8bf 100644
+--- a/src/msg/async/dpdk/DPDK.cc
++++ b/src/msg/async/dpdk/DPDK.cc
+@@ -43,7 +43,7 @@
+ #include "common/Cycles.h"
+ #include "common/dout.h"
+ #include "common/errno.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_dpdk
+ #undef dout_prefix
+diff --git a/src/msg/async/dpdk/DPDKStack.cc b/src/msg/async/dpdk/DPDKStack.cc
+index 9772d0f08b..87429106af 100644
+--- a/src/msg/async/dpdk/DPDKStack.cc
++++ b/src/msg/async/dpdk/DPDKStack.cc
+@@ -47,7 +47,7 @@
+ #include "TCP-Stack.h"
+ 
+ #include "common/dout.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/Cond.h"
+ 
+ #define dout_subsys ceph_subsys_dpdk
+diff --git a/src/msg/async/dpdk/EventDPDK.cc b/src/msg/async/dpdk/EventDPDK.cc
+index 0a80bc7a02..5d291716c7 100644
+--- a/src/msg/async/dpdk/EventDPDK.cc
++++ b/src/msg/async/dpdk/EventDPDK.cc
+@@ -19,7 +19,7 @@
+ #include "EventDPDK.h"
+ 
+ #include "common/dout.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_ms
+ 
+diff --git a/src/msg/async/dpdk/IP.cc b/src/msg/async/dpdk/IP.cc
+index 2ad9dadcf5..f730cded9e 100644
+--- a/src/msg/async/dpdk/IP.cc
++++ b/src/msg/async/dpdk/IP.cc
+@@ -41,7 +41,7 @@
+ #include "toeplitz.h"
+ 
+ #include "common/dout.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_dpdk
+ #undef dout_prefix
+diff --git a/src/msg/async/dpdk/TCP.cc b/src/msg/async/dpdk/TCP.cc
+index 3fd8341e75..fcbd4c5be6 100644
+--- a/src/msg/async/dpdk/TCP.cc
++++ b/src/msg/async/dpdk/TCP.cc
+@@ -26,7 +26,7 @@
+ #include "DPDKStack.h"
+ 
+ #include "common/dout.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_dpdk
+ #undef dout_prefix
+diff --git a/src/msg/async/dpdk/UserspaceEvent.cc b/src/msg/async/dpdk/UserspaceEvent.cc
+index 25b082d613..e320499acd 100644
+--- a/src/msg/async/dpdk/UserspaceEvent.cc
++++ b/src/msg/async/dpdk/UserspaceEvent.cc
+@@ -16,7 +16,7 @@
+ #include "UserspaceEvent.h"
+ 
+ #include "common/dout.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_dpdk
+ #undef dout_prefix
+diff --git a/src/msg/async/dpdk/UserspaceEvent.h b/src/msg/async/dpdk/UserspaceEvent.h
+index 1a725a667d..b2a89172d7 100644
+--- a/src/msg/async/dpdk/UserspaceEvent.h
++++ b/src/msg/async/dpdk/UserspaceEvent.h
+@@ -23,7 +23,7 @@
+ #include <vector>
+ #include <list>
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/int_types.h"
+ #include "common/Tub.h"
+ 
+diff --git a/src/msg/async/dpdk/ethernet.h b/src/msg/async/dpdk/ethernet.h
+index 17546d73a1..18206d4524 100644
+--- a/src/msg/async/dpdk/ethernet.h
++++ b/src/msg/async/dpdk/ethernet.h
+@@ -26,7 +26,7 @@
+ #include <array>
+ #include <sstream>
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "byteorder.h"
+ 
+ struct ethernet_address {
+diff --git a/src/msg/async/dpdk/net.cc b/src/msg/async/dpdk/net.cc
+index 3ef6944682..3353ab8af3 100644
+--- a/src/msg/async/dpdk/net.cc
++++ b/src/msg/async/dpdk/net.cc
+@@ -33,7 +33,7 @@
+ #include "DPDKStack.h"
+ 
+ #include "common/dout.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_dpdk
+ #undef dout_prefix
+diff --git a/src/msg/async/rdma/Infiniband.h b/src/msg/async/rdma/Infiniband.h
+index 677c0374f6..c8010ab3e7 100644
+--- a/src/msg/async/rdma/Infiniband.h
++++ b/src/msg/async/rdma/Infiniband.h
+@@ -19,7 +19,7 @@
+ 
+ #include <boost/pool/pool.hpp>
+ // need this because boost messes with ceph log/assert definitions
+-#include <include/assert.h>
++#include <include/ceph_assert.h>
+ 
+ #include <infiniband/verbs.h>
+ 
+diff --git a/src/msg/simple/SimpleMessenger.h b/src/msg/simple/SimpleMessenger.h
+index cbde220765..3ec384307f 100644
+--- a/src/msg/simple/SimpleMessenger.h
++++ b/src/msg/simple/SimpleMessenger.h
+@@ -33,7 +33,7 @@
+ 
+ #include "msg/SimplePolicyMessenger.h"
+ #include "msg/Message.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include "msg/DispatchQueue.h"
+ #include "Pipe.h"
+diff --git a/src/msg/xio/XioConnection.cc b/src/msg/xio/XioConnection.cc
+index 25ac215449..1a065c97ad 100644
+--- a/src/msg/xio/XioConnection.cc
++++ b/src/msg/xio/XioConnection.cc
+@@ -20,7 +20,7 @@
+ #include "msg/msg_types.h"
+ #include "auth/none/AuthNoneProtocol.h" // XXX
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/dout.h"
+ 
+ extern struct xio_mempool *xio_msgr_mpool;
+diff --git a/src/msg/xio/XioPortal.h b/src/msg/xio/XioPortal.h
+index c22d891b3e..3f46ceae67 100644
+--- a/src/msg/xio/XioPortal.h
++++ b/src/msg/xio/XioPortal.h
+@@ -29,7 +29,7 @@ extern "C" {
+ 
+ #include "include/spinlock.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/dout.h"
+ 
+ #ifndef CACHE_LINE_SIZE
+diff --git a/src/os/bluestore/Allocator.h b/src/os/bluestore/Allocator.h
+index d3a48db650..675ffd421f 100644
+--- a/src/os/bluestore/Allocator.h
++++ b/src/os/bluestore/Allocator.h
+@@ -13,7 +13,7 @@
+ #define CEPH_OS_BLUESTORE_ALLOCATOR_H
+ 
+ #include <ostream>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "os/bluestore/bluestore_types.h"
+ 
+ class Allocator {
+diff --git a/src/os/bluestore/BlockDevice.h b/src/os/bluestore/BlockDevice.h
+index 262619919c..487b66c8b8 100644
+--- a/src/os/bluestore/BlockDevice.h
++++ b/src/os/bluestore/BlockDevice.h
+@@ -30,7 +30,7 @@
+ #ifdef HAVE_LIBAIO
+ #include "aio.h"
+ #endif
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/buffer.h"
+ #include "include/interval_set.h"
+ #define SPDK_PREFIX "spdk:"
+diff --git a/src/os/bluestore/BlueFS.cc b/src/os/bluestore/BlueFS.cc
+index e13675cd5e..ccecc33e63 100644
+--- a/src/os/bluestore/BlueFS.cc
++++ b/src/os/bluestore/BlueFS.cc
+@@ -9,7 +9,7 @@
+ #include "common/perf_counters.h"
+ #include "BlockDevice.h"
+ #include "Allocator.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context cct
+ #define dout_subsys ceph_subsys_bluefs
+diff --git a/src/os/bluestore/BlueRocksEnv.h b/src/os/bluestore/BlueRocksEnv.h
+index 909e1b1c17..486d164320 100644
+--- a/src/os/bluestore/BlueRocksEnv.h
++++ b/src/os/bluestore/BlueRocksEnv.h
+@@ -9,7 +9,7 @@
+ #include "rocksdb/status.h"
+ #include "rocksdb/utilities/env_mirror.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ class BlueFS;
+ 
+diff --git a/src/os/bluestore/BlueStore.h b/src/os/bluestore/BlueStore.h
+index 2c0ff2e383..6042c77a00 100644
+--- a/src/os/bluestore/BlueStore.h
++++ b/src/os/bluestore/BlueStore.h
+@@ -29,7 +29,7 @@
+ #include <boost/functional/hash.hpp>
+ #include <boost/dynamic_bitset.hpp>
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/unordered_map.h"
+ #include "include/memory.h"
+ #include "include/mempool.h"
+diff --git a/src/os/filestore/BtrfsFileStoreBackend.cc b/src/os/filestore/BtrfsFileStoreBackend.cc
+index 8718432ec6..4f1c60db02 100644
+--- a/src/os/filestore/BtrfsFileStoreBackend.cc
++++ b/src/os/filestore/BtrfsFileStoreBackend.cc
+@@ -26,7 +26,7 @@
+ #include "include/linux_fiemap.h"
+ #include "include/color.h"
+ #include "include/buffer.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #ifndef __CYGWIN__
+ #include "os/fs/btrfs_ioctl.h"
+diff --git a/src/os/filestore/DBObjectMap.cc b/src/os/filestore/DBObjectMap.cc
+index 2dae0b3e5f..acb1a26137 100644
+--- a/src/os/filestore/DBObjectMap.cc
++++ b/src/os/filestore/DBObjectMap.cc
+@@ -17,7 +17,7 @@
+ 
+ #include "common/debug.h"
+ #include "common/config.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context cct
+ #define dout_subsys ceph_subsys_filestore
+diff --git a/src/os/filestore/FileJournal.h b/src/os/filestore/FileJournal.h
+index b3110c0a93..475611250b 100644
+--- a/src/os/filestore/FileJournal.h
++++ b/src/os/filestore/FileJournal.h
+@@ -33,7 +33,7 @@ using std::deque;
+ #endif
+ 
+ // re-include our assert to clobber the system one; fix dout:
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ /**
+  * Implements journaling on top of block device or file.
+diff --git a/src/os/filestore/FileStore.cc b/src/os/filestore/FileStore.cc
+index 37a7d9e854..a4b3dbece9 100644
+--- a/src/os/filestore/FileStore.cc
++++ b/src/os/filestore/FileStore.cc
+@@ -76,7 +76,7 @@
+ #include "common/ceph_crypto.h"
+ using ceph::crypto::SHA1;
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include "common/config.h"
+ #include "common/blkdev.h"
+diff --git a/src/os/filestore/FileStore.h b/src/os/filestore/FileStore.h
+index 285721d7f4..e28814054b 100644
+--- a/src/os/filestore/FileStore.h
++++ b/src/os/filestore/FileStore.h
+@@ -28,7 +28,7 @@
+ 
+ #include "include/unordered_map.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include "os/ObjectStore.h"
+ #include "JournalingObjectStore.h"
+diff --git a/src/os/filestore/JournalThrottle.cc b/src/os/filestore/JournalThrottle.cc
+index 4a100c6b39..8475bbbfd1 100644
+--- a/src/os/filestore/JournalThrottle.cc
++++ b/src/os/filestore/JournalThrottle.cc
+@@ -2,7 +2,7 @@
+ // vim: ts=8 sw=2 smarttab
+ 
+ #include "JournalThrottle.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ bool JournalThrottle::set_params(
+   double _low_threshhold,
+diff --git a/src/os/filestore/XfsFileStoreBackend.cc b/src/os/filestore/XfsFileStoreBackend.cc
+index 8a23685160..1081d146aa 100644
+--- a/src/os/filestore/XfsFileStoreBackend.cc
++++ b/src/os/filestore/XfsFileStoreBackend.cc
+@@ -25,7 +25,7 @@
+ 
+ #include "common/errno.h"
+ #include "common/linux_version.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/compat.h"
+ 
+ #define dout_context cct()
+diff --git a/src/os/filestore/ZFSFileStoreBackend.cc b/src/os/filestore/ZFSFileStoreBackend.cc
+index 1a6b63bbd7..e85dbd5263 100644
+--- a/src/os/filestore/ZFSFileStoreBackend.cc
++++ b/src/os/filestore/ZFSFileStoreBackend.cc
+@@ -16,7 +16,7 @@
+ #include "include/linux_fiemap.h"
+ #include "include/color.h"
+ #include "include/buffer.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include <iostream>
+ #include <fstream>
+diff --git a/src/os/filestore/chain_xattr.cc b/src/os/filestore/chain_xattr.cc
+index aa9ce2502f..806369fdc3 100644
+--- a/src/os/filestore/chain_xattr.cc
++++ b/src/os/filestore/chain_xattr.cc
+@@ -6,14 +6,14 @@
+ #include <stdio.h>           // for size_t, snprintf
+ #include <stdlib.h>          // for free, malloc
+ #include <string.h>          // for strcpy, strlen
+-#include "include/assert.h"  // for assert
++#include "include/ceph_assert.h"  // for assert
+ #include "include/buffer.h"
+ 
+ #if defined(__linux__)
+ #include <linux/fs.h>
+ #endif
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ /*
+  * chaining xattrs
+diff --git a/src/os/filestore/chain_xattr.h b/src/os/filestore/chain_xattr.h
+index ce7c558249..a2d17fa64a 100644
+--- a/src/os/filestore/chain_xattr.h
++++ b/src/os/filestore/chain_xattr.h
+@@ -8,7 +8,7 @@
+ #include <errno.h>
+ #include <stdio.h>
+ #include "common/xattr.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/buffer_fwd.h"
+ 
+ #if defined(__linux__)
+diff --git a/src/os/kstore/KStore.h b/src/os/kstore/KStore.h
+index e5cbfbf312..6906b03864 100644
+--- a/src/os/kstore/KStore.h
++++ b/src/os/kstore/KStore.h
+@@ -23,7 +23,7 @@
+ #include <mutex>
+ #include <condition_variable>
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/unordered_map.h"
+ #include "include/memory.h"
+ #include "common/Finisher.h"
+diff --git a/src/os/memstore/MemStore.h b/src/os/memstore/MemStore.h
+index f31320fc1b..1a72477ded 100644
+--- a/src/os/memstore/MemStore.h
++++ b/src/os/memstore/MemStore.h
+@@ -26,7 +26,7 @@
+ #include "common/RWLock.h"
+ #include "os/ObjectStore.h"
+ #include "PageSet.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ class MemStore : public ObjectStore {
+ public:
+diff --git a/src/osd/ECUtil.h b/src/osd/ECUtil.h
+index fb2e8ad283..322b2c0388 100644
+--- a/src/osd/ECUtil.h
++++ b/src/osd/ECUtil.h
+@@ -18,7 +18,7 @@
+ #include <ostream>
+ #include "erasure-code/ErasureCodeInterface.h"
+ #include "include/buffer_fwd.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/encoding.h"
+ #include "common/Formatter.h"
+ 
+diff --git a/src/osd/OSD.cc b/src/osd/OSD.cc
+index 5ff1d6c58e..5182d80a0c 100644
+--- a/src/osd/OSD.cc
++++ b/src/osd/OSD.cc
+@@ -146,7 +146,7 @@
+ #include "include/str_list.h"
+ #include "include/util.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/config.h"
+ #include "common/EventTrace.h"
+ 
+diff --git a/src/osd/OpRequest.cc b/src/osd/OpRequest.cc
+index 51d54c6ad5..40830165ef 100644
+--- a/src/osd/OpRequest.cc
++++ b/src/osd/OpRequest.cc
+@@ -10,7 +10,7 @@
+ #include "messages/MOSDOp.h"
+ #include "messages/MOSDRepOp.h"
+ #include "messages/MOSDRepOpReply.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "osd/osd_types.h"
+ 
+ #ifdef WITH_LTTNG
+diff --git a/src/osd/PG.h b/src/osd/PG.h
+index bcd884a435..1f0f5f06b4 100644
+--- a/src/osd/PG.h
++++ b/src/osd/PG.h
+@@ -29,7 +29,7 @@
+ #include "include/mempool.h"
+ 
+ // re-include our assert to clobber boost's
+-#include "include/assert.h" 
++#include "include/ceph_assert.h" 
+ 
+ #include "include/types.h"
+ #include "include/stringify.h"
+diff --git a/src/osd/PGLog.h b/src/osd/PGLog.h
+index 3ef21d553b..cb0e038f94 100644
+--- a/src/osd/PGLog.h
++++ b/src/osd/PGLog.h
+@@ -17,7 +17,7 @@
+ #pragma once
+ 
+ // re-include our assert to clobber boost's
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "osd_types.h"
+ #include "os/ObjectStore.h"
+ #include <list>
+diff --git a/src/osd/PrimaryLogPG.cc b/src/osd/PrimaryLogPG.cc
+index eeb2de2bc1..705a7733f3 100644
+--- a/src/osd/PrimaryLogPG.cc
++++ b/src/osd/PrimaryLogPG.cc
+@@ -50,7 +50,7 @@
+ #include "osdc/Objecter.h"
+ #include "json_spirit/json_spirit_value.h"
+ #include "json_spirit/json_spirit_reader.h"
+-#include "include/assert.h"  // json_spirit clobbers it
++#include "include/ceph_assert.h"  // json_spirit clobbers it
+ #include "include/rados/rados_types.hpp"
+ 
+ #ifdef WITH_LTTNG
+diff --git a/src/osd/PrimaryLogPG.h b/src/osd/PrimaryLogPG.h
+index 1d3737dfb5..9c4e91b073 100644
+--- a/src/osd/PrimaryLogPG.h
++++ b/src/osd/PrimaryLogPG.h
+@@ -18,7 +18,7 @@
+ #define CEPH_REPLICATEDPG_H
+ 
+ #include <boost/tuple/tuple.hpp>
+-#include "include/assert.h" 
++#include "include/ceph_assert.h" 
+ #include "PG.h"
+ #include "Watch.h"
+ #include "TierAgentState.h"
+diff --git a/src/osd/mClockOpClassSupport.cc b/src/osd/mClockOpClassSupport.cc
+index 5ff4fd76d1..231c0839d6 100644
+--- a/src/osd/mClockOpClassSupport.cc
++++ b/src/osd/mClockOpClassSupport.cc
+@@ -17,7 +17,7 @@
+ #include "osd/mClockOpClassSupport.h"
+ #include "osd/OpQueueItem.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ namespace ceph {
+ 
+diff --git a/src/osdc/Journaler.cc b/src/osdc/Journaler.cc
+index 63cf435e4c..003176ea0d 100644
+--- a/src/osdc/Journaler.cc
++++ b/src/osdc/Journaler.cc
+@@ -18,7 +18,7 @@
+ #include "msg/Messenger.h"
+ #include "osdc/Journaler.h"
+ #include "common/errno.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/Finisher.h"
+ 
+ #define dout_subsys ceph_subsys_journaler
+diff --git a/src/osdc/ObjectCacher.cc b/src/osdc/ObjectCacher.cc
+index 249f24636f..423e03551d 100644
+--- a/src/osdc/ObjectCacher.cc
++++ b/src/osdc/ObjectCacher.cc
+@@ -9,7 +9,7 @@
+ #include "common/errno.h"
+ #include "common/perf_counters.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define MAX_FLUSH_UNDER_LOCK 20  ///< max bh's we start writeback on
+ #define BUFFER_MEMORY_WEIGHT 12   // memory usage of BufferHead, count in (1<<n)
+diff --git a/src/osdc/Objecter.h b/src/osdc/Objecter.h
+index 20c7825f9d..5dd1bdc807 100644
+--- a/src/osdc/Objecter.h
++++ b/src/osdc/Objecter.h
+@@ -25,7 +25,7 @@
+ 
+ #include <boost/thread/shared_mutex.hpp>
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/buffer.h"
+ #include "include/types.h"
+ #include "include/rados/rados_types.hpp"
+diff --git a/src/rbd_replay/ActionTypes.cc b/src/rbd_replay/ActionTypes.cc
+index 167bf85223..d8950f8606 100644
+--- a/src/rbd_replay/ActionTypes.cc
++++ b/src/rbd_replay/ActionTypes.cc
+@@ -2,7 +2,7 @@
+ // vim: ts=8 sw=2 smarttab
+ 
+ #include "rbd_replay/ActionTypes.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/byteorder.h"
+ #include "include/stringify.h"
+ #include "common/Formatter.h"
+diff --git a/src/rbd_replay/BufferReader.cc b/src/rbd_replay/BufferReader.cc
+index 631c17e7a9..61e18bc6c8 100644
+--- a/src/rbd_replay/BufferReader.cc
++++ b/src/rbd_replay/BufferReader.cc
+@@ -2,7 +2,7 @@
+ // vim: ts=8 sw=2 smarttab
+ 
+ #include "rbd_replay/BufferReader.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/intarith.h"
+ 
+ namespace rbd_replay {
+diff --git a/src/rbd_replay/rbd_loc.cc b/src/rbd_replay/rbd_loc.cc
+index fea73c3836..73cdecf6e2 100644
+--- a/src/rbd_replay/rbd_loc.cc
++++ b/src/rbd_replay/rbd_loc.cc
+@@ -13,7 +13,7 @@
+  */
+ 
+ #include "rbd_loc.hpp"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ 
+ using namespace std;
+diff --git a/src/rbd_replay/rbd_replay_debug.hpp b/src/rbd_replay/rbd_replay_debug.hpp
+index 3b9683f585..4b44588b4b 100644
+--- a/src/rbd_replay/rbd_replay_debug.hpp
++++ b/src/rbd_replay/rbd_replay_debug.hpp
+@@ -16,7 +16,7 @@
+ #define _INCLUDED_RBD_REPLAY_DEBUG_H
+ 
+ #include "common/debug.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ namespace rbd_replay {
+ 
+diff --git a/src/rgw/rgw_asio_client.h b/src/rgw/rgw_asio_client.h
+index 5a9957b46c..d9a3c52ba0 100644
+--- a/src/rgw/rgw_asio_client.h
++++ b/src/rgw/rgw_asio_client.h
+@@ -6,7 +6,7 @@
+ #include <boost/asio/ip/tcp.hpp>
+ #include <boost/beast/core.hpp>
+ #include <boost/beast/http.hpp>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include "rgw_client_io.h"
+ 
+diff --git a/src/rgw/rgw_cache.h b/src/rgw/rgw_cache.h
+index af94de8248..5dd58e444a 100644
+--- a/src/rgw/rgw_cache.h
++++ b/src/rgw/rgw_cache.h
+@@ -10,7 +10,7 @@
+ #include <unordered_map>
+ #include "include/types.h"
+ #include "include/utime.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/RWLock.h"
+ 
+ enum {
+diff --git a/src/rgw/rgw_coroutine.cc b/src/rgw/rgw_coroutine.cc
+index fecfbb4c67..7a7942358f 100644
+--- a/src/rgw/rgw_coroutine.cc
++++ b/src/rgw/rgw_coroutine.cc
+@@ -3,7 +3,7 @@
+ #include "rgw_coroutine.h"
+ 
+ // re-include our assert to clobber the system one; fix dout:
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include <boost/asio/yield.hpp>
+ 
+diff --git a/src/rgw/rgw_cr_rados.h b/src/rgw/rgw_cr_rados.h
+index c603e20c5a..c6d6d53d3d 100644
+--- a/src/rgw/rgw_cr_rados.h
++++ b/src/rgw/rgw_cr_rados.h
+@@ -2,7 +2,7 @@
+ #define CEPH_RGW_CR_RADOS_H
+ 
+ #include <boost/intrusive_ptr.hpp>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "rgw_coroutine.h"
+ #include "rgw_rados.h"
+ #include "common/WorkQueue.h"
+diff --git a/src/rgw/rgw_cr_rest.cc b/src/rgw/rgw_cr_rest.cc
+index 7b5b05bd8e..15465534e7 100644
+--- a/src/rgw/rgw_cr_rest.cc
++++ b/src/rgw/rgw_cr_rest.cc
+@@ -3,7 +3,7 @@
+ #include "rgw_coroutine.h"
+ 
+ // re-include our assert to clobber the system one; fix dout:
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include <boost/asio/yield.hpp>
+ 
+diff --git a/src/rgw/rgw_cr_rest.h b/src/rgw/rgw_cr_rest.h
+index 0518edcb1e..769760a938 100644
+--- a/src/rgw/rgw_cr_rest.h
++++ b/src/rgw/rgw_cr_rest.h
+@@ -3,7 +3,7 @@
+ 
+ #include <boost/intrusive_ptr.hpp>
+ #include <mutex>
+-#include "include/assert.h" // boost header clobbers our assert.h
++#include "include/ceph_assert.h" // boost header clobbers our assert.h
+ 
+ #include "rgw_coroutine.h"
+ #include "rgw_rest_conn.h"
+diff --git a/src/rgw/rgw_crypt.cc b/src/rgw/rgw_crypt.cc
+index 03dcf6df49..a1d4265891 100644
+--- a/src/rgw/rgw_crypt.cc
++++ b/src/rgw/rgw_crypt.cc
+@@ -8,7 +8,7 @@
+ #include <auth/Crypto.h>
+ #include <rgw/rgw_b64.h>
+ #include <rgw/rgw_rest_s3.h>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include <boost/utility/string_view.hpp>
+ #include <rgw/rgw_keystone.h>
+ #include "include/str_map.h"
+diff --git a/src/rgw/rgw_env.cc b/src/rgw/rgw_env.cc
+index 813c867856..95b6eeca5d 100644
+--- a/src/rgw/rgw_env.cc
++++ b/src/rgw/rgw_env.cc
+@@ -6,7 +6,7 @@
+ 
+ #include <string>
+ #include <map>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "rgw_crypt_sanitize.h"
+ 
+ #define dout_context g_ceph_context
+diff --git a/src/rgw/rgw_file.h b/src/rgw/rgw_file.h
+index 901252d777..bb543174ae 100644
+--- a/src/rgw/rgw_file.h
++++ b/src/rgw/rgw_file.h
+@@ -41,7 +41,7 @@
+  * ASSERT_H somehow not defined after all the above (which bring
+  * in common/debug.h [e.g., dout])
+  */
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ 
+ #define RGW_RWXMODE  (S_IRWXU | S_IRWXG | S_IRWXO)
+diff --git a/src/rgw/rgw_frontend.cc b/src/rgw/rgw_frontend.cc
+index 23cf115a47..f22ec12454 100644
+--- a/src/rgw/rgw_frontend.cc
++++ b/src/rgw/rgw_frontend.cc
+@@ -6,7 +6,7 @@
+ #include "rgw_frontend.h"
+ #include "include/str_list.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ 
+ #define dout_context g_ceph_context
+diff --git a/src/rgw/rgw_ldap.cc b/src/rgw/rgw_ldap.cc
+index 185602f135..9c1e69476a 100644
+--- a/src/rgw/rgw_ldap.cc
++++ b/src/rgw/rgw_ldap.cc
+@@ -9,7 +9,7 @@
+ #include "common/safe_io.h"
+ #include <boost/algorithm/string.hpp>
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_rgw
+ 
+diff --git a/src/rgw/rgw_ldap.h b/src/rgw/rgw_ldap.h
+index 2f7316ccf7..aeb5f6134e 100644
+--- a/src/rgw/rgw_ldap.h
++++ b/src/rgw/rgw_ldap.h
+@@ -136,7 +136,7 @@ namespace rgw {
+ #include "common/safe_io.h"
+ #include <boost/algorithm/string.hpp>
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ std::string parse_rgw_ldap_bindpw(CephContext* ctx);
+ 
+diff --git a/src/rgw/rgw_lib.h b/src/rgw/rgw_lib.h
+index 7ab037f593..de4a1fe024 100644
+--- a/src/rgw/rgw_lib.h
++++ b/src/rgw/rgw_lib.h
+@@ -14,7 +14,7 @@
+ #include "rgw_process.h"
+ #include "rgw_rest_s3.h" // RGW_Auth_S3
+ #include "rgw_ldap.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ class OpsLogSocket;
+ 
+diff --git a/src/rgw/rgw_metadata.cc b/src/rgw/rgw_metadata.cc
+index 0c6ac0a922..2225c32afc 100644
+--- a/src/rgw/rgw_metadata.cc
++++ b/src/rgw/rgw_metadata.cc
+@@ -13,7 +13,7 @@
+ 
+ #include "rgw_cr_rados.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include <boost/asio/yield.hpp>
+ 
+ #define dout_subsys ceph_subsys_rgw
+diff --git a/src/rgw/rgw_op.cc b/src/rgw/rgw_op.cc
+index 4d95edb425..afb704f6fd 100644
+--- a/src/rgw/rgw_op.cc
++++ b/src/rgw/rgw_op.cc
+@@ -45,7 +45,7 @@
+ #include "cls/rgw/cls_rgw_client.h"
+ 
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include "compressor/Compressor.h"
+ 
+diff --git a/src/rgw/rgw_op.h b/src/rgw/rgw_op.h
+index 22fd91c7f4..603c7bdd43 100644
+--- a/src/rgw/rgw_op.h
++++ b/src/rgw/rgw_op.h
+@@ -44,7 +44,7 @@
+ #include "cls/lock/cls_lock_client.h"
+ #include "cls/rgw/cls_rgw_client.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ using ceph::crypto::SHA1;
+ 
+diff --git a/src/rgw/rgw_period_history.cc b/src/rgw/rgw_period_history.cc
+index 1f0dbee1cd..380331e233 100644
+--- a/src/rgw/rgw_period_history.cc
++++ b/src/rgw/rgw_period_history.cc
+@@ -4,7 +4,7 @@
+ #include "rgw_period_history.h"
+ #include "rgw_rados.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_rgw
+ 
+diff --git a/src/rgw/rgw_period_history.h b/src/rgw/rgw_period_history.h
+index 0796c6116b..11a5c2aa49 100644
+--- a/src/rgw/rgw_period_history.h
++++ b/src/rgw/rgw_period_history.h
+@@ -8,7 +8,7 @@
+ #include <mutex>
+ #include <system_error>
+ #include <boost/intrusive/avl_set.hpp>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/types.h"
+ 
+ namespace bi = boost::intrusive;
+diff --git a/src/rgw/rgw_process.h b/src/rgw/rgw_process.h
+index 699ee1c554..799daf2355 100644
+--- a/src/rgw/rgw_process.h
++++ b/src/rgw/rgw_process.h
+@@ -12,7 +12,7 @@
+ #include "rgw_op.h"
+ #include "rgw_rest.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include "common/WorkQueue.h"
+ #include "common/Throttle.h"
+diff --git a/src/rgw/rgw_realm_watcher.h b/src/rgw/rgw_realm_watcher.h
+index 7ef40f458a..5e76ba0ff0 100644
+--- a/src/rgw/rgw_realm_watcher.h
++++ b/src/rgw/rgw_realm_watcher.h
+@@ -5,7 +5,7 @@
+ #define RGW_REALM_WATCHER_H
+ 
+ #include "include/rados/librados.hpp"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/Timer.h"
+ #include "common/Cond.h"
+ 
+diff --git a/src/rgw/rgw_rest.h b/src/rgw/rgw_rest.h
+index c171a853fb..556d805c7e 100644
+--- a/src/rgw/rgw_rest.h
++++ b/src/rgw/rgw_rest.h
+@@ -10,7 +10,7 @@
+ #include <boost/container/flat_set.hpp>
+ #include "common/sstring.hh"
+ #include "common/ceph_json.h"
+-#include "include/assert.h" /* needed because of common/ceph_json.h */
++#include "include/ceph_assert.h" /* needed because of common/ceph_json.h */
+ #include "rgw_op.h"
+ #include "rgw_formats.h"
+ #include "rgw_client_io.h"
+diff --git a/src/rgw/rgw_rest_config.cc b/src/rgw/rgw_rest_config.cc
+index 3770cec15d..5b6a1cbd38 100644
+--- a/src/rgw/rgw_rest_config.cc
++++ b/src/rgw/rgw_rest_config.cc
+@@ -20,7 +20,7 @@
+ #include "rgw_rest_config.h"
+ #include "rgw_client_io.h"
+ #include "common/errno.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context g_ceph_context
+ #define dout_subsys ceph_subsys_rgw
+diff --git a/src/rgw/rgw_rest_log.cc b/src/rgw/rgw_rest_log.cc
+index 2a8668486b..de7dd5bc13 100644
+--- a/src/rgw/rgw_rest_log.cc
++++ b/src/rgw/rgw_rest_log.cc
+@@ -22,7 +22,7 @@
+ #include "rgw_data_sync.h"
+ #include "rgw_common.h"
+ #include "common/errno.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context g_ceph_context
+ #define LOG_CLASS_LIST_MAX_ENTRIES (1000)
+diff --git a/src/rgw/rgw_rest_metadata.cc b/src/rgw/rgw_rest_metadata.cc
+index 8d7eefec32..2d679a4260 100644
+--- a/src/rgw/rgw_rest_metadata.cc
++++ b/src/rgw/rgw_rest_metadata.cc
+@@ -21,7 +21,7 @@
+ #include "common/errno.h"
+ #include "common/strtol.h"
+ #include "rgw/rgw_b64.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context g_ceph_context
+ #define dout_subsys ceph_subsys_rgw
+diff --git a/src/rgw/rgw_rest_opstate.cc b/src/rgw/rgw_rest_opstate.cc
+index af9c024e13..52e04b5a8d 100644
+--- a/src/rgw/rgw_rest_opstate.cc
++++ b/src/rgw/rgw_rest_opstate.cc
+@@ -19,7 +19,7 @@
+ #include "rgw_rest_opstate.h"
+ #include "rgw_client_io.h"
+ #include "common/errno.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context g_ceph_context
+ #define OPSTATE_LIST_MAX_ENTRIES 1000
+diff --git a/src/rgw/rgw_rest_realm.cc b/src/rgw/rgw_rest_realm.cc
+index 7289d13895..f082beb686 100644
+--- a/src/rgw/rgw_rest_realm.cc
++++ b/src/rgw/rgw_rest_realm.cc
+@@ -6,7 +6,7 @@
+ #include "rgw_rest_s3.h"
+ #include "rgw_rest_config.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_rgw
+ 
+diff --git a/src/rgw/rgw_rest_replica_log.cc b/src/rgw/rgw_rest_replica_log.cc
+index 919815f572..33f23df17f 100644
+--- a/src/rgw/rgw_rest_replica_log.cc
++++ b/src/rgw/rgw_rest_replica_log.cc
+@@ -22,7 +22,7 @@
+ #include "rgw_rest_replica_log.h"
+ #include "rgw_client_io.h"
+ #include "common/errno.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context g_ceph_context
+ #define dout_subsys ceph_subsys_rgw
+diff --git a/src/rgw/rgw_rest_s3.cc b/src/rgw/rgw_rest_s3.cc
+index 67d0712f1f..4d06b9367f 100644
+--- a/src/rgw/rgw_rest_s3.cc
++++ b/src/rgw/rgw_rest_s3.cc
+@@ -43,7 +43,7 @@
+ #include "rgw_crypt.h"
+ #include "rgw_crypt_sanitize.h"
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context g_ceph_context
+ #define dout_subsys ceph_subsys_rgw
+diff --git a/src/rgw/rgw_rest_s3.h b/src/rgw/rgw_rest_s3.h
+index 9e5ef4316a..27451695c9 100644
+--- a/src/rgw/rgw_rest_s3.h
++++ b/src/rgw/rgw_rest_s3.h
+@@ -23,7 +23,7 @@
+ #include "rgw_ldap.h"
+ 
+ #include "rgw_token.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include "rgw_auth.h"
+ #include "rgw_auth_filters.h"
+diff --git a/src/rgw/rgw_rest_swift.cc b/src/rgw/rgw_rest_swift.cc
+index 70cef69f5c..10bbe4fbb1 100644
+--- a/src/rgw/rgw_rest_swift.cc
++++ b/src/rgw/rgw_rest_swift.cc
+@@ -6,7 +6,7 @@
+ #include <boost/optional.hpp>
+ #include <boost/utility/in_place_factory.hpp>
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "ceph_ver.h"
+ 
+ #include "common/Formatter.h"
+diff --git a/src/rgw/rgw_rest_user.cc b/src/rgw/rgw_rest_user.cc
+index ee526e3c03..ec0010eb71 100644
+--- a/src/rgw/rgw_rest_user.cc
++++ b/src/rgw/rgw_rest_user.cc
+@@ -8,7 +8,7 @@
+ #include "rgw_rest_user.h"
+ 
+ #include "include/str_list.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_rgw
+ 
+diff --git a/src/rgw/rgw_sync_log_trim.cc b/src/rgw/rgw_sync_log_trim.cc
+index b14d7e80be..47efd66768 100644
+--- a/src/rgw/rgw_sync_log_trim.cc
++++ b/src/rgw/rgw_sync_log_trim.cc
+@@ -28,7 +28,7 @@
+ #include "rgw_sync.h"
+ 
+ #include <boost/asio/yield.hpp>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_rgw
+ 
+diff --git a/src/rgw/rgw_token.cc b/src/rgw/rgw_token.cc
+index 705bdecfbf..a626ec64e0 100644
+--- a/src/rgw/rgw_token.cc
++++ b/src/rgw/rgw_token.cc
+@@ -21,7 +21,7 @@
+ #include "common/ceph_argparse.h"
+ #include "common/debug.h"
+ #include "global/global_init.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/str_list.h"
+ 
+ #include "rgw_token.h"
+diff --git a/src/rgw/rgw_user.h b/src/rgw/rgw_user.h
+index c9bca868bd..ab1ec13d5c 100644
+--- a/src/rgw/rgw_user.h
++++ b/src/rgw/rgw_user.h
+@@ -6,7 +6,7 @@
+ 
+ #include <string>
+ #include <boost/algorithm/string.hpp>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include "include/types.h"
+ #include "rgw_common.h"
+diff --git a/src/test/encoding/ceph_dencoder.cc b/src/test/encoding/ceph_dencoder.cc
+index dd5a792029..469a1e2c88 100644
+--- a/src/test/encoding/ceph_dencoder.cc
++++ b/src/test/encoding/ceph_dencoder.cc
+@@ -22,7 +22,7 @@
+ #include "common/Formatter.h"
+ #include "common/errno.h"
+ #include "msg/Message.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define TYPE(t)
+ #define TYPE_STRAYDATA(t)
+diff --git a/src/test/fio/fio_ceph_objectstore.cc b/src/test/fio/fio_ceph_objectstore.cc
+index 197ac26751..8fb1957164 100644
+--- a/src/test/fio/fio_ceph_objectstore.cc
++++ b/src/test/fio/fio_ceph_objectstore.cc
+@@ -23,7 +23,7 @@
+ #include <fio.h>
+ #include <optgroup.h>
+ 
+-#include "include/assert.h" // fio.h clobbers our assert.h
++#include "include/ceph_assert.h" // fio.h clobbers our assert.h
+ #include <algorithm>
+ 
+ #define dout_context g_ceph_context
+diff --git a/src/test/journal/test_Journaler.cc b/src/test/journal/test_Journaler.cc
+index 529141de9a..cc7f2c0518 100644
+--- a/src/test/journal/test_Journaler.cc
++++ b/src/test/journal/test_Journaler.cc
+@@ -12,7 +12,7 @@
+ #include "gtest/gtest.h"
+ 
+ // reinclude our assert to clobber the system one
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ class TestJournaler : public RadosTestFixture {
+ public:
+diff --git a/src/test/librados_test_stub/LibradosTestStub.cc b/src/test/librados_test_stub/LibradosTestStub.cc
+index 692f70d736..6d63801d6a 100644
+--- a/src/test/librados_test_stub/LibradosTestStub.cc
++++ b/src/test/librados_test_stub/LibradosTestStub.cc
+@@ -23,7 +23,7 @@
+ #include <deque>
+ #include <list>
+ #include <vector>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/compat.h"
+ 
+ #define dout_context g_ceph_context
+diff --git a/src/test/librados_test_stub/TestClassHandler.cc b/src/test/librados_test_stub/TestClassHandler.cc
+index b8a32dfc50..a83c17493c 100644
+--- a/src/test/librados_test_stub/TestClassHandler.cc
++++ b/src/test/librados_test_stub/TestClassHandler.cc
+@@ -9,7 +9,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include "common/debug.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context g_ceph_context
+ #define dout_subsys ceph_subsys_rados
+diff --git a/src/test/librados_test_stub/TestIoCtxImpl.cc b/src/test/librados_test_stub/TestIoCtxImpl.cc
+index 72836938da..e8be04904a 100644
+--- a/src/test/librados_test_stub/TestIoCtxImpl.cc
++++ b/src/test/librados_test_stub/TestIoCtxImpl.cc
+@@ -6,7 +6,7 @@
+ #include "test/librados_test_stub/TestRadosClient.h"
+ #include "test/librados_test_stub/TestWatchNotify.h"
+ #include "librados/AioCompletionImpl.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/Finisher.h"
+ #include "common/valgrind.h"
+ #include "objclass/objclass.h"
+diff --git a/src/test/librados_test_stub/TestMemRadosClient.h b/src/test/librados_test_stub/TestMemRadosClient.h
+index 26db0795d6..29f26084bc 100644
+--- a/src/test/librados_test_stub/TestMemRadosClient.h
++++ b/src/test/librados_test_stub/TestMemRadosClient.h
+@@ -5,7 +5,7 @@
+ #define CEPH_TEST_MEM_RADOS_CLIENT_H
+ 
+ #include "test/librados_test_stub/TestRadosClient.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include <list>
+ #include <string>
+ 
+diff --git a/src/test/librados_test_stub/TestRadosClient.cc b/src/test/librados_test_stub/TestRadosClient.cc
+index 546973558d..a5642460cc 100644
+--- a/src/test/librados_test_stub/TestRadosClient.cc
++++ b/src/test/librados_test_stub/TestRadosClient.cc
+@@ -4,7 +4,7 @@
+ #include "test/librados_test_stub/TestRadosClient.h"
+ #include "test/librados_test_stub/TestIoCtxImpl.h"
+ #include "librados/AioCompletionImpl.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/ceph_json.h"
+ #include "common/Finisher.h"
+ #include <boost/bind.hpp>
+diff --git a/src/test/librados_test_stub/TestWatchNotify.cc b/src/test/librados_test_stub/TestWatchNotify.cc
+index 427c95f374..368c977347 100644
+--- a/src/test/librados_test_stub/TestWatchNotify.cc
++++ b/src/test/librados_test_stub/TestWatchNotify.cc
+@@ -9,7 +9,7 @@
+ #include "test/librados_test_stub/TestRadosClient.h"
+ #include <boost/bind.hpp>
+ #include <boost/function.hpp>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_rados
+ #undef dout_prefix
+diff --git a/src/test/librgw_file_marker.cc b/src/test/librgw_file_marker.cc
+index a29c8e1f7d..105ab90ee2 100644
+--- a/src/test/librgw_file_marker.cc
++++ b/src/test/librgw_file_marker.cc
+@@ -27,7 +27,7 @@
+ #include "common/ceph_argparse.h"
+ #include "common/debug.h"
+ #include "global/global_init.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_rgw
+ 
+diff --git a/src/test/librgw_file_nfsns.cc b/src/test/librgw_file_nfsns.cc
+index c76555b720..9afa3dc1a2 100644
+--- a/src/test/librgw_file_nfsns.cc
++++ b/src/test/librgw_file_nfsns.cc
+@@ -27,7 +27,7 @@
+ #include "common/ceph_argparse.h"
+ #include "common/debug.h"
+ #include "global/global_init.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_rgw
+ 
+diff --git a/src/test/mon/test-mon-msg.cc b/src/test/mon/test-mon-msg.cc
+index 7e9832057d..988b55077c 100644
+--- a/src/test/mon/test-mon-msg.cc
++++ b/src/test/mon/test-mon-msg.cc
+@@ -35,7 +35,7 @@
+ #include "gtest/gtest.h"
+ 
+ #include "common/config.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include "messages/MMonProbe.h"
+ #include "messages/MRoute.h"
+diff --git a/src/test/mon/test_mon_workloadgen.cc b/src/test/mon/test_mon_workloadgen.cc
+index bc0b47c0da..d546a7578d 100644
+--- a/src/test/mon/test_mon_workloadgen.cc
++++ b/src/test/mon/test_mon_workloadgen.cc
+@@ -50,7 +50,7 @@
+ #include "auth/KeyRing.h"
+ #include "auth/AuthAuthorizeHandler.h"
+ #include "include/uuid.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include "messages/MOSDBoot.h"
+ #include "messages/MOSDAlive.h"
+diff --git a/src/test/msgr/test_msgr.cc b/src/test/msgr/test_msgr.cc
+index 491e755378..f916639342 100644
+--- a/src/test/msgr/test_msgr.cc
++++ b/src/test/msgr/test_msgr.cc
+@@ -39,7 +39,7 @@
+ typedef boost::mt11213b gen_type;
+ 
+ #include "common/dout.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_subsys ceph_subsys_ms
+ #undef dout_prefix
+diff --git a/src/test/objectstore/DeterministicOpSequence.cc b/src/test/objectstore/DeterministicOpSequence.cc
+index 91390a6db2..941e92f61c 100644
+--- a/src/test/objectstore/DeterministicOpSequence.cc
++++ b/src/test/objectstore/DeterministicOpSequence.cc
+@@ -27,7 +27,7 @@
+ 
+ #include "DeterministicOpSequence.h"
+ #include "common/config.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context g_ceph_context
+ #define dout_subsys ceph_subsys_filestore
+diff --git a/src/test/objectstore/TestObjectStoreState.cc b/src/test/objectstore/TestObjectStoreState.cc
+index 61cba8d9ce..2c526a4fff 100644
+--- a/src/test/objectstore/TestObjectStoreState.cc
++++ b/src/test/objectstore/TestObjectStoreState.cc
+@@ -23,7 +23,7 @@
+ #include <boost/scoped_ptr.hpp>
+ #include <boost/lexical_cast.hpp>
+ #include "TestObjectStoreState.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context g_ceph_context
+ #define dout_subsys ceph_subsys_filestore
+diff --git a/src/test/objectstore/test_idempotent_sequence.cc b/src/test/objectstore/test_idempotent_sequence.cc
+index 09514ca30a..d8e71229db 100644
+--- a/src/test/objectstore/test_idempotent_sequence.cc
++++ b/src/test/objectstore/test_idempotent_sequence.cc
+@@ -25,7 +25,7 @@
+ #include "FileStoreDiff.h"
+ 
+ #include "common/config.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context g_ceph_context
+ #define dout_subsys ceph_subsys_
+diff --git a/src/test/objectstore/test_memstore_clone.cc b/src/test/objectstore/test_memstore_clone.cc
+index c526a293a2..7b24564e69 100644
+--- a/src/test/objectstore/test_memstore_clone.cc
++++ b/src/test/objectstore/test_memstore_clone.cc
+@@ -16,7 +16,7 @@
+ #include "common/ceph_argparse.h"
+ #include "os/ObjectStore.h"
+ #include <gtest/gtest.h>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/errno.h"
+ #include "store_test_fixture.h"
+ 
+diff --git a/src/test/on_exit.cc b/src/test/on_exit.cc
+index 50721ac0da..3e811ac840 100644
+--- a/src/test/on_exit.cc
++++ b/src/test/on_exit.cc
+@@ -4,7 +4,7 @@
+ #include <stdlib.h>
+ #include <unistd.h>
+ #include "include/on_exit.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #ifndef MAP_ANONYMOUS
+ # ifdef MAP_ANON
+diff --git a/src/test/osdc/FakeWriteback.cc b/src/test/osdc/FakeWriteback.cc
+index 24a780288b..56d208b7d6 100644
+--- a/src/test/osdc/FakeWriteback.cc
++++ b/src/test/osdc/FakeWriteback.cc
+@@ -9,7 +9,7 @@
+ #include "common/Cond.h"
+ #include "common/Finisher.h"
+ #include "common/Mutex.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/ceph_time.h"
+ 
+ #include "FakeWriteback.h"
+diff --git a/src/test/osdc/MemWriteback.cc b/src/test/osdc/MemWriteback.cc
+index 0f479e3684..ed89d4a939 100644
+--- a/src/test/osdc/MemWriteback.cc
++++ b/src/test/osdc/MemWriteback.cc
+@@ -9,7 +9,7 @@
+ #include "common/Cond.h"
+ #include "common/Finisher.h"
+ #include "common/Mutex.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/ceph_time.h"
+ 
+ #include "MemWriteback.h"
+diff --git a/src/test/rbd_mirror/test_mock_fixture.h b/src/test/rbd_mirror/test_mock_fixture.h
+index 1fd2f9e70c..fdc28cc9b7 100644
+--- a/src/test/rbd_mirror/test_mock_fixture.h
++++ b/src/test/rbd_mirror/test_mock_fixture.h
+@@ -9,7 +9,7 @@
+ #include "common/WorkQueue.h"
+ #include <boost/shared_ptr.hpp>
+ #include <gmock/gmock.h>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ namespace librados {
+ class TestRadosClient;
+diff --git a/src/test/rgw/test_rgw_crypto.cc b/src/test/rgw/test_rgw_crypto.cc
+index 52e34fa877..bcf02ab1b9 100644
+--- a/src/test/rgw/test_rgw_crypto.cc
++++ b/src/test/rgw/test_rgw_crypto.cc
+@@ -18,7 +18,7 @@
+ #include "rgw/rgw_rados.h"
+ #include "rgw/rgw_crypt.h"
+ #include <gtest/gtest.h>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #define dout_subsys ceph_subsys_rgw
+ 
+ using namespace std;
+diff --git a/src/test/signals.cc b/src/test/signals.cc
+index e4b1b17123..86442ac895 100644
+--- a/src/test/signals.cc
++++ b/src/test/signals.cc
+@@ -11,7 +11,7 @@
+ #include <stdlib.h>
+ #include <unistd.h>
+ 
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context g_ceph_context
+ static volatile sig_atomic_t got_sigusr1 = 0;
+diff --git a/src/test/test_rgw_token.cc b/src/test/test_rgw_token.cc
+index 002fb9c190..1f0c49e037 100644
+--- a/src/test/test_rgw_token.cc
++++ b/src/test/test_rgw_token.cc
+@@ -21,7 +21,7 @@
+ #include "common/ceph_argparse.h"
+ #include "common/debug.h"
+ #include "global/global_init.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "gtest/gtest.h"
+ #include "rgw/rgw_token.h"
+ #include "rgw/rgw_b64.h"
+diff --git a/src/test/test_trans.cc b/src/test/test_trans.cc
+index ce9a5e54d9..b52c6109cb 100644
+--- a/src/test/test_trans.cc
++++ b/src/test/test_trans.cc
+@@ -17,7 +17,7 @@
+ #include "common/debug.h"
+ #include "os/filestore/FileStore.h"
+ #include "global/global_init.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context g_ceph_context
+ #define dout_subsys ceph_subsys_filestore
+diff --git a/src/tools/crushtool.cc b/src/tools/crushtool.cc
+index 12b7cfd10d..80153e5071 100644
+--- a/src/tools/crushtool.cc
++++ b/src/tools/crushtool.cc
+@@ -36,7 +36,7 @@
+ #include "crush/CrushWrapper.h"
+ #include "crush/CrushCompiler.h"
+ #include "crush/CrushTester.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context g_ceph_context
+ #define dout_subsys ceph_subsys_crush
+diff --git a/src/tools/rbd/Utils.cc b/src/tools/rbd/Utils.cc
+index 639a9e55f3..f2bebc535f 100644
+--- a/src/tools/rbd/Utils.cc
++++ b/src/tools/rbd/Utils.cc
+@@ -2,7 +2,7 @@
+ // vim: ts=8 sw=2 smarttab
+ 
+ #include "tools/rbd/Utils.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/Context.h"
+ #include "include/encoding.h"
+ #include "common/common_init.h"
+diff --git a/src/tools/rbd/action/Import.cc b/src/tools/rbd/action/Import.cc
+index a90913b4e8..b8417f0d24 100644
+--- a/src/tools/rbd/action/Import.cc
++++ b/src/tools/rbd/action/Import.cc
+@@ -17,7 +17,7 @@
+ #include <iostream>
+ #include <boost/program_options.hpp>
+ #include <boost/scoped_ptr.hpp>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #define dout_context g_ceph_context
+ #define dout_subsys ceph_subsys_rbd
+diff --git a/src/tools/rbd/action/MirrorPool.cc b/src/tools/rbd/action/MirrorPool.cc
+index a2f10cd1d8..6b08c032de 100644
+--- a/src/tools/rbd/action/MirrorPool.cc
++++ b/src/tools/rbd/action/MirrorPool.cc
+@@ -18,7 +18,7 @@
+ #include <iostream>
+ #include <regex>
+ #include <boost/program_options.hpp>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ 
+ #include <atomic>
+ 
+diff --git a/src/tools/rbd_mirror/PoolWatcher.h b/src/tools/rbd_mirror/PoolWatcher.h
+index d51b001700..c9c17ff66f 100644
+--- a/src/tools/rbd_mirror/PoolWatcher.h
++++ b/src/tools/rbd_mirror/PoolWatcher.h
+@@ -16,7 +16,7 @@
+ #include "types.h"
+ #include <boost/functional/hash.hpp>
+ #include <boost/optional.hpp>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "tools/rbd_mirror/pool_watcher/Types.h"
+ 
+ namespace librbd { struct ImageCtx; }
+diff --git a/src/tools/rbd_mirror/image_deleter/RemoveRequest.cc b/src/tools/rbd_mirror/image_deleter/RemoveRequest.cc
+index 772333f9f9..0200ae2012 100644
+--- a/src/tools/rbd_mirror/image_deleter/RemoveRequest.cc
++++ b/src/tools/rbd_mirror/image_deleter/RemoveRequest.cc
+@@ -2,7 +2,7 @@
+ // vim: ts=8 sw=2 smarttab
+ 
+ #include "tools/rbd_mirror/image_deleter/RemoveRequest.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "common/debug.h"
+ #include "common/errno.h"
+ #include "common/WorkQueue.h"
+diff --git a/src/tools/rbd_mirror/image_map/StateTransition.cc b/src/tools/rbd_mirror/image_map/StateTransition.cc
+index 76c66f9fa5..d368c59ecf 100644
+--- a/src/tools/rbd_mirror/image_map/StateTransition.cc
++++ b/src/tools/rbd_mirror/image_map/StateTransition.cc
+@@ -2,7 +2,7 @@
+ // vim: ts=8 sw=2 smarttab
+ 
+ #include <ostream>
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "StateTransition.h"
+ 
+ namespace rbd {
+diff --git a/src/tools/rbd_mirror/image_map/Types.cc b/src/tools/rbd_mirror/image_map/Types.cc
+index e9041a5b80..e61c35cf7d 100644
+--- a/src/tools/rbd_mirror/image_map/Types.cc
++++ b/src/tools/rbd_mirror/image_map/Types.cc
+@@ -2,7 +2,7 @@
+ // vim: ts=8 sw=2 smarttab
+ 
+ #include "Types.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/stringify.h"
+ #include "common/Formatter.h"
+ #include <iostream>
+diff --git a/src/tools/rbd_mirror/instance_watcher/Types.cc b/src/tools/rbd_mirror/instance_watcher/Types.cc
+index b56ed38918..ac44da6281 100644
+--- a/src/tools/rbd_mirror/instance_watcher/Types.cc
++++ b/src/tools/rbd_mirror/instance_watcher/Types.cc
+@@ -2,7 +2,7 @@
+ // vim: ts=8 sw=2 smarttab
+ 
+ #include "Types.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/stringify.h"
+ #include "common/Formatter.h"
+ 
+diff --git a/src/tools/rbd_mirror/leader_watcher/Types.cc b/src/tools/rbd_mirror/leader_watcher/Types.cc
+index 0cd86ebad6..72cb70b433 100644
+--- a/src/tools/rbd_mirror/leader_watcher/Types.cc
++++ b/src/tools/rbd_mirror/leader_watcher/Types.cc
+@@ -2,7 +2,7 @@
+ // vim: ts=8 sw=2 smarttab
+ 
+ #include "Types.h"
+-#include "include/assert.h"
++#include "include/ceph_assert.h"
+ #include "include/stringify.h"
+ #include "common/Formatter.h"
+ 
+-- 
+2.19.1
+
