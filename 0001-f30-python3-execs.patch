@@ -5,8 +5,6 @@ Subject: [PATCH 1/4] f30 python3 execs
 
 ---
  src/ceph-create-keys                          | 2 +-
- src/ceph-detect-init/ceph_detect_init/main.py | 2 +-
- src/ceph-disk/ceph_disk/main.py               | 2 +-
  src/ceph-volume/bin/ceph-volume               | 2 +-
  src/ceph-volume/bin/ceph-volume-systemd       | 2 +-
  src/ceph.in                                   | 2 +-
@@ -23,26 +21,6 @@ index c14c02f28d..7e80aab6a2 100755
  import argparse
  import errno
  import json
-diff --git a/src/ceph-detect-init/ceph_detect_init/main.py b/src/ceph-detect-init/ceph_detect_init/main.py
-index 320ae17032..c18ce74c1c 100644
---- a/src/ceph-detect-init/ceph_detect_init/main.py
-+++ b/src/ceph-detect-init/ceph_detect_init/main.py
-@@ -1,4 +1,4 @@
--#!/usr/bin/env python
-+#!/usr/bin/python3
- #
- # Copyright (C) 2015 <contact@redhat.com>
- # Copyright (C) 2015 SUSE LINUX GmbH
-diff --git a/src/ceph-disk/ceph_disk/main.py b/src/ceph-disk/ceph_disk/main.py
-index 639c49e7e1..bfcce98351 100644
---- a/src/ceph-disk/ceph_disk/main.py
-+++ b/src/ceph-disk/ceph_disk/main.py
-@@ -1,4 +1,4 @@
--#!/usr/bin/env python
-+#!/usr/bin/python3
- #
- # Copyright (C) 2015, 2016, 2017 Red Hat <contact@redhat.com>
- # Copyright (C) 2014 Inktank <info@inktank.com>
 diff --git a/src/ceph-volume/bin/ceph-volume b/src/ceph-volume/bin/ceph-volume
 index 5905cfccc0..a4f62b4a1f 100755
 --- a/src/ceph-volume/bin/ceph-volume
