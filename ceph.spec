@@ -96,7 +96,7 @@
 #################################################################################
 Name:		ceph
 Version:	14.0.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -417,7 +417,7 @@ Requires:       python%{_python_buildid}-cherrypy
 Requires:       python%{_python_buildid}-jinja2
 Requires:       python%{_python_buildid}-routes
 Requires:       python%{_python_buildid}-werkzeug
-Requires:       pyOpenSSL%{_python_buildid}
+Requires:       python%{_python_buildid}-pyOpenSSL
 Requires:	python%{_python_buildid}-bcrypt
 %endif
 %if 0%{?suse_version}
@@ -1941,6 +1941,9 @@ exit 0
 
 
 %changelog
+* Sat Dec 08 2018 Boris Ranto <branto@redhat.com> - 2:14.0.1-2
+- fix pyOpenSSL depemdency
+
 * Tue Dec 04 2018 Boris Ranto <branto@redhat.com> - 2:14.0.1-1
 - New release (2:14.0.1-1)
 - Sync with upstream
