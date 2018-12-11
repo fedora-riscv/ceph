@@ -85,7 +85,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	12.2.9
+Version:	12.2.10
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
@@ -283,14 +283,25 @@ Requires:      python-requests
 Requires:      python-setuptools
 Requires:      grep
 Requires:      xfsprogs
+Requires:      e2fsprogs
 Requires:      logrotate
+Requires:      parted
 Requires:      util-linux
 Requires:      cryptsetup
 Requires:      findutils
 Requires:      psmisc
 Requires:      which
+%if 0%{?fedora} || 0%{?rhel}
+Requires:      gdisk
+# The following is necessary due to tracker 36508 and can be removed once the
+# associated upstream bugs are resolved.
+%if 0%{with tcmalloc}
+Requires:      gperftools-libs >= 2.6.1
+%endif
+%endif
 %if 0%{?suse_version}
 Recommends:    ntp-daemon
+Requires:      gptfdisk
 %endif
 %description base
 Base is the package that includes all the files shared amongst ceph servers
@@ -458,14 +469,6 @@ Summary:	Ceph Object Storage Daemon
 Group:		System/Filesystems
 %endif
 Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
-# for sgdisk, used by ceph-disk
-%if 0%{?fedora} || 0%{?rhel}
-Requires:	gdisk
-%endif
-%if 0%{?suse_version}
-Requires:	gptfdisk
-%endif
-Requires:       parted
 Requires:       lvm2
 %description osd
 ceph-osd is the object storage daemon for the Ceph distributed file
@@ -1800,6 +1803,9 @@ exit 0
 
 
 %changelog
+* Fri Dec 7 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.10-1
+- New release (1:12.2.10-1)
+
 * Mon Oct 29 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.9-1
 - New release (1:12.2.9-1)
 
