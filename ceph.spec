@@ -1647,9 +1647,7 @@ fi
 %{_libdir}/librados_tp.so.*
 %endif
 
-%post -n librados2 -p /sbin/ldconfig
-
-%postun -n librados2 -p /sbin/ldconfig
+%ldconfig_scriptlets -n librados2
 
 %files -n librados-devel
 %dir %{_includedir}/rados
@@ -1683,9 +1681,7 @@ fi
 %files -n libradosstriper1
 %{_libdir}/libradosstriper.so.*
 
-%post -n libradosstriper1 -p /sbin/ldconfig
-
-%postun -n libradosstriper1 -p /sbin/ldconfig
+%ldconfig_scriptlets -n libradosstriper1
 
 %files -n libradosstriper-devel
 %dir %{_includedir}/radosstriper
@@ -1700,9 +1696,7 @@ fi
 %{_libdir}/librbd_tp.so.*
 %endif
 
-%post -n librbd1 -p /sbin/ldconfig
-
-%postun -n librbd1 -p /sbin/ldconfig
+%ldconfig_scriptlets -n librbd1
 
 %files -n librbd-devel
 %dir %{_includedir}/rbd
@@ -1722,9 +1716,7 @@ fi
 %{_libdir}/librgw_rados_tp.so*
 %endif
 
-%post -n librgw2 -p /sbin/ldconfig
-
-%postun -n librgw2 -p /sbin/ldconfig
+%ldconfig_scriptlets -n librgw2
 
 %files -n librgw-devel
 %dir %{_includedir}/rados
@@ -1757,9 +1749,7 @@ fi
 %files -n libcephfs2
 %{_libdir}/libcephfs.so.*
 
-%post -n libcephfs2 -p /sbin/ldconfig
-
-%postun -n libcephfs2 -p /sbin/ldconfig
+%ldconfig_scriptlets -n libcephfs2
 
 %files -n libcephfs-devel
 %dir %{_includedir}/cephfs
@@ -1830,9 +1820,7 @@ fi
 %files -n libcephfs_jni1
 %{_libdir}/libcephfs_jni.so.*
 
-%post -n libcephfs_jni1 -p /sbin/ldconfig
-
-%postun -n libcephfs_jni1 -p /sbin/ldconfig
+%ldconfig_scriptlets -n libcephfs_jni1
 
 %files -n libcephfs_jni-devel
 %{_libdir}/libcephfs_jni.so
