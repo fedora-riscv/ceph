@@ -108,7 +108,6 @@ Epoch:		2
 Summary:	User space components of the Ceph file system
 License:	LGPL-2.1 and CC-BY-SA-3.0 and GPL-2.0 and BSL-1.0 and BSD-3-Clause and MIT
 %if 0%{?suse_version}
-Group:		System/Filesystems
 %endif
 URL:		http://ceph.com/
 Source0:	%{?_remote_tarball_prefix}ceph-14.0.1.tar.bz2
@@ -315,7 +314,6 @@ on commodity hardware and delivers object, block and file system storage.
 %package base
 Summary:       Ceph Base Package
 %if 0%{?suse_version}
-Group:         System/Filesystems
 %endif
 Provides:      ceph-test:/usr/bin/ceph-kvstore-tool
 Requires:      ceph-common = %{_epoch_prefix}%{version}-%{release}
@@ -351,7 +349,6 @@ Base is the package that includes all the files shared amongst ceph servers
 %package -n ceph-common
 Summary:	Ceph Common
 %if 0%{?suse_version}
-Group:		System/Filesystems
 %endif
 Requires:	librbd1 = %{_epoch_prefix}%{version}-%{release}
 Requires:	librados2 = %{_epoch_prefix}%{version}-%{release}
@@ -383,7 +380,6 @@ Comprised of files that are common to Ceph clients and servers.
 %package mds
 Summary:	Ceph Metadata Server Daemon
 %if 0%{?suse_version}
-Group:		System/Filesystems
 %endif
 Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
 %description mds
@@ -394,7 +390,6 @@ namespace, coordinating access to the shared OSD cluster.
 %package mon
 Summary:	Ceph Monitor Daemon
 %if 0%{?suse_version}
-Group:		System/Filesystems
 %endif
 Provides:	ceph-test:/usr/bin/ceph-monstore-tool
 Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
@@ -407,7 +402,6 @@ of cluster membership, configuration, and state.
 %package mgr
 Summary:        Ceph Manager Daemon
 %if 0%{?suse_version}
-Group:          System/Filesystems
 %endif
 Requires:       ceph-base = %{_epoch_prefix}%{version}-%{release}
 Requires:       python%{_python_buildid}-pecan
@@ -438,7 +432,6 @@ exposes all these to the python modules.
 %package fuse
 Summary:	Ceph fuse-based client
 %if 0%{?suse_version}
-Group:		System/Filesystems
 %endif
 Requires:       fuse
 %description fuse
@@ -447,7 +440,6 @@ FUSE based client for Ceph distributed network file system
 %package -n rbd-fuse
 Summary:	Ceph fuse-based client
 %if 0%{?suse_version}
-Group:		System/Filesystems
 %endif
 Requires:	librados2 = %{_epoch_prefix}%{version}-%{release}
 Requires:	librbd1 = %{_epoch_prefix}%{version}-%{release}
@@ -457,7 +449,6 @@ FUSE based client to map Ceph rbd images to files
 %package -n rbd-mirror
 Summary:	Ceph daemon for mirroring RBD images
 %if 0%{?suse_version}
-Group:		System/Filesystems
 %endif
 Requires:	ceph-common = %{_epoch_prefix}%{version}-%{release}
 Requires:	librados2 = %{_epoch_prefix}%{version}-%{release}
@@ -468,7 +459,6 @@ changes asynchronously.
 %package -n rbd-nbd
 Summary:	Ceph RBD client base on NBD
 %if 0%{?suse_version}
-Group:		System/Filesystems
 %endif
 Requires:	librados2 = %{_epoch_prefix}%{version}-%{release}
 Requires:	librbd1 = %{_epoch_prefix}%{version}-%{release}
@@ -478,7 +468,6 @@ NBD based client to map Ceph rbd images to local device
 %package radosgw
 Summary:	Rados REST gateway
 %if 0%{?suse_version}
-Group:		System/Filesystems
 %endif
 Requires:	ceph-common = %{_epoch_prefix}%{version}-%{release}
 %if 0%{with selinux}
@@ -499,7 +488,6 @@ service as well as the OpenStack Object Storage ("Swift") API.
 %package resource-agents
 Summary:	OCF-compliant resource agents for Ceph daemons
 %if 0%{?suse_version}
-Group:		System/Filesystems
 %endif
 Requires:	ceph-base = %{_epoch_prefix}%{version}
 Requires:	resource-agents
@@ -512,7 +500,6 @@ managers such as Pacemaker.
 %package osd
 Summary:	Ceph Object Storage Daemon
 %if 0%{?suse_version}
-Group:		System/Filesystems
 %endif
 Provides:	ceph-test:/usr/bin/ceph-osdomap-tool
 Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
@@ -526,7 +513,6 @@ and providing access to them over the network.
 %package -n librados2
 Summary:	RADOS distributed object store client library
 %if 0%{?suse_version}
-Group:		System/Libraries
 %endif
 %if 0%{?rhel} || 0%{?fedora}
 Obsoletes:	ceph-libs < %{_epoch_prefix}%{version}-%{release}
@@ -540,7 +526,6 @@ store using a simple file-like interface.
 %package -n librados-devel
 Summary:	RADOS headers
 %if 0%{?suse_version}
-Group:		Development/Libraries/C and C++
 %endif
 Requires:	librados2 = %{_epoch_prefix}%{version}-%{release}
 Obsoletes:	ceph-devel < %{_epoch_prefix}%{version}-%{release}
@@ -553,7 +538,6 @@ that use RADOS object store.
 %package -n librgw2
 Summary:	RADOS gateway client library
 %if 0%{?suse_version}
-Group:		System/Libraries
 %endif
 Requires:	librados2 = %{_epoch_prefix}%{version}-%{release}
 %description -n librgw2
@@ -563,7 +547,6 @@ This package provides a library implementation of the RADOS gateway
 %package -n librgw-devel
 Summary:	RADOS gateway client library
 %if 0%{?suse_version}
-Group:		Development/Libraries/C and C++
 %endif
 Requires:	librados-devel = %{_epoch_prefix}%{version}-%{release}
 Requires:	librgw2 = %{_epoch_prefix}%{version}-%{release}
@@ -577,7 +560,6 @@ that use RADOS gateway client library.
 %package -n python-rgw
 Summary:	Python 2 libraries for the RADOS gateway
 %if 0%{?suse_version}
-Group:		Development/Libraries/Python
 %endif
 Requires:	librgw2 = %{_epoch_prefix}%{version}-%{release}
 Requires:	python-rados = %{_epoch_prefix}%{version}-%{release}
@@ -590,7 +572,6 @@ gateway.
 %package -n python%{python3_pkgversion}-rgw
 Summary:	Python 3 libraries for the RADOS gateway
 %if 0%{?suse_version}
-Group:		Development/Libraries/Python
 %endif
 Requires:	librgw2 = %{_epoch_prefix}%{version}-%{release}
 Requires:	python%{python3_pkgversion}-rados = %{_epoch_prefix}%{version}-%{release}
@@ -602,7 +583,6 @@ gateway.
 %package -n python-rados
 Summary:	Python 2 libraries for the RADOS object store
 %if 0%{?suse_version}
-Group:		Development/Libraries/Python
 %endif
 Requires:	librados2 = %{_epoch_prefix}%{version}-%{release}
 Obsoletes:	python-ceph < %{_epoch_prefix}%{version}-%{release}
@@ -614,7 +594,6 @@ object store.
 %package -n python%{python3_pkgversion}-rados
 Summary:	Python 3 libraries for the RADOS object store
 %if 0%{?suse_version}
-Group:		Development/Libraries/Python
 %endif
 Requires:	python%{python3_pkgversion}
 Requires:	librados2 = %{_epoch_prefix}%{version}-%{release}
@@ -626,7 +605,6 @@ object store.
 %package -n libradosstriper1
 Summary:	RADOS striping interface
 %if 0%{?suse_version}
-Group:		System/Libraries
 %endif
 Requires:	librados2 = %{_epoch_prefix}%{version}-%{release}
 %description -n libradosstriper1
@@ -637,7 +615,6 @@ an interface very similar to the rados one.
 %package -n libradosstriper-devel
 Summary:	RADOS striping interface headers
 %if 0%{?suse_version}
-Group:		Development/Libraries/C and C++
 %endif
 Requires:	libradosstriper1 = %{_epoch_prefix}%{version}-%{release}
 Requires:	librados-devel = %{_epoch_prefix}%{version}-%{release}
@@ -652,7 +629,6 @@ that use RADOS striping interface.
 %package -n librbd1
 Summary:	RADOS block device client library
 %if 0%{?suse_version}
-Group:		System/Libraries
 %endif
 Requires:	librados2 = %{_epoch_prefix}%{version}-%{release}
 %if 0%{?suse_version}
@@ -670,7 +646,6 @@ shared library allowing applications to manage these block devices.
 %package -n librbd-devel
 Summary:	RADOS block device headers
 %if 0%{?suse_version}
-Group:		Development/Libraries/C and C++
 %endif
 Requires:	librbd1 = %{_epoch_prefix}%{version}-%{release}
 Requires:	librados-devel = %{_epoch_prefix}%{version}-%{release}
@@ -685,7 +660,6 @@ that use RADOS block device.
 %package -n python-rbd
 Summary:	Python 2 libraries for the RADOS block device
 %if 0%{?suse_version}
-Group:		Development/Libraries/Python
 %endif
 Requires:	librbd1 = %{_epoch_prefix}%{version}-%{release}
 Requires:	python-rados = %{_epoch_prefix}%{version}-%{release}
@@ -698,7 +672,6 @@ block device.
 %package -n python%{python3_pkgversion}-rbd
 Summary:	Python 3 libraries for the RADOS block device
 %if 0%{?suse_version}
-Group:		Development/Libraries/Python
 %endif
 Requires:	librbd1 = %{_epoch_prefix}%{version}-%{release}
 Requires:	python%{python3_pkgversion}-rados = %{_epoch_prefix}%{version}-%{release}
@@ -709,7 +682,6 @@ block device.
 %package -n libcephfs2
 Summary:	Ceph distributed file system client library
 %if 0%{?suse_version}
-Group:		System/Libraries
 %endif
 Obsoletes:	libcephfs1
 %if 0%{?rhel} || 0%{?fedora}
@@ -725,7 +697,6 @@ POSIX-like interface.
 %package -n libcephfs-devel
 Summary:	Ceph distributed file system headers
 %if 0%{?suse_version}
-Group:		Development/Libraries/C and C++
 %endif
 Requires:	libcephfs2 = %{_epoch_prefix}%{version}-%{release}
 Requires:	librados-devel = %{_epoch_prefix}%{version}-%{release}
@@ -740,7 +711,6 @@ that use Cephs distributed file system.
 %package -n python-cephfs
 Summary:	Python 2 libraries for Ceph distributed file system
 %if 0%{?suse_version}
-Group:		Development/Libraries/Python
 %endif
 Requires:	libcephfs2 = %{_epoch_prefix}%{version}-%{release}
 Requires:	python-rados = %{_epoch_prefix}%{version}-%{release}
@@ -754,7 +724,6 @@ file system.
 %package -n python%{python3_pkgversion}-cephfs
 Summary:	Python 3 libraries for Ceph distributed file system
 %if 0%{?suse_version}
-Group:		Development/Libraries/Python
 %endif
 Requires:	libcephfs2 = %{_epoch_prefix}%{version}-%{release}
 Requires:	python%{python3_pkgversion}-rados = %{_epoch_prefix}%{version}-%{release}
@@ -767,7 +736,6 @@ file system.
 %package -n python-ceph-argparse
 Summary:	Python 2 utility libraries for Ceph CLI
 %if 0%{?suse_version}
-Group:		Development/Libraries/Python
 %endif
 %description -n python-ceph-argparse
 This package contains types and routines for Python 2 used by the Ceph CLI as
@@ -779,7 +747,6 @@ descriptions, and submitting the command to the appropriate daemon.
 %package -n python%{python3_pkgversion}-ceph-argparse
 Summary:	Python 3 utility libraries for Ceph CLI
 %if 0%{?suse_version}
-Group:		Development/Libraries/Python
 %endif
 %description -n python%{python3_pkgversion}-ceph-argparse
 This package contains types and routines for Python 3 used by the Ceph CLI as
@@ -803,7 +770,6 @@ works like an FTP client.
 %package -n ceph-test
 Summary:	Ceph benchmarks and test tools
 %if 0%{?suse_version}
-Group:		System/Benchmark
 %endif
 Requires:	ceph-common = %{_epoch_prefix}%{version}-%{release}
 Requires:	xmlstarlet
@@ -818,7 +784,6 @@ This package contains Ceph benchmarks and test tools.
 %package -n libcephfs_jni1
 Summary:	Java Native Interface library for CephFS Java bindings
 %if 0%{?suse_version}
-Group:		System/Libraries
 %endif
 Requires:	java
 Requires:	libcephfs2 = %{_epoch_prefix}%{version}-%{release}
@@ -829,7 +794,6 @@ bindings.
 %package -n libcephfs_jni-devel
 Summary:	Development files for CephFS Java Native Interface library
 %if 0%{?suse_version}
-Group:		Development/Libraries/Java
 %endif
 Requires:	java
 Requires:	libcephfs_jni1 = %{_epoch_prefix}%{version}-%{release}
@@ -843,7 +807,6 @@ library.
 %package -n cephfs-java
 Summary:	Java libraries for the Ceph File System
 %if 0%{?suse_version}
-Group:		System/Libraries
 %endif
 Requires:	java
 Requires:	libcephfs_jni1 = %{_epoch_prefix}%{version}-%{release}
@@ -857,7 +820,6 @@ This package contains the Java libraries for the Ceph File System.
 %package -n rados-objclass-devel
 Summary:        RADOS object class development kit
 %if 0%{?suse_version}
-Group:		Development/Libraries/C and C++
 %endif
 Requires:       librados2-devel = %{_epoch_prefix}%{version}-%{release}
 %description -n rados-objclass-devel
@@ -869,7 +831,6 @@ class plugins.
 %package selinux
 Summary:	SELinux support for Ceph MON, OSD and MDS
 %if 0%{?suse_version}
-Group:		System/Filesystems
 %endif
 Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
 Requires:	policycoreutils, libselinux-utils
@@ -887,7 +848,6 @@ populated file-systems.
 %package -n python-ceph-compat
 Summary:	Compatibility package for Cephs python libraries
 %if 0%{?suse_version}
-Group:		Development/Libraries/Python
 %endif
 Obsoletes:	python-ceph
 Requires:	python-rados = %{_epoch_prefix}%{version}-%{release}
