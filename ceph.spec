@@ -85,7 +85,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	12.2.10
+Version:	12.2.11
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
@@ -1803,6 +1803,9 @@ exit 0
 
 
 %changelog
+* Fri Feb 1 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.11-1
+- New release (1:12.2.11-1)
+
 * Fri Dec 7 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.10-1
 - New release (1:12.2.10-1)
 
