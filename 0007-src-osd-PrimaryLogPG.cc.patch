@@ -1,10 +1,24 @@
---- ceph-12.2.9/src/osd/PrimaryLogPG.cc.orig	2018-10-29 09:12:57.766116270 -0400
-+++ ceph-12.2.9/src/osd/PrimaryLogPG.cc	2018-10-29 09:32:37.146116270 -0400
-@@ -20,6 +20,7 @@
- #include "PG.h"
- #include "PrimaryLogPG.h"
- #include "OSD.h"
-+#include <algorithm>
- #include "OpRequest.h"
- #include "ScrubStore.h"
- #include "Session.h"
+--- ceph-12.2.11/src/osd/PrimaryLogPG.cc.orig	2019-02-02 01:29:42.853608099 -0500
++++ ceph-12.2.11/src/osd/PrimaryLogPG.cc	2019-02-02 12:39:33.841608099 -0500
+@@ -1582,8 +1582,9 @@
+   if (limit != eversion_t() &&
+       limit != pg_trim_to &&
+       pg_log.get_log().approx_size() > target) {
++    size_t osd_pg_log_trim_max = cct->_conf->osd_pg_log_trim_max;
+     size_t num_to_trim = std::min(pg_log.get_log().approx_size() - target,
+-                             cct->_conf->osd_pg_log_trim_max);
++                                  osd_pg_log_trim_max);
+     if (num_to_trim < cct->_conf->osd_pg_log_trim_min &&
+         cct->_conf->osd_pg_log_trim_max >= cct->_conf->osd_pg_log_trim_min) {
+       return;
+@@ -1628,8 +1629,9 @@
+       pg_log.get_log().approx_size() > target) {
+     dout(10) << __func__ << " approx pg log length =  "
+              << pg_log.get_log().approx_size() << dendl;
++    size_t osd_pg_log_trim_max = cct->_conf->osd_pg_log_trim_max;
+     size_t num_to_trim = std::min(pg_log.get_log().approx_size() - target,
+-				  cct->_conf->osd_pg_log_trim_max);
++				  osd_pg_log_trim_max);
+     dout(10) << __func__ << " num_to_trim =  " << num_to_trim << dendl;
+     if (num_to_trim < cct->_conf->osd_pg_log_trim_min &&
+ 	cct->_conf->osd_pg_log_trim_max >= cct->_conf->osd_pg_log_trim_min) {
