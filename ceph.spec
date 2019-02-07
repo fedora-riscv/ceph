@@ -96,7 +96,7 @@
 #################################################################################
 Name:		ceph
 Version:	14.0.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -112,6 +112,7 @@ License:	LGPL-2.1 and CC-BY-SA-3.0 and GPL-2.0 and BSL-1.0 and BSD-3-Clause and 
 URL:		http://ceph.com/
 Source0:	%{?_remote_tarball_prefix}ceph-14.0.1.tar.bz2
 Patch001:	0001-f30-python3-execs.patch
+Patch002:	0002-f30-gcc9.patch
 ExcludeArch:	i686 armv7hl
 #################################################################################
 # dependencies that apply across all distro families
@@ -978,6 +979,8 @@ ${CMAKE} .. \
 %endif
     -DBOOST_J=$CEPH_SMP_NCPUS
 
+export VERBOSE=1
+export V=1
 make "$CEPH_MFLAGS_JOBS"
 
 
@@ -1886,6 +1889,9 @@ exit 0
 
 
 %changelog
+* Thu Feb 8 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.0.1-4
+- w/ fixes for gcc9
+
 * Thu Jan 31 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2:14.0.1-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 
