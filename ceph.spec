@@ -911,7 +911,9 @@ cmake .. \
 %endif
     -DBOOST_J=%{_smp_ncpus}
 
-make VERBOSE=1 %{?_smp_mflags}
+export VERBOSE=1
+export V=1
+make %{?_smp_mflags}
 
 
 %if 0%{with make_check}
