@@ -108,6 +108,7 @@ Patch002:	0002-cmake-Support-ppc64.patch
 Patch003:	0003-librbd-Conditionally-import-TrimRequest.cc.patch
 Patch005:	0005-src-rocksdb-table-block.h.patch
 Patch007:	0007-src-osd-PrimaryLogPG.cc.patch
+Patch008:	0008-src-rgw-CMakeLists.txt.patch
 %if 0%{?suse_version}
 %if 0%{?is_opensuse}
 ExclusiveArch:	x86_64 aarch64 ppc64 ppc64le
@@ -910,6 +911,8 @@ cmake .. \
 %endif
     -DBOOST_J=%{_smp_ncpus}
 
+export VERBOSE=1
+export V=1
 make %{?_smp_mflags}
 
 
