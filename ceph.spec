@@ -96,9 +96,9 @@
 #################################################################################
 Name:		ceph
 Version:	14.0.1
-Release:	4%{?dist}
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
-Epoch:		2
+Epoch:		1
 %endif
 
 # define _epoch_prefix macro which will expand to the empty string if epoch is
@@ -919,11 +919,9 @@ env | sort
 mkdir build
 cd build
 %if 0%{?rhel} == 7
-CMAKE=cmake3
-%else
-CMAKE=cmake
+%global cmake cmake3
 %endif
-${CMAKE} .. \
+%{cmake} .. \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
     -DCMAKE_INSTALL_LIBEXECDIR=%{_libexecdir} \
@@ -1889,7 +1887,16 @@ exit 0
 
 
 %changelog
-* Thu Feb 8 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.0.1-4
+* Wed Feb 20 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:14.0.1-1
+- rebuild for f31/rawhide, including:
+- use the %%{cmake} %%global to get all the extra Fedora cmake options.
+  (This is Fedora, so don't care so much about rhel/rhel7 cmake3.)
+- reset epoch to 1. Note we use (have been using) epoch=1 in Fedora since
+  forever. I presume this is so that people can install Ceph RPMs from
+  ceph.com if they prefer those, which use epoch=2, and not run into issues
+  when updating.
+
+* Thu Feb 7 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.0.1-4
 - w/ fixes for gcc9
 
 * Thu Jan 31 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2:14.0.1-3
