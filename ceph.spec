@@ -113,6 +113,7 @@ URL:		http://ceph.com/
 Source0:	%{?_remote_tarball_prefix}ceph-14.0.1.tar.bz2
 Patch001:	0001-f30-python3-execs.patch
 Patch002:	0002-f30-gcc9.patch
+Patch003:	0003-cve-2019-3821.patch
 ExcludeArch:	i686 armv7hl
 #################################################################################
 # dependencies that apply across all distro families
