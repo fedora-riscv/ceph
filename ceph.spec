@@ -96,7 +96,7 @@
 #################################################################################
 Name:		ceph
 Version:	14.0.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -923,14 +923,13 @@ cd build
 %global cmake cmake3
 %endif
 %{cmake} .. \
-    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-    -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DBUILD_CONFIG=rpmbuild \
     -DCMAKE_INSTALL_LIBEXECDIR=%{_libexecdir} \
     -DCMAKE_INSTALL_LOCALSTATEDIR=%{_localstatedir} \
     -DCMAKE_INSTALL_SYSCONFDIR=%{_sysconfdir} \
     -DCMAKE_INSTALL_MANDIR=%{_mandir} \
     -DCMAKE_INSTALL_DOCDIR=%{_docdir}/ceph \
-    -DCMAKE_INSTALL_INCLUDEDIR=%{_includedir} \
     -DWITH_MANPAGE=ON \
     -DWITH_PYTHON3=ON \
     -DWITH_MGR_DASHBOARD_FRONTEND=OFF \
@@ -1888,6 +1887,10 @@ exit 0
 
 
 %changelog
+* Thu Feb 21 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:14.0.1-2
+- Eliminate redundant CMAKE_* macros when using %%cmake global
+- Add CMAKE_BUILD_TYPE=RelWithDeb(ug)Info and BUILD_CONFIG=rpmbuild
+
 * Wed Feb 20 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:14.0.1-1
 - rebuild for f31/rawhide, including:
 - use the %%{cmake} %%global to get all the extra Fedora cmake options.
