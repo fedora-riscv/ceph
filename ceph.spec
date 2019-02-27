@@ -120,6 +120,7 @@ Group:		System/Filesystems
 %endif
 URL:		http://ceph.com/
 Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.bz2
+Patch001:	0001-s390x-A-compile-hack.patch
 ExcludeArch:	i686 armv7hl
 #################################################################################
 # dependencies that apply across all distro families

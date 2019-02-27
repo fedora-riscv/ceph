@@ -1,0 +1,33 @@
+From efb45add11eb3516b939f04381bd21ab9a5523d1 Mon Sep 17 00:00:00 2001
+From: Boris Ranto <branto@redhat.com>
+Date: Thu, 28 Feb 2019 00:58:12 +0100
+Subject: [PATCH] s390x: A compile hack
+
+Signed-off-by: Boris Ranto <branto@redhat.com>
+---
+ src/rgw/rgw_dmclock_async_scheduler.cc | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/rgw/rgw_dmclock_async_scheduler.cc b/src/rgw/rgw_dmclock_async_scheduler.cc
+index 18ba5a5e32..08657cf2b5 100644
+--- a/src/rgw/rgw_dmclock_async_scheduler.cc
++++ b/src/rgw/rgw_dmclock_async_scheduler.cc
+@@ -41,6 +41,7 @@ int AsyncScheduler::schedule_request_impl(const client_id& client,
+                                           const Time& time, const Cost& cost,
+                                           optional_yield yield_ctx)
+ {
++#ifdef HAVE_BOOST_CONTEXT
+     ceph_assert(yield_ctx);
+ 
+     auto &yield = yield_ctx.get_yield_context();
+@@ -53,6 +54,7 @@ int AsyncScheduler::schedule_request_impl(const client_id& client,
+       else
+         return -ec.value();
+     }
++#endif
+ 
+     return 0;
+ }
+-- 
+2.20.1
+
