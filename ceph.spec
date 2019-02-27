@@ -95,8 +95,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	14.0.1
-Release:	2%{?dist}
+Version:	14.1.0
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -110,10 +110,7 @@ License:	LGPL-2.1 and CC-BY-SA-3.0 and GPL-2.0 and BSL-1.0 and BSD-3-Clause and 
 %if 0%{?suse_version}
 %endif
 URL:		http://ceph.com/
-Source0:	%{?_remote_tarball_prefix}ceph-14.0.1.tar.bz2
-Patch001:	0001-f30-python3-execs.patch
-Patch002:	0002-f30-gcc9.patch
-Patch003:	0003-cve-2019-3821.patch
+Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.bz2
 ExcludeArch:	i686 armv7hl
 #################################################################################
 # dependencies that apply across all distro families
@@ -868,7 +865,7 @@ python-rbd, python-rgw or python-cephfs instead.
 # common
 #################################################################################
 %prep
-%autosetup -p1 -n ceph-14.0.1
+%autosetup -p1
 
 %build
 
@@ -1887,6 +1884,9 @@ exit 0
 
 
 %changelog
+* Wed Feb 27 2019 Boris Ranto <branto@redhat.com> - 1:14.1.0-1
+- Rebase to v14.1.0 (updated for fixes in upstream nautilus branch)
+
 * Thu Feb 21 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:14.0.1-2
 - Eliminate redundant CMAKE_* macros when using %%cmake global
 - Add CMAKE_BUILD_TYPE=RelWithDeb(ug)Info and BUILD_CONFIG=rpmbuild
