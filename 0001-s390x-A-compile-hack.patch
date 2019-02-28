@@ -1,12 +1,13 @@
-From efb45add11eb3516b939f04381bd21ab9a5523d1 Mon Sep 17 00:00:00 2001
+From a45270a441d483ce57db48cda699a0d2d9c01f18 Mon Sep 17 00:00:00 2001
 From: Boris Ranto <branto@redhat.com>
 Date: Thu, 28 Feb 2019 00:58:12 +0100
 Subject: [PATCH] s390x: A compile hack
 
 Signed-off-by: Boris Ranto <branto@redhat.com>
 ---
- src/rgw/rgw_dmclock_async_scheduler.cc | 2 ++
- 1 file changed, 2 insertions(+)
+ src/rgw/rgw_dmclock_async_scheduler.cc     | 2 ++
+ src/test/rgw/test_rgw_dmclock_scheduler.cc | 8 ++++----
+ 2 files changed, 6 insertions(+), 4 deletions(-)
 
 diff --git a/src/rgw/rgw_dmclock_async_scheduler.cc b/src/rgw/rgw_dmclock_async_scheduler.cc
 index 18ba5a5e32..08657cf2b5 100644
@@ -28,6 +29,37 @@ index 18ba5a5e32..08657cf2b5 100644
  
      return 0;
  }
+diff --git a/src/test/rgw/test_rgw_dmclock_scheduler.cc b/src/test/rgw/test_rgw_dmclock_scheduler.cc
+index 4e4177cb0b..ddbfd12217 100644
+--- a/src/test/rgw/test_rgw_dmclock_scheduler.cc
++++ b/src/test/rgw/test_rgw_dmclock_scheduler.cc
+@@ -14,6 +14,8 @@
+ 
+ //#define BOOST_ASIO_ENABLE_HANDLER_TRACKING
+ 
++#ifdef HAVE_BOOST_CONTEXT
++
+ #include "rgw/rgw_dmclock_sync_scheduler.h"
+ #include "rgw/rgw_dmclock_async_scheduler.h"
+ 
+@@ -395,8 +397,6 @@ TEST(Queue, CrossExecutorRequest)
+   EXPECT_EQ(PhaseType::priority, *p2);
+ }
+ 
+-#ifdef HAVE_BOOST_CONTEXT
+-
+ TEST(Queue, SpawnAsyncRequest)
+ {
+   boost::asio::io_context context;
+@@ -426,6 +426,6 @@ TEST(Queue, SpawnAsyncRequest)
+   EXPECT_TRUE(context.stopped());
+ }
+ 
+-#endif
+-
+ } // namespace rgw::dmclock
++
++#endif
 -- 
 2.20.1
 
