@@ -2170,7 +2170,7 @@ exit 0
 
 
 %changelog
-* Wed Mar 6 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:14.1.0-1
+* Wed Mar 6 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:14.1.0-2
 - ceph 14.1.0 w/ static libcrc32
 
 * Wed Feb 27 2019 Boris Ranto <branto@redhat.com> - 1:14.1.0-1
