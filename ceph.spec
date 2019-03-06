@@ -104,7 +104,7 @@
 #################################################################################
 Name:		ceph
 Version:	14.1.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
 %endif
@@ -121,6 +121,7 @@ Group:		System/Filesystems
 URL:		http://ceph.com/
 Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.bz2
 Patch001:	0001-s390x-A-compile-hack.patch
+Patch002:	0002-src-common-CMakeLists.txt.patch
 ExcludeArch:	i686 armv7hl
 #################################################################################
 # dependencies that apply across all distro families
@@ -2169,6 +2170,9 @@ exit 0
 
 
 %changelog
+* Wed Mar 6 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:14.1.0-1
+- ceph 14.1.0 w/ static libcrc32
+
 * Wed Feb 27 2019 Boris Ranto <branto@redhat.com> - 1:14.1.0-1
 - Rebase to v14.1.0 (updated for fixes in upstream nautilus branch)
 
