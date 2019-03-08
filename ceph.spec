@@ -104,9 +104,9 @@
 #################################################################################
 Name:		ceph
 Version:	14.1.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
-Epoch:		1
+Epoch:		2
 %endif
 
 # define _epoch_prefix macro which will expand to the empty string if epoch is
@@ -2170,6 +2170,9 @@ exit 0
 
 
 %changelog
+* Thu Mar 07 2019 Adam Williamson <awilliam@redhat.com> - 2:14.1.0-3
+- Return epoch to 2, epochs cannot ever go backwards
+
 * Wed Mar 6 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:14.1.0-2
 - ceph 14.1.0 w/ static libcrc32
 
