@@ -103,8 +103,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	14.1.0
-Release:	3%{?dist}
+Version:	14.1.1
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2170,6 +2170,9 @@ exit 0
 
 
 %changelog
+* Wed Mar 13 2019 Boris Ranto <branto@redhat.com> - 2:14.1.1-1
+- Rebase to latest upstream version
+
 * Thu Mar 07 2019 Adam Williamson <awilliam@redhat.com> - 2:14.1.0-3
 - Return epoch to 2, epochs cannot ever go backwards
 
