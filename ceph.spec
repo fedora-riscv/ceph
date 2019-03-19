@@ -103,7 +103,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	14.1.1
+Version:	14.2.0
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
@@ -119,7 +119,7 @@ License:	LGPL-2.1 and CC-BY-SA-3.0 and GPL-2.0 and BSL-1.0 and BSD-3-Clause and 
 Group:		System/Filesystems
 %endif
 URL:		http://ceph.com/
-Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.bz2
+Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.gz
 Patch001:	0001-s390x-A-compile-hack.patch
 Patch002:	0002-src-common-CMakeLists.txt.patch
 ExcludeArch:	i686 armv7hl
@@ -611,6 +611,7 @@ Provides:	ceph-test:/usr/bin/ceph-osdomap-tool
 Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
 Requires:	lvm2
 Requires:	sudo
+Requires:	libstoragemgmt
 %description osd
 ceph-osd is the object storage daemon for the Ceph distributed file
 system.  It is responsible for storing objects on a local file system
@@ -2170,6 +2171,9 @@ exit 0
 
 
 %changelog
+* Tue Mar 19 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.0-1
+- ceph 14.2.0 GA
+
 * Wed Mar 13 2019 Boris Ranto <branto@redhat.com> - 2:14.1.1-1
 - Rebase to latest upstream version
 
