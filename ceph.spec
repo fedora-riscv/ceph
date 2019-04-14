@@ -85,7 +85,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	12.2.11
+Version:	12.2.12
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		1
@@ -108,7 +108,6 @@ Patch002:	0002-cmake-Support-ppc64.patch
 Patch003:	0003-librbd-Conditionally-import-TrimRequest.cc.patch
 Patch005:	0005-src-rocksdb-table-block.h.patch
 Patch007:	0007-src-osd-PrimaryLogPG.cc.patch
-Patch008:	0008-src-rgw-CMakeLists.txt.patch
 %if 0%{?suse_version}
 %if 0%{?is_opensuse}
 ExclusiveArch:	x86_64 aarch64 ppc64 ppc64le
@@ -414,7 +413,7 @@ Summary:	Ceph daemon for mirroring RBD images
 %if 0%{?suse_version}
 Group:		System/Filesystems
 %endif
-Requires:	ceph-common = %{_epoch_prefix}%{version}-%{release}
+Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
 Requires:	librados2 = %{_epoch_prefix}%{version}-%{release}
 %description -n rbd-mirror
 Daemon for mirroring RBD images between Ceph clusters, streaming
@@ -435,7 +434,7 @@ Summary:	Rados REST gateway
 %if 0%{?suse_version}
 Group:		System/Filesystems
 %endif
-Requires:	ceph-common = %{_epoch_prefix}%{version}-%{release}
+Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
 %if 0%{with selinux}
 Requires:	ceph-selinux = %{_epoch_prefix}%{version}-%{release}
 %endif
@@ -1806,6 +1805,9 @@ exit 0
 
 
 %changelog
+* Fri Apr 12 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.12-1
+- New release (1:12.2.12-1)
+
 * Fri Feb 1 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.11-1
 - New release (1:12.2.11-1)
 
