@@ -103,7 +103,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	14.2.0
+Version:	14.2.1
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
@@ -2171,6 +2171,9 @@ exit 0
 
 
 %changelog
+* Mon Apr 29 2019 Boris Ranto <branto@redhat.com> - 2:14.2.1-1
+- Rebase to latest upstream version (14.2.1)
+
 * Tue Mar 19 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.0-1
 - ceph 14.2.0 GA
 
