@@ -38,6 +38,7 @@
 %bcond_without cephfs_java
 %bcond_without lttng
 %bcond_without libradosstriper
+%bcond_without ocf
 %bcond_without amqp_endpoint
 %global _remote_tarball_prefix https://download.ceph.com/tarballs/
 %endif
@@ -53,8 +54,10 @@
 %if 0%{?is_opensuse}
 %bcond_without lttng
 %bcond_without libradosstriper
+%bcond_without ocf
 %else
 %bcond_with libradosstriper
+%bcond_with ocf
 %ifarch x86_64 aarch64
 %bcond_without lttng
 %else
@@ -89,6 +92,7 @@
 %{!?_udevrulesdir: %global _udevrulesdir /lib/udev/rules.d}
 %{!?tmpfiles_create: %global tmpfiles_create systemd-tmpfiles --create}
 %{!?python3_pkgversion: %global python3_pkgversion 3}
+%{!?python3_version: %global python3_version 3}
 # define _python_buildid macro which will expand to the empty string when
 # building with python2
 %global _python_buildid %{?_defined_if_python2_absent:%{python3_pkgversion}}
@@ -253,16 +257,9 @@ BuildRequires:  openldap-devel
 BuildRequires:  openssl-devel
 BuildRequires:  CUnit-devel
 BuildRequires:  redhat-lsb-core
-%if 0%{?rhel} == 7
-BuildRequires:	Cython
-BuildRequires:	python34-devel
-BuildRequires:	python34-setuptools
-BuildRequires:	python34-Cython
-%else
-BuildRequires:	python3-devel
-BuildRequires:	python3-setuptools
-BuildRequires:	python3-Cython
-%endif
+BuildRequires:	python%{python3_pkgversion}-devel
+BuildRequires:	python%{python3_pkgversion}-setuptools
+BuildRequires:	python%{python3_pkgversion}-Cython
 BuildRequires:	python%{_python_buildid}-prettytable
 BuildRequires:	python%{_python_buildid}-sphinx
 BuildRequires:	lz4-devel >= 1.7
@@ -687,6 +684,7 @@ Group:		Development/Libraries/Python
 Requires:	librgw2 = %{_epoch_prefix}%{version}-%{release}
 Requires:	python-rados = %{_epoch_prefix}%{version}-%{release}
 Obsoletes:	python-ceph < %{_epoch_prefix}%{version}-%{release}
+Provides:	python3-rgw = %{_epoch_prefix}%{version}-%{release}
 %description -n python-rgw
 This package contains Python 2 libraries for interacting with Cephs RADOS
 gateway.
@@ -723,6 +721,7 @@ Group:		Development/Libraries/Python
 %endif
 Requires:	python%{python3_pkgversion}
 Requires:	librados2 = %{_epoch_prefix}%{version}-%{release}
+Provides:	python3-rados = %{_epoch_prefix}%{version}-%{release}
 %description -n python%{python3_pkgversion}-rados
 This package contains Python 3 libraries for interacting with Cephs RADOS
 object store.
@@ -866,6 +865,7 @@ Group:		Development/Libraries/Python
 Requires:	libcephfs2 = %{_epoch_prefix}%{version}-%{release}
 Requires:	python%{python3_pkgversion}-rados = %{_epoch_prefix}%{version}-%{release}
 Requires:	python%{python3_pkgversion}-ceph-argparse = %{_epoch_prefix}%{version}-%{release}
+Provides:	python3-cephfs = %{_epoch_prefix}%{version}-%{release}
 %description -n python%{python3_pkgversion}-cephfs
 This package contains Python 3 libraries for interacting with Cephs distributed
 file system.
@@ -888,6 +888,7 @@ Summary:	Python 3 utility libraries for Ceph CLI
 %if 0%{?suse_version}
 Group:		Development/Libraries/Python
 %endif
+Provides:	python3-ceph-argparse = %{_epoch_prefix}%{version}-%{release}
 %description -n python%{python3_pkgversion}-ceph-argparse
 This package contains types and routines for Python 3 used by the Ceph CLI as
 well as the RESTful interface. These have to do with querying the daemons for
@@ -1089,7 +1090,7 @@ cd build
     -DCMAKE_INSTALL_MANDIR=%{_mandir} \
     -DCMAKE_INSTALL_DOCDIR=%{_docdir}/ceph \
     -DWITH_MANPAGE=ON \
-    -DWITH_PYTHON3=ON \
+    -DWITH_PYTHON3=%{python3_version} \
     -DWITH_MGR_DASHBOARD_FRONTEND=OFF \
 %if %{with python2}
     -DWITH_PYTHON2=ON \
@@ -2171,6 +2172,9 @@ exit 0
 
 
 %changelog
+* Wed May 8 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com>
+- sync w/ upstream to minimize diffs/drift
+
 * Mon Apr 29 2019 Boris Ranto <branto@redhat.com> - 2:14.2.1-1
 - Rebase to latest upstream version (14.2.1)
 
