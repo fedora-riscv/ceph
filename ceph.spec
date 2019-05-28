@@ -108,7 +108,7 @@
 #################################################################################
 Name:		ceph
 Version:	14.2.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -483,8 +483,8 @@ BuildArch:      noarch
 Group:          System/Filesystems
 %endif
 Requires:       ceph-mgr = %{_epoch_prefix}%{version}-%{release}
-Requires:       numpy
-Requires:       scipy
+Requires:       python%{_python_buildid}-numpy
+Requires:       python%{_python_buildid}-scipy
 %description mgr-diskprediction-local
 ceph-mgr-diskprediction-local is a ceph-mgr plugin that tries to predict
 disk failures using local algorithms and machine-learning databases.
@@ -2172,6 +2172,10 @@ exit 0
 
 
 %changelog
+* Tue May 28 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.0-2
+- numpy -> python3-numpy, bz#1712203 (and why I like to keep upstream
+  and fedora .spec files in sync)
+
 * Wed May 8 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com>
 - sync w/ upstream to minimize diffs/drift
 
