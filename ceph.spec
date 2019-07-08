@@ -126,6 +126,7 @@ URL:		http://ceph.com/
 Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.gz
 Patch001:	0001-s390x-A-compile-hack.patch
 Patch002:	0002-src-common-CMakeLists.txt.patch
+# ceph ≥ 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 #################################################################################
 # dependencies that apply across all distro families
