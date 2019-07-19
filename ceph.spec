@@ -107,8 +107,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	14.2.1
-Release:	2%{?dist}
+Version:	14.2.2
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -245,6 +245,8 @@ BuildRequires:	python%{_python_buildid}-PrettyTable
 BuildRequires:	python%{_python_buildid}-Sphinx
 BuildRequires:  rdma-core-devel
 BuildRequires:	liblz4-devel >= 1.7
+# for prometheus-alerts
+BuildRequires:  golang-github-prometheus-prometheus
 %endif
 %if 0%{?fedora} || 0%{?rhel}
 Requires:	systemd
@@ -686,6 +688,10 @@ Requires:	librgw2 = %{_epoch_prefix}%{version}-%{release}
 Requires:	python-rados = %{_epoch_prefix}%{version}-%{release}
 Obsoletes:	python-ceph < %{_epoch_prefix}%{version}-%{release}
 Provides:	python3-rgw = %{_epoch_prefix}%{version}-%{release}
+%if 0%{without python2}
+Provides:	python-rgw = %{_epoch_prefix}%{version}-%{release}
+Obsoletes:	python-rgw < %{_epoch_prefix}%{version}-%{release}
+%endif
 %description -n python-rgw
 This package contains Python 2 libraries for interacting with Cephs RADOS
 gateway.
@@ -723,6 +729,10 @@ Group:		Development/Libraries/Python
 Requires:	python%{python3_pkgversion}
 Requires:	librados2 = %{_epoch_prefix}%{version}-%{release}
 Provides:	python3-rados = %{_epoch_prefix}%{version}-%{release}
+%if 0%{without python2}
+Provides:	python-rados = %{_epoch_prefix}%{version}-%{release}
+Obsoletes:	python-rados < %{_epoch_prefix}%{version}-%{release}
+%endif
 %description -n python%{python3_pkgversion}-rados
 This package contains Python 3 libraries for interacting with Cephs RADOS
 object store.
@@ -809,6 +819,10 @@ Group:		Development/Libraries/Python
 %endif
 Requires:	librbd1 = %{_epoch_prefix}%{version}-%{release}
 Requires:	python%{python3_pkgversion}-rados = %{_epoch_prefix}%{version}-%{release}
+%if 0%{without python2}
+Provides:	python-rbd = %{_epoch_prefix}%{version}-%{release}
+Obsoletes:	python-rbd < %{_epoch_prefix}%{version}-%{release}
+%endif
 %description -n python%{python3_pkgversion}-rbd
 This package contains Python 3 libraries for interacting with Cephs RADOS
 block device.
@@ -867,6 +881,10 @@ Requires:	libcephfs2 = %{_epoch_prefix}%{version}-%{release}
 Requires:	python%{python3_pkgversion}-rados = %{_epoch_prefix}%{version}-%{release}
 Requires:	python%{python3_pkgversion}-ceph-argparse = %{_epoch_prefix}%{version}-%{release}
 Provides:	python3-cephfs = %{_epoch_prefix}%{version}-%{release}
+%if 0%{without python2}
+Provides:	python-cephfs = %{_epoch_prefix}%{version}-%{release}
+Obsoletes:	python-cephfs < %{_epoch_prefix}%{version}-%{release}
+%endif
 %description -n python%{python3_pkgversion}-cephfs
 This package contains Python 3 libraries for interacting with Cephs distributed
 file system.
@@ -1024,6 +1042,15 @@ collecting data from Ceph Manager "prometheus" module and Prometheus
 project "node_exporter" module. The dashboards are designed to be
 integrated with the Ceph Manager Dashboard web UI.
 
+%if 0%{?suse_version}
+%package prometheus-alerts
+Summary:        Prometheus alerts for a Ceph deplyoment
+BuildArch:      noarch
+Group:          System/Monitoring
+%description prometheus-alerts
+This package provides Ceph’s default alerts for Prometheus.
+%endif
+
 #################################################################################
 # common
 #################################################################################
@@ -1031,6 +1058,9 @@ integrated with the Ceph Manager Dashboard web UI.
 %autosetup -p1
 
 %build
+# LTO can be enabled as soon as the following GCC bug is fixed:
+# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=48200
+%define _lto_cflags %{nil}
 
 %if 0%{?rhel} == 7
 . /opt/rh/devtoolset-7/enable
@@ -1213,6 +1243,8 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/bootstrap-rbd-mirror
 %if 0%{?suse_version}
 # create __pycache__ directories and their contents
 %py3_compile %{buildroot}%{python3_sitelib}
+# prometheus alerts
+install -m 644 -D monitoring/prometheus/alerts/ceph_default_alerts.yml %{buildroot}/etc/prometheus/SUSE/default_rules/ceph_default_alerts.yml
 %endif
 %if 0%{?rhel} == 8
 %py_byte_compile %{__python3} %{buildroot}%{python3_sitelib}
@@ -2161,9 +2193,9 @@ exit 0
 
 %files grafana-dashboards
 %if 0%{?suse_version}
-%attr(0750,root,grafana) %dir %{_sysconfdir}/grafana
-%attr(0750,root,grafana) %dir %{_sysconfdir}/grafana/dashboards
-%attr(0750,root,grafana) %dir %{_sysconfdir}/grafana/dashboards/ceph-dashboard
+%attr(0750,root,root) %dir %{_sysconfdir}/grafana
+%attr(0750,root,root) %dir %{_sysconfdir}/grafana/dashboards
+%attr(0750,root,root) %dir %{_sysconfdir}/grafana/dashboards/ceph-dashboard
 %else
 %attr(0755,root,root) %dir %{_sysconfdir}/grafana/dashboards/ceph-dashboard
 %endif
@@ -2171,8 +2203,17 @@ exit 0
 %doc monitoring/grafana/dashboards/README
 %doc monitoring/grafana/README.md
 
+%if 0%{?suse_version}
+%files prometheus-alerts
+%dir /etc/prometheus/SUSE/
+%dir /etc/prometheus/SUSE/default_rules/
+%config /etc/prometheus/SUSE/default_rules/ceph_default_alerts.yml
+%endif
 
 %changelog
+* Fri Jul 19 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.2-1
+- ceph 14.2.2 GA
+
 * Tue May 28 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.0-2
 - numpy -> python3-numpy, bz#1712203 (and why I like to keep upstream
   and fedora .spec files in sync)
