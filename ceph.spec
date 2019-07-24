@@ -108,7 +108,7 @@
 #################################################################################
 Name:		ceph
 Version:	14.2.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2211,6 +2211,9 @@ exit 0
 %endif
 
 %changelog
+* Wed Jul 24 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2:14.2.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
+
 * Fri Jul 19 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.2-1
 - ceph 14.2.2 GA
 
