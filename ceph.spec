@@ -107,8 +107,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	14.2.2
-Release:	3%{?dist}
+Version:	14.2.3
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -226,7 +226,6 @@ BuildRequires:  yaml-cpp-devel
 %if 0%{?suse_version}
 BuildRequires:  pkgconfig(systemd)
 BuildRequires:	systemd-rpm-macros
-BuildRequires:	systemd
 %{?systemd_requires}
 PreReq:		%fillup_prereq
 BuildRequires:	net-tools
@@ -456,6 +455,7 @@ BuildArch:      noarch
 Group:          System/Filesystems
 %endif
 Requires:       ceph-mgr = %{_epoch_prefix}%{version}-%{release}
+Requires:       ceph-grafana-dashboards = %{_epoch_prefix}%{version}-%{release}
 %if 0%{?fedora} || 0%{?rhel}
 Requires:       python%{_python_buildid}-cherrypy
 Requires:       python%{_python_buildid}-jwt
@@ -1209,8 +1209,6 @@ install -m 0644 -D etc/sysctl/90-ceph-osd.conf %{buildroot}%{_sysctldir}/90-ceph
 
 # firewall templates and /sbin/mount.ceph symlink
 %if 0%{?suse_version}
-install -m 0644 -D etc/sysconfig/SuSEfirewall2.d/services/ceph-mon %{buildroot}%{_sysconfdir}/sysconfig/SuSEfirewall2.d/services/ceph-mon
-install -m 0644 -D etc/sysconfig/SuSEfirewall2.d/services/ceph-osd-mds %{buildroot}%{_sysconfdir}/sysconfig/SuSEfirewall2.d/services/ceph-osd-mds
 mkdir -p %{buildroot}/sbin
 ln -sf %{_sbindir}/mount.ceph %{buildroot}/sbin/mount.ceph
 %endif
@@ -1286,8 +1284,6 @@ install -m 644 -D monitoring/prometheus/alerts/ceph_default_alerts.yml %{buildro
 %endif
 %if 0%{?suse_version}
 %{_fillupdir}/sysconfig.*
-%config %{_sysconfdir}/sysconfig/SuSEfirewall2.d/services/ceph-mon
-%config %{_sysconfdir}/sysconfig/SuSEfirewall2.d/services/ceph-osd-mds
 %endif
 %{_unitdir}/ceph.target
 %if 0%{with python2}
@@ -2211,6 +2207,9 @@ exit 0
 %endif
 
 %changelog
+* Wed Sep 4 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.3-1
+- ceph 14.2.3 GA
+
 * Mon Aug 19 2019 Miro Hrončok <mhroncok@redhat.com> - 2:14.2.2-3
 - Rebuilt for Python 3.8
 
