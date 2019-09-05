@@ -832,10 +832,10 @@ Summary:	Ceph distributed file system client library
 %if 0%{?suse_version}
 Group:		System/Libraries
 %endif
-Obsoletes:	libcephfs1
+Obsoletes:	libcephfs1 < %{_epoch_prefix}:14.0.0-1
 %if 0%{?rhel} || 0%{?fedora}
 Obsoletes:	ceph-libs < %{_epoch_prefix}%{version}-%{release}
-Obsoletes:	ceph-libcephfs
+Obsoletes:	ceph-libcephfs < %{_epoch_prefix}:14.0.0-1
 %endif
 %description -n libcephfs2
 Ceph is a distributed network file system designed to provide excellent
@@ -2179,7 +2179,7 @@ if [ $1 -eq 0 ]; then
 fi
 exit 0
 
-%endif # with selinux
+%endif
 
 %if 0%{with python2}
 %files -n python-ceph-compat
