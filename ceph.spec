@@ -108,7 +108,7 @@
 #################################################################################
 Name:		ceph
 Version:	14.2.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -431,6 +431,8 @@ Requires:       python%{_python_buildid}-six
 %if 0%{?fedora} || 0%{?rhel}
 Requires:       python%{_python_buildid}-cherrypy
 Requires:       python%{_python_buildid}-werkzeug
+Requires:       python%{_python_buildid}-gprcio
+Requires:       python%{_python_buildid}-protobuf
 %endif
 %if 0%{?suse_version}
 Requires:       python%{_python_buildid}-CherryPy
@@ -2207,6 +2209,9 @@ exit 0
 %endif
 
 %changelog
+* Tue Nov 5 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.4-2
+- ceph 14.2.4, partial fix for bz#1768017
+
 * Tue Sep 17 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.4-1
 - ceph 14.2.4 GA
 
