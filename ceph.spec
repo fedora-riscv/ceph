@@ -108,10 +108,10 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	14.2.5
+Version:	14.2.6
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
-Epoch:		2
+Epoch:		1
 %endif
 
 # define _epoch_prefix macro which will expand to the empty string if epoch is
@@ -2265,6 +2265,9 @@ exit 0
 %endif
 
 %changelog
+* Thu Jan 9 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.6-1
+- ceph 14.2.6 GA
+
 * Tue Dec 10 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.5-1
 - ceph 14.2.5 GA
 
