@@ -109,9 +109,9 @@
 #################################################################################
 Name:		ceph
 Version:	14.2.6
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
-Epoch:		1
+Epoch:		2
 %endif
 
 # define _epoch_prefix macro which will expand to the empty string if epoch is
@@ -2265,6 +2265,9 @@ exit 0
 %endif
 
 %changelog
+* Thu Jan 9 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.6-2
+- ceph 14.2.6
+
 * Thu Jan 9 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.6-1
 - ceph 14.2.6 GA
 
