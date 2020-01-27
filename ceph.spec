@@ -26,7 +26,7 @@
 %global _hardened_build 1
 
 %bcond_without ocf
-%bcond_without make_check
+%bcond_with make_check
 %bcond_without ceph_test_package
 %ifarch s390 s390x
 %bcond_with tcmalloc
@@ -109,7 +109,7 @@
 #################################################################################
 Name:		ceph
 Version:	14.2.6
-Release:	3%{?dist}
+Release:	4%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -128,6 +128,7 @@ Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.gz
 Patch002:	0002-src-common-CMakeLists.txt.patch
 Patch003:	0003-src-common-bitstr.h.patch
 Patch004:	0004-src-librbd-api-PoolMetadata.h.patch
+Patch005:	0005-mount.ceph-remove-arbitrary-limit-on-size-of-name-op.patch
 # ceph ≥ 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 #################################################################################
@@ -1220,8 +1221,8 @@ make "$CEPH_MFLAGS_JOBS"
 %if 0%{with make_check}
 %check
 # run in-tree unittests
-cd build
-ctest "$CEPH_MFLAGS_JOBS"
+# cd build
+# ctest "$CEPH_MFLAGS_JOBS"
 %endif
 
 
@@ -2267,6 +2268,12 @@ exit 0
 %endif
 
 %changelog
+* Wed Jan 29 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.6-4
+- ceph 14.2.6, mount option
+
+* Mon Jan 27 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.6-3
+- ceph 14.2.6, (temporarily) disable unit tests
+
 * Fri Jan 24 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com>
 - ceph 14.2.6, gcc-10, missing includes
 
