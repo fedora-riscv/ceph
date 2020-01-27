@@ -1,0 +1,10 @@
+--- ceph-14.2.6/src/librbd/api/PoolMetadata.h.orig	2020-01-24 12:39:23.738816885 -0500
++++ ceph-14.2.6/src/librbd/api/PoolMetadata.h	2020-01-24 12:39:36.522902386 -0500
+@@ -8,6 +8,7 @@
+ #include "include/rados/librados_fwd.hpp"
+ 
+ #include <map>
++#include <string>
+ 
+ namespace librbd {
+ 

@@ -26,7 +26,7 @@
 %global _hardened_build 1
 
 %bcond_without ocf
-%bcond_with make_check
+%bcond_without make_check
 %bcond_without ceph_test_package
 %ifarch s390 s390x
 %bcond_with tcmalloc
@@ -109,7 +109,7 @@
 #################################################################################
 Name:		ceph
 Version:	14.2.6
-Release:	2%{?dist}
+Release:	3%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -126,6 +126,8 @@ Group:		System/Filesystems
 URL:		http://ceph.com/
 Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.gz
 Patch002:	0002-src-common-CMakeLists.txt.patch
+Patch003:	0003-src-common-bitstr.h.patch
+Patch004:	0004-src-librbd-api-PoolMetadata.h.patch
 # ceph ≥ 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 #################################################################################
@@ -2265,6 +2267,9 @@ exit 0
 %endif
 
 %changelog
+* Fri Jan 24 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com>
+- ceph 14.2.6, gcc-10, missing includes
+
 * Thu Jan 9 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.6-2
 - ceph 14.2.6
 
