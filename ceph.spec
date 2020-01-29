@@ -2269,7 +2269,7 @@ exit 0
 
 %changelog
 * Wed Jan 29 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.6-4
-- ceph 14.2.6, mount option
+- ceph 14.2.6, https://tracker.ceph.com/issues/43649
 
 * Mon Jan 27 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.6-3
 - ceph 14.2.6, (temporarily) disable unit tests
