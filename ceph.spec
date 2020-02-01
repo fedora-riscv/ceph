@@ -108,8 +108,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	14.2.6
-Release:	4%{?dist}
+Version:	14.2.7
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2268,6 +2268,9 @@ exit 0
 %endif
 
 %changelog
+* Sat Feb 1 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.7-1
+- ceph 14.2.7 GA
+
 * Wed Jan 29 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.6-4
 - ceph 14.2.6, https://tracker.ceph.com/issues/43649
 
