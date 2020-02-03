@@ -109,7 +109,7 @@
 #################################################################################
 Name:		ceph
 Version:	14.2.7
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -551,7 +551,7 @@ BuildArch:	noarch
 Group:          System/Filesystems
 %endif
 Requires:       ceph-mgr = %{_epoch_prefix}%{version}-%{release}
-Requires:       python-remoto
+Requires:       python3-remoto
 %description mgr-ssh
 ceph-mgr-ssh is a ceph-mgr module for orchestration functions using
 direct SSH connections for management operations.
@@ -2268,6 +2268,9 @@ exit 0
 %endif
 
 %changelog
+* Mon Feb 3 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.7-2
+- ceph 14.2.7 python3-remoto #1784216
+
 * Sat Feb 1 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.7-1
 - ceph 14.2.7 GA
 
