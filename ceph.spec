@@ -126,9 +126,10 @@ Group:		System/Filesystems
 %endif
 URL:		http://ceph.com/
 Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.gz
-Patch002:	0002-src-common-CMakeLists.txt.patch
-Patch003:	0003-src-common-bitstr.h.patch
-# ceph ≥ 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
+Patch0002:	0002-src-common-CMakeLists.txt.patch
+Patch0003:	0003-src-common-bitstr.h.patch
+Patch0004:	0004-src-test-rgw-test_rgw_reshart_wait.cc.patch
+# ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 #################################################################################
 # dependencies that apply across all distro families
