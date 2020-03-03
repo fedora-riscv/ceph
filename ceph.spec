@@ -108,8 +108,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	14.2.7
-Release:	2%{?dist}
+Version:	14.2.8
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -128,7 +128,6 @@ Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.gz
 Patch002:	0002-src-common-CMakeLists.txt.patch
 Patch003:	0003-src-common-bitstr.h.patch
 Patch004:	0004-src-librbd-api-PoolMetadata.h.patch
-Patch005:	0005-mount.ceph-remove-arbitrary-limit-on-size-of-name-op.patch
 # ceph ≥ 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 #################################################################################
@@ -158,11 +157,7 @@ BuildRequires:	fuse-devel
 %if 0%{?rhel} == 7
 # devtoolset offers newer make and valgrind-devel, but the old ones are good
 # enough.
-%ifarch x86_64
 BuildRequires: devtoolset-8-gcc-c++ >= 8.2.1
-%else
-BuildRequires:	devtoolset-7-gcc-c++ >= 7.3.1-5.13
-%endif
 %else
 BuildRequires:	gcc-c++
 %endif
@@ -296,6 +291,7 @@ BuildRequires:	python%{_python_buildid}-PyJWT
 BuildRequires:	python%{_python_buildid}-Routes
 BuildRequires:	python%{_python_buildid}-Werkzeug
 BuildRequires:	python%{_python_buildid}-numpy-devel
+BuildRequires:  rpmbuild
 BuildRequires:  xmlsec1-devel
 %endif
 %endif
@@ -1544,6 +1540,7 @@ fi
 %files mgr
 %{_bindir}/ceph-mgr
 %dir %{_datadir}/ceph/mgr
+%{_datadir}/ceph/mgr/alerts
 %{_datadir}/ceph/mgr/ansible
 %{_datadir}/ceph/mgr/balancer
 %{_datadir}/ceph/mgr/crash
@@ -2268,6 +2265,9 @@ exit 0
 %endif
 
 %changelog
+* Tue Mar 3 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.8-1
+- ceph 14.2.8 GA
+
 * Mon Feb 3 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.7-2
 - ceph 14.2.7 python3-remoto #1784216
 
