@@ -128,6 +128,7 @@ Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.gz
 Patch002:	0002-src-common-CMakeLists.txt.patch
 Patch003:	0003-src-common-bitstr.h.patch
 Patch004:	0004-src-librbd-api-PoolMetadata.h.patch
+Patch005:	0005-cmake-modules-CheckCxxAtomic.cmake.patch
 # ceph ≥ 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 #################################################################################
