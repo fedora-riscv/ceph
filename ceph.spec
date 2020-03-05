@@ -139,6 +139,7 @@ Requires:       ceph-mds = %{_epoch_prefix}%{version}-%{release}
 Requires:       ceph-mgr = %{_epoch_prefix}%{version}-%{release}
 Requires:       ceph-mon = %{_epoch_prefix}%{version}-%{release}
 Requires(post):	binutils
+
 %if 0%{with cephfs_java}
 BuildRequires:	java-devel
 BuildRequires:	sharutils
@@ -161,6 +162,10 @@ BuildRequires:	fuse-devel
 BuildRequires: devtoolset-8-gcc-c++ >= 8.2.1
 %else
 BuildRequires:	gcc-c++
+%endif
+%ifarch s390 s390x
+# unlike with gcc-10, installing gcc-9 does not include gcc/libatomic
+BuildRequires:	libatomic
 %endif
 BuildRequires:	gdbm
 %if 0%{with tcmalloc}
