@@ -1,0 +1,13 @@
+diff --git a/cmake/modules/BuildBoost.cmake b/cmake/modules/BuildBoost.cmake
+index 2e92132366..3cb1e3d958 100644
+--- a/cmake/modules/BuildBoost.cmake
++++ b/cmake/modules/BuildBoost.cmake
+@@ -62,7 +62,7 @@ function(do_build_boost version)
+   else()
+     list(APPEND boost_features "address-model=32")
+   endif()
+-  set(BOOST_CXXFLAGS "-fPIC -w") # check on arm, etc <---XXX
++  set(BOOST_CXXFLAGS "-fPIC -w -fexceptions -fstack-protector-strong -grecord-gcc-switches -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -ftemplate-depth-1024 -fno-new-ttp-matching -fno-builtin-malloc -fno-builtin-calloc -fno-builtin-realloc -fno-builtin-free") # check on arm, etc <---XXX
+   list(APPEND boost_features "cxxflags=${BOOST_CXXFLAGS}")
+ 
+   set(boost_with_libs)
