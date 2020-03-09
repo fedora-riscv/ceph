@@ -109,7 +109,7 @@
 #################################################################################
 Name:		ceph
 Version:	15.1.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -126,6 +126,7 @@ Group:		System/Filesystems
 %endif
 URL:		http://ceph.com/
 Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.gz
+Patch0001:	0001-src-common-crc32c_intel_fast.patch
 Patch0002:	0002-src-common-CMakeLists.txt.patch
 Patch0003:	0003-src-common-bitstr.h.patch
 Patch0004:	0004-src-test-rgw-test_rgw_reshart_wait.cc.patch
@@ -2293,6 +2294,9 @@ exit 0
 %endif
 
 %changelog
+* Thu Mar 5 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.1.0-3
+- ceph 15.1.0, rhbz#1809799
+
 * Thu Feb 20 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.1.0-2
 - ceph 15.1.0, fmt, rhbz#1805422
 
