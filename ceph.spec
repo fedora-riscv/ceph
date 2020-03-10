@@ -130,7 +130,7 @@ Patch0001:	0001-src-common-crc32c_intel_fast.patch
 Patch0002:	0002-src-common-CMakeLists.txt.patch
 Patch0003:	0003-src-common-bitstr.h.patch
 Patch0004:	0004-src-test-rgw-test_rgw_reshart_wait.cc.patch
-Source1::	cmake-modules-BuildBoost.cmake.noautopatch
+Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 #################################################################################
