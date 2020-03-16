@@ -26,6 +26,7 @@
 %global _hardened_build 1
 
 %bcond_with make_check
+%bcond_with cmake_verbose_logging
 %bcond_without ceph_test_package
 %ifarch s390 s390x
 %bcond_with tcmalloc
@@ -77,17 +78,17 @@
 # distros that do _not_ ship cmd2/colorama
 %bcond_with cephfs_shell
 %endif
-%if 0%{?fedora} || 0%{?suse_version}
+%if 0%{?fedora} || 0%{?suse_version} || 0%{?rhel} >= 8
 %global weak_deps 1
 %endif
 %if %{with selinux}
 # get selinux policy version
 # Force 0.0.0 policy version for centos builds to avoid repository sync issues between rhel and centos
-#%if %%{?centos}
-# %%global _selinux_policy_version 0.0.0
-#%else
+%if 0%{?centos}
+%global _selinux_policy_version 0.0.0
+%else
 %{!?_selinux_policy_version: %global _selinux_policy_version 0.0.0}
-#%endif
+%endif
 %endif
 
 %{!?_udevrulesdir: %global _udevrulesdir /lib/udev/rules.d}
@@ -108,8 +109,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	15.1.0
-Release:	3%{?dist}
+Version:	15.1.1
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -129,10 +130,13 @@ Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.gz
 Patch0001:	0001-src-common-crc32c_intel_fast.patch
 Patch0002:	0002-src-common-CMakeLists.txt.patch
 Patch0003:	0003-src-common-bitstr.h.patch
-Patch0004:	0004-src-test-rgw-test_rgw_reshart_wait.cc.patch
 Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
+%if 0%{?suse_version}
+# _insert_obs_source_lines_here
+ExclusiveArch:	x86_64 aarch64 ppc64le s390x
+%endif
 #################################################################################
 # dependencies that apply across all distro families
 #################################################################################
@@ -157,7 +161,6 @@ BuildRequires:	cmake > 3.5
 %endif
 BuildRequires:	cryptsetup
 BuildRequires:	fuse-devel
-BuildRequires:	fmt-devel
 %if 0%{?rhel} == 7
 # devtoolset offers newer make and valgrind-devel, but the old ones are good
 # enough.
@@ -179,7 +182,7 @@ BuildRequires:	libaio-devel
 BuildRequires:	libblkid-devel >= 2.17
 BuildRequires:	libcurl-devel
 BuildRequires:	libcap-ng-devel
-BuildRequires:	libudev-devel
+BuildRequires:	pkgconfig(libudev)
 BuildRequires:	libnl3-devel
 BuildRequires:	liboath-devel
 BuildRequires:	libtool
@@ -195,7 +198,7 @@ BuildRequires:	python%{python3_pkgversion}
 BuildRequires:	python%{python3_pkgversion}-devel
 BuildRequires:	snappy-devel
 BuildRequires:	sudo
-BuildRequires:	udev
+BuildRequires:	pkgconfig(udev)
 BuildRequires:	util-linux
 BuildRequires:	valgrind-devel
 BuildRequires:	which
@@ -212,18 +215,32 @@ BuildRequires:	librdkafka-devel
 %if 0%{with make_check}
 BuildRequires:	jq
 BuildRequires:	libuuid-devel
+%if 0%{?rhel} == 7
+BuildRequires:	python%{python3_version_nodots}-bcrypt
+BuildRequires:	python%{python3_version_nodots}-nose
+BuildRequires:	python%{python3_version_nodots}-requests
+BuildRequires:	python%{python3_version_nodots}-dateutil
+%else
 BuildRequires:	python%{python3_pkgversion}-bcrypt
 BuildRequires:	python%{python3_pkgversion}-nose
 BuildRequires:	python%{python3_pkgversion}-pecan
 BuildRequires:	python%{python3_pkgversion}-requests
-BuildRequires:	python%{python3_pkgversion}-six
-BuildRequires:	python%{python3_pkgversion}-virtualenv
-%if 0%{?rhel} < 8
-BuildRequires:	python%{python3_pkgversion}-coverage
-BuildRequires:	python%{python3_pkgversion}-tox
+BuildRequires:	python%{python3_pkgversion}-dateutil
 %endif
 %if 0%{?rhel} == 7
-BuildRequires:	pyOpenSSL%{python3_pkgversion}
+BuildRequires:	python%{python3_version_nodots}-six
+BuildRequires:	python%{python3_version_nodots}-virtualenv
+%else
+BuildRequires:	python%{python3_pkgversion}-six
+BuildRequires:	python%{python3_pkgversion}-virtualenv
+%endif
+%if 0%{?rhel} == 7
+BuildRequires:	python%{python3_version_nodots}-coverage
+%else
+BuildRequires:	python%{python3_pkgversion}-coverage
+%endif
+%if 0%{?rhel} == 7
+BuildRequires:	python%{python3_version_nodots}-pyOpenSSL
 %else
 BuildRequires:	python%{python3_pkgversion}-pyOpenSSL
 %endif
@@ -302,12 +319,21 @@ BuildRequires:	xmlsec1-nss
 %endif
 BuildRequires:	xmlsec1-openssl
 BuildRequires:	xmlsec1-openssl-devel
+%if 0%{?rhel} == 7
+BuildRequires:	python%{python3_version_nodots}-jwt
+BuildRequires:	python%{python3_version_nodots}-scipy
+%else
 BuildRequires:	python%{python3_pkgversion}-cherrypy
 BuildRequires:	python%{python3_pkgversion}-jwt
 BuildRequires:	python%{python3_pkgversion}-routes
 BuildRequires:	python%{python3_pkgversion}-scipy
 BuildRequires:	python%{python3_pkgversion}-werkzeug
+%endif
+%if 0%{?rhel} == 7
+BuildRequires:	python%{python3_version_nodots}-pyOpenSSL
+%else
 BuildRequires:	python%{python3_pkgversion}-pyOpenSSL
+%endif
 %endif
 %if 0%{?suse_version}
 BuildRequires:	libxmlsec1-1
@@ -406,9 +432,14 @@ Base is the package that includes all the files shared amongst ceph servers
 
 %package -n cephadm
 Summary:	Utility to bootstrap Ceph clusters
-Requires:	podman
 Requires:	lvm2
+%if 0%{?suse_version}
+Requires:	apparmor-abstractions
+%endif
 Requires:	python%{python3_pkgversion}
+%if 0%{?weak_deps}
+Recommends:	podman
+%endif
 %description -n cephadm
 Utility to bootstrap a Ceph cluster and manage Ceph daemons deployed
 with systemd and podman.
@@ -474,28 +505,20 @@ Summary:	Ceph Manager Daemon
 Group:		System/Filesystems
 %endif
 Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
-Requires:	python%{python3_pkgversion}-bcrypt
-Requires:	python%{python3_pkgversion}-pecan
-Requires:	python%{python3_pkgversion}-requests
+Requires:	ceph-mgr-modules-core = %{_epoch_prefix}%{version}-%{release}
+%if 0%{?rhel} == 7
+Requires:	python%{python3_version_nodots}-six
+%else
 Requires:	python%{python3_pkgversion}-six
-%if 0%{?fedora} || 0%{?rhel}
-Requires:	python%{python3_pkgversion}-cherrypy
-Requires:	python%{python3_pkgversion}-werkzeug
-%endif
-%if 0%{?suse_version}
-Requires:	python%{python3_pkgversion}-CherryPy
-Requires:	python%{python3_pkgversion}-Werkzeug
 %endif
 %if 0%{?weak_deps}
 Recommends:	ceph-mgr-dashboard = %{_epoch_prefix}%{version}-%{release}
 Recommends:	ceph-mgr-diskprediction-local = %{_epoch_prefix}%{version}-%{release}
 Recommends:	ceph-mgr-diskprediction-cloud = %{_epoch_prefix}%{version}-%{release}
-Recommends:	ceph-mgr-rook = %{_epoch_prefix}%{version}-%{release}
 Recommends:	ceph-mgr-k8sevents = %{_epoch_prefix}%{version}-%{release}
 Recommends:	ceph-mgr-cephadm = %{_epoch_prefix}%{version}-%{release}
 Recommends:	python%{python3_pkgversion}-influxdb
 %endif
-Requires:	python%{python3_pkgversion}-pyOpenSSL
 %description mgr
 ceph-mgr enables python modules that provide services (such as the REST
 module derived from Calamari) and expose CLI hooks.  ceph-mgr gathers
@@ -522,19 +545,14 @@ Requires:	python%{python3_pkgversion}-PyJWT
 Requires:	python%{python3_pkgversion}-Routes
 Requires:	python%{python3_pkgversion}-Werkzeug
 %endif
-%if 0%{?rhel} == 7
-Requires:	pyOpenSSL
-%else
-Requires:	python%{python3_pkgversion}-pyOpenSSL
-%endif
 %description mgr-dashboard
-ceph-mgr-dashboard is a manager plugin, providing a web-based application
+ceph-mgr-dashboard is a manager module, providing a web-based application
 to monitor and manage many aspects of a Ceph cluster and related components.
 See the Dashboard documentation at http://docs.ceph.com/ for details and a
 detailed feature overview.
 
 %package mgr-diskprediction-local
-Summary:	Ceph Manager plugin for predicting disk failures
+Summary:	Ceph Manager module for predicting disk failures
 BuildArch:	noarch
 %if 0%{?suse_version}
 Group:		System/Filesystems
@@ -547,11 +565,11 @@ Requires:	numpy
 Requires:	scipy
 %endif
 %description mgr-diskprediction-local
-ceph-mgr-diskprediction-local is a ceph-mgr plugin that tries to predict
+ceph-mgr-diskprediction-local is a ceph-mgr module that tries to predict
 disk failures using local algorithms and machine-learning databases.
 
 %package mgr-diskprediction-cloud
-Summary:	Ceph Manager plugin for cloud-based disk failure prediction
+Summary:	Ceph Manager module for cloud-based disk failure prediction
 BuildArch:	noarch
 %if 0%{?suse_version}
 Group:		System/Filesystems
@@ -560,41 +578,72 @@ Requires:	ceph-mgr = %{_epoch_prefix}%{version}-%{release}
 Requires:	python%{python3_pkgversion}-grpcio
 Requires:	python%{python3_pkgversion}-protobuf
 %description mgr-diskprediction-cloud
-ceph-mgr-diskprediction-cloud is a ceph-mgr plugin that tries to predict
+ceph-mgr-diskprediction-cloud is a ceph-mgr module that tries to predict
 disk failures using services in the Google cloud.
+
+%package mgr-modules-core
+Summary:	Ceph Manager modules which are always enabled
+BuildArch:	noarch
+%if 0%{?suse_version}
+Group:		System/Filesystems
+%endif
+%if 0%{?rhel} == 7
+Requires:	python%{python3_version_nodots}-bcrypt
+Requires:	python%{python3_version_nodots}-pyOpenSSL
+Requires:	python%{python3_version_nodots}-requests
+Requires:	python%{python3_version_nodots}-PyYAML
+Requires:	python%{python3_version_nodots}-dateutil
+%else
+Requires:	python%{python3_pkgversion}-bcrypt
+Requires:	python%{python3_pkgversion}-pecan
+Requires:	python%{python3_pkgversion}-pyOpenSSL
+Requires:	python%{python3_pkgversion}-requests
+Requires:	python%{python3_pkgversion}-dateutil
+%endif
+%if 0%{?fedora} || 0%{?rhel} >= 8
+Requires:	python%{python3_pkgversion}-cherrypy
+Requires:	python%{python3_pkgversion}-pyyaml
+Requires:	python%{python3_pkgversion}-werkzeug
+%endif
+%if 0%{?suse_version}
+Requires:	python%{python3_pkgversion}-CherryPy
+Requires:	python%{python3_pkgversion}-PyYAML
+Requires:	python%{python3_pkgversion}-Werkzeug
+%endif
+%if 0%{?weak_deps}
+Recommends:	ceph-mgr-rook = %{_epoch_prefix}%{version}-%{release}
+%endif
+%description mgr-modules-core
+ceph-mgr-modules-core provides a set of modules which are always
+enabled by ceph-mgr.
 
 %package mgr-rook
 BuildArch:	noarch
-Summary:	Ceph Manager plugin for Rook-based orchestration
+Summary:	Ceph Manager module for Rook-based orchestration
 %if 0%{?suse_version}
 Group:		System/Filesystems
 %endif
 Requires:	ceph-mgr = %{_epoch_prefix}%{version}-%{release}
 Requires:	python%{python3_pkgversion}-kubernetes
+Requires:	python%{python3_pkgversion}-jsonpatch
 %description mgr-rook
-ceph-mgr-rook is a ceph-mgr plugin for orchestration functions using
+ceph-mgr-rook is a ceph-mgr module for orchestration functions using
 a Rook backend.
 
 %package mgr-k8sevents
 BuildArch:	noarch
-Summary:	Ceph Manager plugin to orchestrate ceph-events to kubernetes' events API
+Summary:	Ceph Manager module to orchestrate ceph-events to kubernetes' events API
 %if 0%{?suse_version}
 Group:		System/Filesystems
 %endif
 Requires:	ceph-mgr = %{_epoch_prefix}%{version}-%{release}
 Requires:	python%{python3_pkgversion}-kubernetes
-%if 0%{?fedora} || 0%{?rhel}
-Requires:	python%{python3_pkgversion}-yaml
-%endif
-%if 0%{?suse_version}
-Requires:	python%{python3_pkgversion}-PyYAML
-%endif
 %description mgr-k8sevents
-ceph-mgr-k8sevents is a ceph-mgr plugin that sends every ceph-events
+ceph-mgr-k8sevents is a ceph-mgr module that sends every ceph-events
 to kubernetes' events API
 
 %package mgr-cephadm
-Summary:	Ceph Manager plugin for cephadm-based orchestration
+Summary:	Ceph Manager module for cephadm-based orchestration
 BuildArch:	noarch
 %if 0%{?suse_version}
 Group:		System/Filesystems
@@ -1141,6 +1190,8 @@ cd build
 %{cmake} .. \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DBUILD_CONFIG=rpmbuild \
+    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+    -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
     -DCMAKE_INSTALL_LIBEXECDIR=%{_libexecdir} \
     -DCMAKE_INSTALL_LOCALSTATEDIR=%{_localstatedir} \
     -DCMAKE_INSTALL_SYSCONFDIR=%{_sysconfdir} \
@@ -1170,6 +1221,7 @@ cd build
 %if 0%{with ocf}
     -DWITH_OCF=ON \
 %endif
+    -DWITH_SYSTEM_BOOST=OFF \
 %ifarch aarch64 armv7hl mips mipsel ppc ppc64 ppc64le %{ix86} x86_64
     -DWITH_BOOST_CONTEXT=ON \
 %else
@@ -1193,8 +1245,16 @@ cd build
 %else
     -DWITH_RADOSGW_KAFKA_ENDPOINT=OFF \
 %endif
+%if 0%{with cmake_verbose_logging}
+    -DCMAKE_VERBOSE_MAKEFILE=ON \
+%endif
     -DBOOST_J=$CEPH_SMP_NCPUS \
     -DWITH_GRAFANA=ON
+
+%if %{with cmake_verbose_logging}
+cat ./CMakeFiles/CMakeOutput.log
+cat ./CMakeFiles/CMakeError.log
+%endif
 
 export VERBOSE=1
 export V=1
@@ -1552,33 +1612,8 @@ fi
 %files mgr
 %{_bindir}/ceph-mgr
 %dir %{_datadir}/ceph/mgr
-%{_datadir}/ceph/mgr/alerts
-%{_datadir}/ceph/mgr/ansible
-%{_datadir}/ceph/mgr/balancer
-%{_datadir}/ceph/mgr/crash
-%{_datadir}/ceph/mgr/deepsea
-%{_datadir}/ceph/mgr/devicehealth
-%{_datadir}/ceph/mgr/influx
-%{_datadir}/ceph/mgr/insights
-%{_datadir}/ceph/mgr/iostat
-%{_datadir}/ceph/mgr/localpool
 %{_datadir}/ceph/mgr/mgr_module.*
 %{_datadir}/ceph/mgr/mgr_util.*
-%{_datadir}/ceph/mgr/orchestrator_cli
-%{_datadir}/ceph/mgr/orchestrator.*
-%{_datadir}/ceph/mgr/osd_perf_query
-%{_datadir}/ceph/mgr/pg_autoscaler
-%{_datadir}/ceph/mgr/progress
-%{_datadir}/ceph/mgr/prometheus
-%{_datadir}/ceph/mgr/rbd_support
-%{_datadir}/ceph/mgr/restful
-%{_datadir}/ceph/mgr/selftest
-%{_datadir}/ceph/mgr/status
-%{_datadir}/ceph/mgr/telegraf
-%{_datadir}/ceph/mgr/telemetry
-%{_datadir}/ceph/mgr/test_orchestrator
-%{_datadir}/ceph/mgr/volumes
-%{_datadir}/ceph/mgr/zabbix
 %if 0%{?rhel} == 7
 %{_datadir}/ceph/mgr/__pycache__
 %endif
@@ -1665,6 +1700,32 @@ fi
 if [ $1 -eq 1 ] ; then
     /usr/bin/systemctl try-restart ceph-mgr.target >/dev/null 2>&1 || :
 fi
+
+%files mgr-modules-core
+%dir %{_datadir}/ceph/mgr
+%{_datadir}/ceph/mgr/alerts
+%{_datadir}/ceph/mgr/balancer
+%{_datadir}/ceph/mgr/crash
+%{_datadir}/ceph/mgr/devicehealth
+%{_datadir}/ceph/mgr/influx
+%{_datadir}/ceph/mgr/insights
+%{_datadir}/ceph/mgr/iostat
+%{_datadir}/ceph/mgr/localpool
+%{_datadir}/ceph/mgr/orchestrator
+%{_datadir}/ceph/mgr/osd_perf_query
+%{_datadir}/ceph/mgr/osd_support
+%{_datadir}/ceph/mgr/pg_autoscaler
+%{_datadir}/ceph/mgr/progress
+%{_datadir}/ceph/mgr/prometheus
+%{_datadir}/ceph/mgr/rbd_support
+%{_datadir}/ceph/mgr/restful
+%{_datadir}/ceph/mgr/selftest
+%{_datadir}/ceph/mgr/status
+%{_datadir}/ceph/mgr/telegraf
+%{_datadir}/ceph/mgr/telemetry
+%{_datadir}/ceph/mgr/test_orchestrator
+%{_datadir}/ceph/mgr/volumes
+%{_datadir}/ceph/mgr/zabbix
 
 %files mgr-rook
 %{_datadir}/ceph/mgr/rook
@@ -2298,6 +2359,9 @@ exit 0
 %endif
 
 %changelog
+* Mon Mar 16 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.1.1-1
+- ceph 15.1.1 RC
+
 * Thu Mar 5 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.1.0-3
 - ceph 15.1.0, rhbz#1809799
 
