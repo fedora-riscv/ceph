@@ -110,7 +110,7 @@
 #################################################################################
 Name:		ceph
 Version:	15.1.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -161,6 +161,7 @@ BuildRequires:	cmake > 3.5
 %endif
 BuildRequires:	cryptsetup
 BuildRequires:	fuse-devel
+BuildRequires:	fmt-devel
 %if 0%{?rhel} == 7
 # devtoolset offers newer make and valgrind-devel, but the old ones are good
 # enough.
@@ -2359,6 +2360,9 @@ exit 0
 %endif
 
 %changelog
+* Tue Mar 16 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.1.1-2
+- ceph 15.1.1 fmt, rhbz#1805422 again
+
 * Mon Mar 16 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.1.1-1
 - ceph 15.1.1 RC
 
