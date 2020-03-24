@@ -109,8 +109,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	15.1.1
-Release:	2%{?dist}
+Version:	15.2.0
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2360,7 +2360,10 @@ exit 0
 %endif
 
 %changelog
-* Tue Mar 16 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.1.1-2
+* Mon Mar 23 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.0-1
+- ceph 15.2.0 GA
+
+* Mon Mar 16 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.1.1-2
 - ceph 15.1.1 fmt, rhbz#1805422 again
 
 * Mon Mar 16 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.1.1-1
