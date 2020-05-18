@@ -27,7 +27,7 @@
 
 %bcond_with make_check
 %bcond_with cmake_verbose_logging
-%bcond_with ceph_test_package
+%bcond_without ceph_test_package
 %ifarch s390 s390x
 %bcond_with tcmalloc
 %else
@@ -1030,6 +1030,7 @@ Requires:	xmlstarlet
 Requires:	jq
 Requires:	socat
 Requires:	gtest
+Requires:	gmock
 %description -n ceph-test
 This package contains Ceph benchmarks and test tools.
 %endif
@@ -2360,9 +2361,9 @@ exit 0
 
 %changelog
 * Mon May 18 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.1-2
-- ceph 15.2.1, disable ceph-test due to no gmock
+- ceph 15.2.1, gmock and gtest. (although gmock last built for f27)
 
-* Mon Apr 10 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.1-1
+* Fri Apr 10 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.1-1
 - ceph 15.2.1 GA
 
 * Mon Mar 23 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.0-1
