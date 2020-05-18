@@ -27,7 +27,7 @@
 
 %bcond_with make_check
 %bcond_with cmake_verbose_logging
-%bcond_without ceph_test_package
+%bcond_with ceph_test_package
 %ifarch s390 s390x
 %bcond_with tcmalloc
 %else
@@ -110,7 +110,7 @@
 #################################################################################
 Name:		ceph
 Version:	15.2.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -1029,6 +1029,7 @@ Requires:	ceph-common = %{_epoch_prefix}%{version}-%{release}
 Requires:	xmlstarlet
 Requires:	jq
 Requires:	socat
+Requires:	gtest
 %description -n ceph-test
 This package contains Ceph benchmarks and test tools.
 %endif
@@ -2358,6 +2359,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Mon May 18 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.1-2
+- ceph 15.2.1, disable ceph-test due to no gmock
+
 * Mon Apr 10 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.1-1
 - ceph 15.2.1 GA
 
