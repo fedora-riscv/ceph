@@ -49,25 +49,19 @@
 %global _remote_tarball_prefix https://download.ceph.com/tarballs/
 %endif
 %if 0%{?suse_version}
-%bcond_with selinux
-%bcond_with cephfs_java
 %bcond_with amqp_endpoint
+%bcond_with cephfs_java
 %bcond_with kafka_endpoint
-#Compat macro for new _fillupdir macro introduced in Nov 2017
-%if ! %{defined _fillupdir}
-%global _fillupdir /var/adm/fillup-templates
-%endif
-%if 0%{?is_opensuse}
-%bcond_without libradosstriper
-%bcond_without ocf
-%else
-%bcond_with libradosstriper
-%bcond_with ocf
-%endif
 %ifarch x86_64 aarch64 ppc64le
 %bcond_without lttng
 %else
- %bcond_with lttng
+%bcond_with lttng
+%endif
+%bcond_with ocf
+%bcond_with selinux
+#Compat macro for _fillupdir macro introduced in Nov 2017
+%if ! %{defined _fillupdir}
+%global _fillupdir /var/adm/fillup-templates
 %endif
 %endif
 %bcond_with seastar
@@ -109,8 +103,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	15.2.1
-Release:	2%{?dist}
+Version:	15.2.2
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -540,12 +534,16 @@ Requires:	python%{python3_pkgversion}-cherrypy
 Requires:	python%{python3_pkgversion}-jwt
 Requires:	python%{python3_pkgversion}-routes
 Requires:	python%{python3_pkgversion}-werkzeug
+%if 0%{?weak_deps}
+Recommends:	python%{python3_pkgversion}-saml
+%endif
 %endif
 %if 0%{?suse_version}
 Requires:	python%{python3_pkgversion}-CherryPy
 Requires:	python%{python3_pkgversion}-PyJWT
 Requires:	python%{python3_pkgversion}-Routes
 Requires:	python%{python3_pkgversion}-Werkzeug
+Recommends:	python%{python3_pkgversion}-python3-saml
 %endif
 %description mgr-dashboard
 ceph-mgr-dashboard is a manager module, providing a web-based application
@@ -1029,8 +1027,8 @@ Requires:	ceph-common = %{_epoch_prefix}%{version}-%{release}
 Requires:	xmlstarlet
 Requires:	jq
 Requires:	socat
-Requires:	gtest
-Requires:	gmock
+BuildRequires:	gtest-devel
+BuildRequires:	gmock-devel
 %description -n ceph-test
 This package contains Ceph benchmarks and test tools.
 %endif
@@ -1251,6 +1249,9 @@ cd build
     -DCMAKE_VERBOSE_MAKEFILE=ON \
 %endif
     -DBOOST_J=$CEPH_SMP_NCPUS \
+%if 0%{with ceph_test_package}
+    -DWITH_SYSTEM_GTEST=ON \
+%endif
     -DWITH_GRAFANA=ON
 
 %if %{with cmake_verbose_logging}
@@ -1464,6 +1465,7 @@ exit 0
 
 %files -n cephadm
 %{_sbindir}/cephadm
+%{_mandir}/man8/cephadm.8*
 %{_sysconfdir}/sudoers.d/cephadm
 %attr(0700,cephadm,cephadm) %dir %{_sharedstatedir}/cephadm
 %attr(0700,cephadm,cephadm) %dir %{_sharedstatedir}/cephadm/.ssh
@@ -2360,6 +2362,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Mon May 18 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.2-1
+- ceph 15.2.2 GA
+
 * Mon May 18 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.1-2
 - ceph 15.2.1, gmock and gtest. (although gmock last built for f27)
 
