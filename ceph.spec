@@ -109,7 +109,7 @@
 #################################################################################
 Name:		ceph
 Version:	14.2.9
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -996,6 +996,8 @@ Requires:	ceph-common = %{_epoch_prefix}%{version}-%{release}
 Requires:	xmlstarlet
 Requires:	jq
 Requires:	socat
+BuildRequires:	gtest-devel
+BuildRequires:	gmock-devel
 %description -n ceph-test
 This package contains Ceph benchmarks and test tools.
 %endif
@@ -1231,6 +1233,9 @@ cd build
     -DWITH_RADOSGW_AMQP_ENDPOINT=OFF \
 %endif
     -DBOOST_J=$CEPH_SMP_NCPUS \
+%if 0%{with ceph_test_package}
+    -DWITH_SYSTEM_GTEST=ON \
+%endif
     -DWITH_GRAFANA=ON
 
 export VERBOSE=1
@@ -2283,6 +2288,9 @@ exit 0
 %endif
 
 %changelog
+* Tue May 26 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.9-2
+- ceph 14.2.9, /w system gtest, gmock
+
 * Tue Apr 21 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.9-1
 - ceph 14.2.9 GA, resync w/ upstream ceph.spec(.in)
 
