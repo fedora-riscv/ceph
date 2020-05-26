@@ -104,7 +104,7 @@
 #################################################################################
 Name:		ceph
 Version:	15.2.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2362,6 +2362,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Tue May 26 2020 Miro Hrončok <mhroncok@redhat.com> - 2:15.2.2-2
+- Rebuilt for Python 3.9
+
 * Mon May 18 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.2-1
 - ceph 15.2.2 GA
 
