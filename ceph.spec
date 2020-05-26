@@ -28,7 +28,7 @@
 
 %bcond_without ocf
 %bcond_with make_check
-%bcond_without ceph_test_package
+%bcond_with ceph_test_package
 %ifarch s390 s390x
 %bcond_with tcmalloc
 %else
@@ -2289,7 +2289,9 @@ exit 0
 
 %changelog
 * Tue May 26 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.9-2
-- ceph 14.2.9, /w system gtest, gmock
+- ceph 14.2.9, /w system gtest, gmock, or would be if it was new enough
+  thus disabling as the bundled gtest, etc. result in a build that doesn't
+  install.
 
 * Tue Apr 21 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.9-1
 - ceph 14.2.9 GA, resync w/ upstream ceph.spec(.in)
