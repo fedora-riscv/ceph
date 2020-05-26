@@ -53,7 +53,7 @@
  
  true
 --- ceph-15.2.2/src/common/crc32c_intel_fast_asm.s.orig	2020-05-26 08:34:32.226201974 -0400
-+++ ceph-15.2.2/src/common/crc32c_intel_fast_asm.s	2020-05-26 09:25:55.528201974 -0400
++++ ceph-15.2.2/src/common/crc32c_intel_fast_asm.s	2020-05-26 17:19:20.327201974 -0400
 @@ -1,5 +1,5 @@
  ;
 -; Copyright 2012-2013 Intel Corporation All Rights Reserved.
@@ -129,15 +129,6 @@
  	;;;; Calculate CRC of unaligned bytes of the buffer (if any) ;;;;
  	mov     rbx, [bufptmp]          ;; load a quadword from the buffer
  	add     bufptmp, bufp           ;; align buffer pointer for
-@@ -217,7 +235,7 @@
- 	cmp     len, 240
- 	jb      bit8
- 
--	lea     crc_init, [mul_table_72 wrt rip]  ;; load table base address
-+	lea     crc_init, [mul_table_72]  ;; load table base address
- 
- 	crcB3   640, 0x1000, 0x0c00     ; 640*3 = 1920 (Tables 1280, 640)
- 	crcB3   320, 0x0c00, 0x0800     ; 320*3 =  960 (Tables  640, 320)
 @@ -233,7 +251,7 @@
  	jnc     bit7                    ;; jump to bit-6 if bit-7 == 0
   %assign i 0
@@ -212,7 +203,7 @@
 +;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 +;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 --- ceph-15.2.2/src/common/crc32c_intel_fast_zero_asm.s.orig	2020-05-26 08:34:32.226201974 -0400
-+++ ceph-15.2.2/src/common/crc32c_intel_fast_zero_asm.s	2020-05-26 09:19:55.571201974 -0400
++++ ceph-15.2.2/src/common/crc32c_intel_fast_zero_asm.s	2020-05-26 17:19:32.497201974 -0400
 @@ -1,5 +1,5 @@
  ;
 -; Copyright 2012-2013 Intel Corporation All Rights Reserved.
@@ -234,7 +225,7 @@
 +	crc32   r10, bufptmp  ;; update crc2
 +	%assign i (i+8)
 + %endrep
-+	jmp %%next %+ %1
++	jmp %%next %+%1
 +
 +%%non_prefetch:
   %assign i 0
@@ -266,15 +257,6 @@
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  ;; 1) ALIGN: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  
-@@ -199,7 +217,7 @@
- 	cmp     len, 240
- 	jb      bit8
- 
--	lea     crc_init, [mul_table_72 wrt rip]  ;; load table base address
-+	lea     crc_init, [mul_table_72]  ;; load table base address
- 
- 	crcB3   640, 0x1000, 0x0c00     ; 640*3 = 1920 (Tables 1280, 640)
- 	crcB3   320, 0x0c00, 0x0800     ; 320*3 =  960 (Tables  640, 320)
 @@ -654,3 +672,22 @@
  ; inform linker that this doesn't require executable stack
  section .note.GNU-stack noalloc noexec nowrite progbits
