@@ -36,7 +36,6 @@
 %endif
 %if 0%{?fedora} || 0%{?rhel}
 %bcond_without selinux
-%bcond_without ceph_test_package
 %bcond_without cephfs_java
 %bcond_without lttng
 %bcond_without libradosstriper
