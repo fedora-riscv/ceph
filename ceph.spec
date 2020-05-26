@@ -104,7 +104,7 @@
 #################################################################################
 Name:		ceph
 Version:	15.2.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2362,10 +2362,13 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
-* Tue May 26 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.2-2
+* Tue May 26 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.2-3
 - ceph 15.2.2, CET enable src/common/crc32c_intel_*_asm.s; shstk, ibt
 - and other fixes
 - see https://github.com/intel/isa-l/blob/master/crc/crc32_iscsi_00.asm
+
+* Tue May 26 2020 Miro Hrončok <mhroncok@redhat.com> - 2:15.2.2-2
+- Rebuilt for Python 3.9
 
 * Mon May 18 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.2-1
 - ceph 15.2.2 GA
