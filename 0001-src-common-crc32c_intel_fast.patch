@@ -225,7 +225,7 @@
 +	crc32   r10, bufptmp  ;; update crc2
 +	%assign i (i+8)
 + %endrep
-+	jmp %%next %+%1
++	jmp %%next %+ %1
 +
 +%%non_prefetch:
   %assign i 0
