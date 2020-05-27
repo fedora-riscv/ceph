@@ -28,7 +28,7 @@
 
 %bcond_without ocf
 %bcond_with make_check
-%bcond_without ceph_test_package
+%bcond_with ceph_test_package
 %ifarch s390 s390x
 %bcond_with tcmalloc
 %else
@@ -36,7 +36,6 @@
 %endif
 %if 0%{?fedora} || 0%{?rhel}
 %bcond_without selinux
-%bcond_without ceph_test_package
 %bcond_without cephfs_java
 %bcond_without lttng
 %bcond_without libradosstriper
@@ -109,7 +108,7 @@
 #################################################################################
 Name:		ceph
 Version:	14.2.9
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -1001,6 +1000,8 @@ Requires:	ceph-common = %{_epoch_prefix}%{version}-%{release}
 Requires:	xmlstarlet
 Requires:	jq
 Requires:	socat
+BuildRequires:	gtest-devel
+BuildRequires:	gmock-devel
 %description -n ceph-test
 This package contains Ceph benchmarks and test tools.
 %endif
@@ -1236,6 +1237,9 @@ cd build
     -DWITH_RADOSGW_AMQP_ENDPOINT=OFF \
 %endif
     -DBOOST_J=$CEPH_SMP_NCPUS \
+%if 0%{with ceph_test_package}
+    -DWITH_SYSTEM_GTEST=ON \
+%endif
     -DWITH_GRAFANA=ON
 
 export VERBOSE=1
@@ -2288,6 +2292,11 @@ exit 0
 %endif
 
 %changelog
+* Tue May 26 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.9-2
+- ceph 14.2.9, /w system gtest, gmock, or would be if it was new enough
+  thus disabling as the bundled gtest, etc. result in a build that doesn't
+  install.
+
 * Tue Apr 21 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.9-1
 - ceph 14.2.9 GA, resync w/ upstream ceph.spec(.in)
 
