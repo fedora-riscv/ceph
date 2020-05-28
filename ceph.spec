@@ -1221,7 +1221,7 @@ cd build
 %if 0%{with ocf}
     -DWITH_OCF=ON \
 %endif
-    -DWITH_SYSTEM_BOOST=OFF \
+    -DWITH_SYSTEM_BOOST=ON \
 %ifarch aarch64 armv7hl mips mipsel ppc ppc64 ppc64le %{ix86} x86_64
     -DWITH_BOOST_CONTEXT=ON \
 %else
@@ -2362,6 +2362,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Thu May 28 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com>
+- SYSTEM_BOOST=ON in preparatrion for rebuild with boost-1.73
+
 * Tue May 26 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.2-3
 - ceph 15.2.2, CET enable src/common/crc32c_intel_*_asm.s; shstk, ibt
 - and other fixes
