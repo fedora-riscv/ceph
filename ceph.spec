@@ -103,8 +103,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	15.2.2
-Release:	3%{?dist}
+Version:	15.2.3
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -282,6 +282,7 @@ BuildRequires:	golang-github-prometheus-prometheus
 %endif
 %if 0%{?fedora} || 0%{?rhel}
 Requires:	systemd
+BuildRequires:	boost-devel
 BuildRequires:	boost-random
 BuildRequires:	nss-devel
 BuildRequires:	keyutils-libs-devel
@@ -2362,8 +2363,8 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
-* Thu May 28 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com>
-- SYSTEM_BOOST=ON in preparatrion for rebuild with boost-1.73
+* Mon Jun 1 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.3-1
+- ceph 15.2.3 GA
 
 * Tue May 26 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.2-3
 - ceph 15.2.2, CET enable src/common/crc32c_intel_*_asm.s; shstk, ibt
