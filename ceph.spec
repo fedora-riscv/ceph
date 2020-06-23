@@ -191,6 +191,7 @@ BuildRequires:	pkgconfig
 BuildRequires:	procps
 BuildRequires:	python%{python3_pkgversion}
 BuildRequires:	python%{python3_pkgversion}-devel
+BuildRequires:	python%{python3_pkgversion}-setuptools
 BuildRequires:	snappy-devel
 BuildRequires:	sudo
 BuildRequires:	pkgconfig(udev)
@@ -2363,6 +2364,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Tue Jun 23 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com>
+- explict BuildRequires python3-setuptools
+
 * Mon Jun 1 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.3-1
 - ceph 15.2.3 GA
 
