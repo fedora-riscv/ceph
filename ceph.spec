@@ -20,9 +20,6 @@
 # please read http://rpm.org/user_doc/conditional_builds.html for explanation of
 # bcond syntax!
 #################################################################################
-# This package depends on automagic byte compilation
-# https://fedoraproject.org/wiki/Changes/No_more_automagic_Python_bytecompilation_phase_2
-%global _python_bytecompile_extra 1
 %global _hardened_build 1
 
 %bcond_with make_check
@@ -103,7 +100,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	15.2.3
+Version:	15.2.4
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
@@ -655,9 +652,11 @@ Requires:	python%{python3_pkgversion}-remoto
 Requires:	cephadm = %{_epoch_prefix}%{version}-%{release}
 %if 0%{?suse_version}
 Requires:	openssh
+Requires:	python%{python3_pkgversion}-Jinja2
 %endif
 %if 0%{?rhel} || 0%{?fedora}
 Requires:	openssh-clients
+Requires:	python%{python3_pkgversion}-jinja2
 %endif
 %description mgr-cephadm
 ceph-mgr-cephadm is a ceph-mgr module for orchestration functions using
@@ -1350,7 +1349,7 @@ install -m 644 -D monitoring/prometheus/alerts/ceph_default_alerts.yml %{buildro
 %fdupes %{buildroot}%{_prefix}
 %endif
 
-%if 0%{?rhel} == 8
+%if 0%{?rhel} == 8 || 0%{?fedora} >= 33
 %py_byte_compile %{__python3} %{buildroot}%{python3_sitelib}
 %endif
 
@@ -1504,6 +1503,7 @@ exit 0
 %{_mandir}/man8/ceph-authtool.8*
 %{_mandir}/man8/ceph-conf.8*
 %{_mandir}/man8/ceph-dencoder.8*
+%{_mandir}/man8/ceph-diff-sorted.8*
 %{_mandir}/man8/ceph-rbdnamer.8*
 %{_mandir}/man8/ceph-syn.8*
 %{_mandir}/man8/ceph-post-file.8*
@@ -1516,6 +1516,7 @@ exit 0
 %{_mandir}/man8/rbd-replay.8*
 %{_mandir}/man8/rbd-replay-many.8*
 %{_mandir}/man8/rbd-replay-prep.8*
+%{_mandir}/man8/rgw-orphan-list.8*
 %dir %{_datadir}/ceph/
 %{_datadir}/ceph/known_hosts_drop.ceph.com
 %{_datadir}/ceph/id_rsa_drop.ceph.com
@@ -1933,10 +1934,12 @@ fi
 %{_mandir}/man8/rbd-nbd.8*
 
 %files radosgw
+%{_bindir}/ceph-diff-sorted
 %{_bindir}/radosgw
 %{_bindir}/radosgw-token
 %{_bindir}/radosgw-es
 %{_bindir}/radosgw-object-expirer
+%{_bindir}/rgw-orphan-list
 %{_libdir}/libradosgw.so*
 %{_mandir}/man8/radosgw.8*
 %dir %{_localstatedir}/lib/ceph/radosgw
@@ -2185,7 +2188,7 @@ fi
 %files -n libcephfs-devel
 %dir %{_includedir}/cephfs
 %{_includedir}/cephfs/libcephfs.h
-%{_includedir}/cephfs/ceph_statx.h
+%{_includedir}/cephfs/ceph_ll_client.h
 %{_libdir}/libcephfs.so
 
 %files -n python%{python3_pkgversion}-cephfs
@@ -2364,8 +2367,11 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed Jul 1 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-1
+- ceph 15.2.4 GA
+
 * Tue Jun 23 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com>
-- explict BuildRequires python3-setuptools
+- explicit BuildRequires python3-setuptools
 
 * Mon Jun 1 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.3-1
 - ceph 15.2.3 GA
