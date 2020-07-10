@@ -101,7 +101,7 @@
 #################################################################################
 Name:		ceph
 Version:	15.2.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2367,6 +2367,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Jul 10 2020 Jiri Vanek <jvanek@redhat.com> - 2:15.2.4-2
+- Rebuilt for JDK-11, see https://fedoraproject.org/wiki/Changes/Java11
+
 * Wed Jul 1 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-1
 - ceph 15.2.4 GA
 
