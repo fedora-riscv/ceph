@@ -101,7 +101,7 @@
 #################################################################################
 Name:		ceph
 Version:	15.2.4
-Release:	5%{?dist}
+Release:	6%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2368,6 +2368,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Jul 17 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-6
+- see 15.2.4-4
+
 * Fri Jul 17 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-5
 - see 15.2.4-3
 
