@@ -8,3 +8,14 @@
  
  namespace ceph {
    class Formatter;
+--- ceph-15.2.4/src/global/signal_handler.h.orig        2020-07-17 12:57:54.763628429 -0400
++++ ceph-15.2.4/src/global/signal_handler.h     2020-07-17 12:58:10.610628429 -0400
+@@ -16,6 +16,8 @@
+ #define CEPH_GLOBAL_SIGNAL_HANDLER_H
+
+ #include <signal.h>
++#include <string>
++
+ #include "acconfig.h"
+
+ typedef void (*signal_handler_t)(int);

@@ -26,32 +26,26 @@
  	* )
  	    new="$new $1"
  	    shift
-@@ -39,6 +46,25 @@
- #echo $0: yasm $new
- yasm $new
+
+@@ -36,8 +43,16 @@
+     esac
+ done
  
-+INDEXOFNOTEGNUPROPLINE=$(readelf -S -W ${object} | grep ".note.gnu.property")
+-#echo $0: yasm $new
+-yasm $new
++#echo ${0}: yasm ${new}
++yasm ${new}
 +
-+if [ -n "${INDEXOFNOTEGNUPROPLINE}" ]; then
-+
-+	STARTOFSECTHDRLINE=$(readelf -h ${object} | grep "Start of section headers:")
-+	SIZEOFSECTHDRLINE=$(readelf -h ${object} | grep "Size of section headers:")
-+
-+	STARTOFSECTHDR=$(echo ${STARTOFSECTHDRLINE} | cut -d ' ' -f 5)
-+        SIZEOFSECTHDR=$(echo ${SIZEOFSECTHDRLINE} | cut -d ' ' -f 5)
-+        INDEXOFNOTEGNUPROPFRAG=$(echo ${INDEXOFNOTEGNUPROPLINE} | cut -d '.' -f 1)
-+
-+	INDEXOFNOTEGNUPROP=$(echo ${INDEXOFNOTEGNUPROPFRAG} | grep -Eo "[[:digit:]]+")
-+
-+	OFFSET=$(( ${STARTOFSECTHDR} + 4 + ( ${SIZEOFSECTHDR} * ${INDEXOFNOTEGNUPROP} ) ))
-+
-+	printf '\x07' | dd of=${object} bs=1 seek=${OFFSET} count=1 conv=notrunc &> /dev/null
-+
++echo ${new} | grep -- "crc32c_intel_fast*asm\.s"
++if [ $? -ne 0 ]; then
++    touch /tmp/${object}
++    ld -r -z ibt -z shstk -z noexecstack -o ${object}.tmp ${object}
++    mv ${object}.tmp ${object}
 +fi
 +
+ 
  [ -n "$touch" ] && touch $touch
  
- true
 --- ceph-15.2.2/src/common/crc32c_intel_fast_asm.s.orig	2020-05-26 08:34:32.226201974 -0400
 +++ ceph-15.2.2/src/common/crc32c_intel_fast_asm.s	2020-05-26 17:19:20.327201974 -0400
 @@ -1,5 +1,5 @@
@@ -179,29 +173,6 @@
  	shl     len_b, 1                ;; shift-out MSB (bit-3)
  	jnc     bit2                    ;; jump to bit-2 if bit-3 == 0
  	crc32   eax, ebx                ;; compute crc32 of 4-byte data
-@@ -672,3 +690,22 @@
- ; inform linker that this doesn't require executable stack
- section .note.GNU-stack noalloc noexec nowrite progbits
- %endif
-+
-+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-+
-+SECTION .note.gnu.property align=8 noexec               ; section number 22, const
-+
-+        db 04H, 00H, 00H, 00H, 20H, 00H, 00H, 00H       ; 0000 _ .... ...
-+        db 05H, 00H, 00H, 00H, 47H, 4EH, 55H, 00H       ; 0008 _ ....GNU.
-+        db 00H, 00H, 00H, 0C0H, 04H, 00H, 00H, 00H      ; 0010 _ ........
-+        db 00H, 00H, 00H, 00H, 00H, 00H, 00H, 00H       ; 0018 _ ........
-+        db 01H, 00H, 00H, 0C0H, 04H, 00H, 00H, 00H      ; 0020 _ ........
-+        db 00H, 00H, 00H, 00H, 00H, 00H, 00H, 00H       ; 0028 _ ........
-+        db 04H, 00H, 00H, 00H, 10H, 00H, 00H, 00H       ; 0030 _ ........
-+        db 05H, 00H, 00H, 00H, 47H, 4EH, 55H, 00H       ; 0038 _ ....GNU.
-+        db 02H, 00H, 00H, 0C0H, 04H, 00H, 00H, 00H      ; 0040 _ ........
-+        db 03H, 00H, 00H, 00H, 00H, 00H, 00H, 00H       ; 0048 _ ........
-+
-+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 --- ceph-15.2.2/src/common/crc32c_intel_fast_zero_asm.s.orig	2020-05-26 08:34:32.226201974 -0400
 +++ ceph-15.2.2/src/common/crc32c_intel_fast_zero_asm.s	2020-05-26 17:19:32.497201974 -0400
 @@ -1,5 +1,5 @@
@@ -257,26 +228,3 @@
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  ;; 1) ALIGN: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
  
-@@ -654,3 +672,22 @@
- ; inform linker that this doesn't require executable stack
- section .note.GNU-stack noalloc noexec nowrite progbits
- %endif
-+
-+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-+
-+SECTION .note.gnu.property align=8 noexec               ; section number 22, const
-+
-+        db 04H, 00H, 00H, 00H, 20H, 00H, 00H, 00H       ; 0000 _ .... ...
-+        db 05H, 00H, 00H, 00H, 47H, 4EH, 55H, 00H       ; 0008 _ ....GNU.
-+        db 00H, 00H, 00H, 0C0H, 04H, 00H, 00H, 00H      ; 0010 _ ........
-+        db 00H, 00H, 00H, 00H, 00H, 00H, 00H, 00H       ; 0018 _ ........
-+        db 01H, 00H, 00H, 0C0H, 04H, 00H, 00H, 00H      ; 0020 _ ........
-+        db 00H, 00H, 00H, 00H, 00H, 00H, 00H, 00H       ; 0028 _ ........
-+        db 04H, 00H, 00H, 00H, 10H, 00H, 00H, 00H       ; 0030 _ ........
-+        db 05H, 00H, 00H, 00H, 47H, 4EH, 55H, 00H       ; 0038 _ ....GNU.
-+        db 02H, 00H, 00H, 0C0H, 04H, 00H, 00H, 00H      ; 0040 _ ........
-+        db 03H, 00H, 00H, 00H, 00H, 00H, 00H, 00H       ; 0048 _ ........
-+
-+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

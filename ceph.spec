@@ -101,7 +101,7 @@
 #################################################################################
 Name:		ceph
 Version:	15.2.4
-Release:	2%{?dist}
+Release:	3%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2367,6 +2367,12 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Jul 17 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-3
+- use `ld -r -z ibt -z shstk...` instead of magic hackery to get CET ibt
+  and shstk. N.B. updated yasm in f33/rawhide now has support for
+  .note.gnu.properties so even this will go away in the next build
+- signal_handler.cc, use HAVE_REENTRANT_STRSIGNAL, strsignal(3)
+
 * Fri Jul 10 2020 Jiri Vanek <jvanek@redhat.com> - 2:15.2.4-2
 - Rebuilt for JDK-11, see https://fedoraproject.org/wiki/Changes/Java11
 
