@@ -101,7 +101,7 @@
 #################################################################################
 Name:		ceph
 Version:	15.2.4
-Release:	4%{?dist}
+Release:	5%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -1246,6 +1246,7 @@ cd build
 %else
     -DWITH_RADOSGW_KAFKA_ENDPOINT=OFF \
 %endif
+    -DWITH_REENTRANT_STRSIGNAL=ON \
 %if 0%{with cmake_verbose_logging}
     -DCMAKE_VERBOSE_MAKEFILE=ON \
 %endif
@@ -2367,6 +2368,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Jul 17 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-5
+- see 15.2.4-3
+
 * Fri Jul 17 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-4
 - Rebuilt for JDK-11, see https://fedoraproject.org/wiki/Changes/Java11
 
