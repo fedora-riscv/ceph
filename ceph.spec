@@ -1277,7 +1277,7 @@ make "$CEPH_MFLAGS_JOBS"
 
 %install
 pushd build
-make DESTDIR=%{buildroot} install
+%make_install
 # we have dropped sysvinit bits
 rm -f %{buildroot}/%{_sysconfdir}/init.d/ceph
 popd
@@ -2371,6 +2371,7 @@ exit 0
 %changelog
 * Fri Jul 17 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-7
 - see 15.2.4-3, hopefully for real this time
+- and use %make_install macro
 
 * Fri Jul 17 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-6
 - see 15.2.4-4
