@@ -102,7 +102,7 @@
 #################################################################################
 Name:		ceph
 Version:	15.2.4
-Release:	7%{?dist}
+Release:	8%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2369,7 +2369,11 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
-* Fri Jul 17 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-7
+* Mon Jul 20 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-8
+- see 15.2.4-4 (f33-java11) for real this time
+- and use %make_install macro
+
+* Mon Jul 20 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-7
 - see 15.2.4-3, hopefully for real this time
 - and use %make_install macro
 
