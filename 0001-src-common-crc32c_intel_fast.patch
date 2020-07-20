@@ -1,5 +1,5 @@
---- ceph-15.2.2/src/yasm-wrapper.orig	2020-03-09 12:57:37.603837466 -0400
-+++ ceph-15.2.2/src/yasm-wrapper	2020-03-09 13:02:31.496796609 -0400
+--- ceph-15.2.4/src/yasm-wrapper.orig	2020-06-30 11:40:51.000000000 -0400
++++ ceph-15.2.4/src/yasm-wrapper	2020-07-20 12:21:34.574980869 -0400
 @@ -1,10 +1,11 @@
 -#!/bin/sh -e
 +#!/bin/sh
@@ -26,8 +26,7 @@
  	* )
  	    new="$new $1"
  	    shift
-
-@@ -36,8 +43,16 @@
+@@ -36,8 +43,15 @@
      esac
  done
  
@@ -42,7 +41,6 @@
 +    ld -r -z ibt -z shstk -z noexecstack -o ${object}.tmp ${object}
 +    mv ${object}.tmp ${object}
 +fi
-+
  
  [ -n "$touch" ] && touch $touch
  

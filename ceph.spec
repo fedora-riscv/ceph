@@ -21,6 +21,7 @@
 # bcond syntax!
 #################################################################################
 %global _hardened_build 1
+%global __cmake_in_source_build 1
 
 %bcond_with make_check
 %bcond_with cmake_verbose_logging
@@ -101,7 +102,7 @@
 #################################################################################
 Name:		ceph
 Version:	15.2.4
-Release:	6%{?dist}
+Release:	7%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -1222,6 +1223,7 @@ cd build
 %if 0%{with ocf}
     -DWITH_OCF=ON \
 %endif
+    -DWITH_REENTRANT_STRSIGNAL=ON \
     -DWITH_SYSTEM_BOOST=ON \
 %ifarch aarch64 armv7hl mips mipsel ppc ppc64 ppc64le %{ix86} x86_64
     -DWITH_BOOST_CONTEXT=ON \
@@ -1246,7 +1248,6 @@ cd build
 %else
     -DWITH_RADOSGW_KAFKA_ENDPOINT=OFF \
 %endif
-    -DWITH_REENTRANT_STRSIGNAL=ON \
 %if 0%{with cmake_verbose_logging}
     -DCMAKE_VERBOSE_MAKEFILE=ON \
 %endif
@@ -2368,6 +2369,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Jul 17 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-7
+- see 15.2.4-3, hopefully for real this time
+
 * Fri Jul 17 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-6
 - see 15.2.4-4
 
