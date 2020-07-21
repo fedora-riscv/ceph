@@ -21,7 +21,6 @@
 # bcond syntax!
 #################################################################################
 %global _hardened_build 1
-%global __cmake_in_source_build 1
 
 %bcond_with make_check
 %bcond_with cmake_verbose_logging
@@ -102,7 +101,7 @@
 #################################################################################
 Name:		ceph
 Version:	15.2.4
-Release:	8%{?dist}
+Release:	9%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -1264,7 +1263,7 @@ cat ./CMakeFiles/CMakeError.log
 
 export VERBOSE=1
 export V=1
-make "$CEPH_MFLAGS_JOBS"
+%cmake_build "$CEPH_MFLAGS_JOBS"
 
 
 %if 0%{with make_check}
@@ -1277,7 +1276,7 @@ make "$CEPH_MFLAGS_JOBS"
 
 %install
 pushd build
-%make_install
+%cmake_install
 # we have dropped sysvinit bits
 rm -f %{buildroot}/%{_sysconfdir}/init.d/ceph
 popd
@@ -2369,6 +2368,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Tue Jul 21 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-9
+- %cmake_build and %cmake_install
+
 * Mon Jul 20 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-8
 - see 15.2.4-4 (f33-java11) for real this time
 - and use %make_install macro
