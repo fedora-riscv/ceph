@@ -101,7 +101,7 @@
 #################################################################################
 Name:		ceph
 Version:	15.2.4
-Release:	9%{?dist}
+Release:	10%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2368,6 +2368,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Mon Jul 27 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2:15.2.4-10
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
 * Tue Jul 21 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-9
 - %cmake_build and %cmake_install
 
