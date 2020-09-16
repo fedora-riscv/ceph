@@ -100,8 +100,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	15.2.4
-Release:	11%{?dist}
+Version:	15.2.5
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -757,6 +757,7 @@ Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
 Requires:	lvm2
 Requires:	sudo
 Requires:	libstoragemgmt
+Requires:	python%{python3_pkgversion}-ceph-common = %{_epoch_prefix}%{version}-%{release}
 %description osd
 ceph-osd is the object storage daemon for the Ceph distributed file
 system.  It is responsible for storing objects on a local file system
@@ -998,6 +999,12 @@ descriptions, and submitting the command to the appropriate daemon.
 
 %package -n python%{python3_pkgversion}-ceph-common
 Summary:	Python 3 utility libraries for Ceph
+%if 0%{?fedora} || 0%{?rhel} >= 8
+Requires:	python%{python3_pkgversion}-pyyaml
+%endif
+%if 0%{?suse_version}
+Requires:	python%{python3_pkgversion}-PyYAML
+%endif
 %if 0%{?suse_version}
 Group:		Development/Libraries/Python
 %endif
@@ -2368,6 +2375,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed Sep 16 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.5-1
+- ceph 15.2.5 GA
+
 * Wed Jul 29 2020 Richard W.M. Jones <rjones@redhat.com> - 2:15.2.4-11
 - Rebuild against fmt 7.
 
