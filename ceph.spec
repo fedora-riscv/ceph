@@ -111,7 +111,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	14.2.11
+Version:	14.2.12
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
@@ -130,7 +130,6 @@ URL:		http://ceph.com/
 Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.gz
 Patch002:	0002-src-common-CMakeLists.txt.patch
 Patch003:	0003-src-common-bitstr.h.patch
-Patch004:	0004-src-librbd-api-PoolMetadata.h.patch
 # ceph ≥ 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 %if 0%{?suse_version}
@@ -486,9 +485,12 @@ Recommends:	ceph-mgr-ssh = %{_epoch_prefix}%{version}-%{release}
 Recommends:	python%{_python_buildid}-influxdb
 %endif
 %if 0%{?rhel} == 7
-Requires:       pyOpenSSL
+Requires:	pyOpenSSL
 %else
-Requires:       python%{_python_buildid}-pyOpenSSL
+Requires:	python%{_python_buildid}-pyOpenSSL
+%endif
+%if 0%{?rhel} < 8 || 0%{?suse_version}
+Requires:	python-enum34
 %endif
 %description mgr
 ceph-mgr enables python modules that provide services (such as the REST
@@ -686,6 +688,10 @@ Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
 Requires:	lvm2
 Requires:	sudo
 Requires: libstoragemgmt
+%if 0%{?weak_deps}
+Recommends:	nvme-cli
+Recommends:	smartmontools
+%endif
 %description osd
 ceph-osd is the object storage daemon for the Ceph distributed file
 system.  It is responsible for storing objects on a local file system
@@ -2322,6 +2328,9 @@ exit 0
 %endif
 
 %changelog
+* Tue Oct 20 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.12-1
+- ceph 14.2.12 GA
+
 * Tue Aug 11 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.11-1
 - ceph 14.2.11 GA
 
