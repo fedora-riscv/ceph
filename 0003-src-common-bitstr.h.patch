@@ -1,13 +1,21 @@
---- ceph-14.2.6/src/common/bit_str.h.orig	2020-01-24 11:37:20.547679336 -0500
-+++ ceph-14.2.6/src/common/bit_str.h	2020-01-24 11:37:55.351904895 -0500
-@@ -14,7 +14,10 @@
- #ifndef CEPH_COMMON_BIT_STR_H
- #define CEPH_COMMON_BIT_STR_H
- 
-+#include <cstdint>
-+#include <iosfwd>
+--- ceph-15.1.0/src/common/bit_str.h.orig	2020-02-03 09:47:20.047149798 -0500
++++ ceph-15.1.0/src/common/bit_str.h	2020-02-03 09:47:50.213149798 -0500
+@@ -17,6 +17,7 @@
+ #include <cstdint>
+ #include <iosfwd>
  #include <functional>
 +#include <ostream>
  
  namespace ceph {
    class Formatter;
+--- ceph-15.2.4/src/global/signal_handler.h.orig        2020-07-17 12:57:54.763628429 -0400
++++ ceph-15.2.4/src/global/signal_handler.h     2020-07-17 12:58:10.610628429 -0400
+@@ -16,6 +16,8 @@
+ #define CEPH_GLOBAL_SIGNAL_HANDLER_H
+
+ #include <signal.h>
++#include <string>
++
+ #include "acconfig.h"
+
+ typedef void (*signal_handler_t)(int);
