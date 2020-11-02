@@ -111,7 +111,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	14.2.12
+Version:	14.2.13
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
@@ -297,6 +297,7 @@ BuildRequires: python%{_python_buildid}-tox
 BuildRequires:  xmlsec1
 %if 0%{?rhel} == 7
 BuildRequires:  pyOpenSSL%{_python_buildid}
+BuildRequires:  python-enum34
 %else
 BuildRequires:  python%{_python_buildid}-pyOpenSSL
 %endif
@@ -488,9 +489,6 @@ Recommends:	python%{_python_buildid}-influxdb
 Requires:	pyOpenSSL
 %else
 Requires:	python%{_python_buildid}-pyOpenSSL
-%endif
-%if 0%{?rhel} < 8 || 0%{?suse_version}
-Requires:	python-enum34
 %endif
 %description mgr
 ceph-mgr enables python modules that provide services (such as the REST
@@ -2328,6 +2326,9 @@ exit 0
 %endif
 
 %changelog
+* Mon Nov 2 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.13-1
+- ceph 14.2.13 GA
+
 * Tue Oct 20 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.12-1
 - ceph 14.2.12 GA
 
