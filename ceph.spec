@@ -112,7 +112,7 @@
 #################################################################################
 Name:		ceph
 Version:	14.2.13
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -302,7 +302,6 @@ BuildRequires: python%{_python_buildid}-tox
 BuildRequires:  xmlsec1
 %if 0%{?rhel} == 7
 BuildRequires:  pyOpenSSL%{_python_buildid}
-BuildRequires:  python-enum34
 %else
 BuildRequires:  python%{_python_buildid}-pyOpenSSL
 %endif
@@ -492,6 +491,7 @@ Recommends:	python%{_python_buildid}-influxdb
 %endif
 %if 0%{?rhel} == 7
 Requires:	pyOpenSSL
+BuildRequires:  python-enum34
 %else
 Requires:	python%{_python_buildid}-pyOpenSSL
 %endif
@@ -2331,6 +2331,9 @@ exit 0
 %endif
 
 %changelog
+* Fri Nov 6 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.13-2
+- ceph 14.2.13 python-enum34
+
 * Mon Nov 2 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.13-1
 - ceph 14.2.13 GA
 
