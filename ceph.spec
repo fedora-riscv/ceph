@@ -111,8 +111,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	14.2.13
-Release:	2%{?dist}
+Version:	14.2.14
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2326,6 +2326,9 @@ exit 0
 %endif
 
 %changelog
+* Thu Nov 19 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.14-1
+- ceph 14.2.14 GA
+
 * Fri Nov 6 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.13-2
 - ceph 14.2.13 python-enum34
 
