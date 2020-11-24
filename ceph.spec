@@ -111,7 +111,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	14.2.14
+Version:	14.2.15
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
@@ -2326,6 +2326,9 @@ exit 0
 %endif
 
 %changelog
+* Tue Nov 24 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.15-1
+- ceph 14.2.15 GA
+
 * Thu Nov 19 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.14-1
 - ceph 14.2.14 GA
 
