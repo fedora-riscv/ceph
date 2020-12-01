@@ -100,7 +100,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	15.2.6
+Version:	15.2.7
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
@@ -2375,6 +2375,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Mon Nov 30 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.7-1
+- ceph 15.2.7 GA
+
 * Thu Nov 19 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.6-1
 - ceph 15.2.6 GA
 
