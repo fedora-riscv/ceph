@@ -121,6 +121,9 @@ Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.gz
 Patch0001:	0001-src-common-crc32c_intel_fast.patch
 Patch0002:	0002-src-common-CMakeLists.txt.patch
 Patch0003:	0003-src-common-bitstr.h.patch
+Patch0004:	0004-src-common-ceph-time.h.patch
+Patch0005:	0005-src-CMakeLists.txt.patch
+Patch0006:	0006-src-rgw-rgw_asio_frontend.cc.patch
 Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
@@ -1278,7 +1281,7 @@ cat ./CMakeFiles/CMakeError.log
 
 export VERBOSE=1
 export V=1
-%cmake_build "$CEPH_MFLAGS_JOBS"
+%cmake_build
 
 
 %if 0%{with make_check}
