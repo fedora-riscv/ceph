@@ -101,7 +101,7 @@
 #################################################################################
 Name:		ceph
 Version:	15.2.8
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -154,7 +154,7 @@ BuildRequires:	cmake3 > 3.5
 BuildRequires:	cmake > 3.5
 %endif
 BuildRequires:	cryptsetup
-BuildRequires:	fuse-devel
+BuildRequires:	fuse3-devel
 BuildRequires:	fmt-devel
 %if 0%{?rhel} == 7
 # devtoolset offers newer make and valgrind-devel, but the old ones are good
@@ -2381,6 +2381,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Thu Jan 7 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.8-2
+- ceph 15.2.8, fuse3-devel
+
 * Wed Dec 23 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.8-1
 - ceph 15.2.8 GA
 
