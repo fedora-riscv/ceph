@@ -101,7 +101,7 @@
 #################################################################################
 Name:		ceph
 Version:	15.2.8
-Release:	4%{?dist}
+Release:	5%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -1241,7 +1241,7 @@ cd build
     -DWITH_OCF=ON \
 %endif
     -DWITH_REENTRANT_STRSIGNAL=ON \
-    -DWITH_SYSTEM_BOOST=ON \
+    -DWITH_SYSTEM_BOOST=OFF \
 %ifarch aarch64 armv7hl mips mipsel ppc ppc64 ppc64le %{ix86} x86_64
     -DWITH_BOOST_CONTEXT=ON \
 %else
@@ -2381,6 +2381,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Jan 22 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.8-5
+- rebuilt with bundled Boost
+
 * Fri Jan 22 2021 Jonathan Wakely <jwakely@redhat.com> - 2:15.2.8-4
 - Rebuilt for Boost 1.75
 
