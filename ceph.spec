@@ -101,7 +101,7 @@
 #################################################################################
 Name:		ceph
 Version:	15.2.8
-Release:	3%{?dist}
+Release:	4%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2381,6 +2381,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Jan 22 2021 Jonathan Wakely <jwakely@redhat.com> - 2:15.2.8-4
+- Rebuilt for Boost 1.75
+
 * Fri Jan 8 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.8-3
 - ceph 15.2.8, %%changelog date
 
