@@ -101,7 +101,7 @@
 #################################################################################
 Name:		ceph
 Version:	15.2.8
-Release:	5%{?dist}
+Release:	6%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -124,6 +124,7 @@ Patch0003:	0003-src-common-bitstr.h.patch
 Patch0004:	0004-src-common-ceph-time.h.patch
 Patch0005:	0005-src-CMakeLists.txt.patch
 Patch0006:	0006-src-rgw-rgw_asio_frontend.cc.patch
+Patch0007:	0007-src-tools-rbd-action-Bench.cc.patch
 Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
@@ -1241,7 +1242,7 @@ cd build
     -DWITH_OCF=ON \
 %endif
     -DWITH_REENTRANT_STRSIGNAL=ON \
-    -DWITH_SYSTEM_BOOST=OFF \
+    -DWITH_SYSTEM_BOOST=ON \
 %ifarch aarch64 armv7hl mips mipsel ppc ppc64 ppc64le %{ix86} x86_64
     -DWITH_BOOST_CONTEXT=ON \
 %else
@@ -2381,6 +2382,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Mon Jan 25 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.8-6
+- rebuilt with system Boost
+
 * Fri Jan 22 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.8-5
 - rebuilt with bundled Boost
 
