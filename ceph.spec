@@ -113,7 +113,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.1.0
-Release:	0.1.snapshot%{?dist}
+Release:	0.2.snapshot%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -137,6 +137,9 @@ Patch0002:	0002-src-common-CMakeLists.txt.patch
 Patch0003:	0003-src-common-bitstr.h.patch
 Patch0004:	0004-src-CMakeLists.txt.patch
 Patch0005:	0005-src-librbd-migration.patch
+Patch0006:	0006-src-blk-CMakeLists.txt.patch
+Patch0007:	0007-src-test-neorados-CMakeLists.txt.patch
+Patch0008:	0008-cmake-modules-Finduring.cmake.patch
 Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
@@ -165,6 +168,8 @@ BuildRequires:	cmake > 3.5
 BuildRequires:	cryptsetup
 BuildRequires:	fuse3-devel
 BuildRequires:	fmt-devel
+BuildRequires:	rocksdb-devel
+BuildRequires:	liburing-devel
 %if 0%{?rhel} == 7
 # devtoolset offers newer make and valgrind-devel, but the old ones are good
 # enough.
@@ -1268,6 +1273,8 @@ cd build
     -DWITH_OCF=ON \
 %endif
     -DWITH_REENTRANT_STRSIGNAL=ON \
+    -DWITH_SYSTEM_ROCKSDB=ON \
+    -DWITH_SYSTEM_LIBURING=ON \
     -DWITH_SYSTEM_BOOST=ON \
 %if 0%{with cephfs_shell}
     -DWITH_CEPHFS_SHELL=ON \
@@ -2415,6 +2422,12 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Mon Feb 1 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.2.snapshot
+- libblk.so -> libblk.a
+- libneoradostest-support.so -> libneoradostest-support.a
+- w/ liburing-devel, -DWITH_SYSTEM_LIBURING
+- w/ rocksdb-devel, -DWITH_SYSTEM_LIBURING
+
 * Fri Jan 29 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.1.snapshot
 - ceph 16.1.0 RC (ceph-16.1.0-43-g6b74fb5c)
 
