@@ -101,7 +101,7 @@
 #################################################################################
 Name:		ceph
 Version:	15.2.8
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -153,6 +153,8 @@ BuildRequires:	cmake > 3.5
 BuildRequires:	cryptsetup
 BuildRequires:	fuse-devel
 BuildRequires:	fmt-devel
+BuildRequires:	rocksdb-devel
+BuildRequires:	npm
 %if 0%{?rhel} == 7
 # devtoolset offers newer make and valgrind-devel, but the old ones are good
 # enough.
@@ -1238,6 +1240,8 @@ cd build
     -DWITH_OCF=ON \
 %endif
     -DWITH_REENTRANT_STRSIGNAL=ON \
+    -DWITH_SYSTEM_NPM=ON \
+    -DWITH_SYSTEM_ROCKSDB=ON \
     -DWITH_SYSTEM_BOOST=ON \
 %ifarch aarch64 armv7hl mips mipsel ppc ppc64 ppc64le %{ix86} x86_64
     -DWITH_BOOST_CONTEXT=ON \
@@ -2378,6 +2382,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Mon Feb 1 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.8-2
+- ceph 15.2.8, w/ system rocksdb, w/ system npm
+
 * Wed Dec 23 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.8-1
 - ceph 15.2.8 GA
 
