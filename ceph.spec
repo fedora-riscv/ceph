@@ -112,7 +112,7 @@
 #################################################################################
 Name:		ceph
 Version:	14.2.16
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -160,6 +160,8 @@ BuildRequires:  cmake > 3.5
 %endif
 BuildRequires:	cryptsetup
 BuildRequires:	fuse-devel
+BuildRequires:	rocksdb-devel
+BuildRequires:	npm
 %if 0%{?rhel} == 7
 # devtoolset offers newer make and valgrind-devel, but the old ones are good
 # enough.
@@ -1238,6 +1240,8 @@ cd build
 %if 0%{with ocf}
     -DWITH_OCF=ON \
 %endif
+    -DWITH_SYSTEM_NPM=ON \
+    -DWITH_SYSTEM_ROCKSDB=ON \
 %ifarch aarch64 armv7hl mips mipsel ppc ppc64 ppc64le %{ix86} x86_64
     -DWITH_BOOST_CONTEXT=ON \
 %else
@@ -2326,6 +2330,9 @@ exit 0
 %endif
 
 %changelog
+* Tue Feb 2 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.16-2
+- ceph 14.2.16 w/ system rocksdb, w/ npm
+
 * Wed Dec 23 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.16-1
 - ceph 14.2.16 GA
 
