@@ -1213,7 +1213,11 @@ export CXXFLAGS=$(echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//g')
 
 # Parallel build settings ...
 CEPH_MFLAGS_JOBS="%{?_smp_mflags}"
+%ifarch s390 s390x
+CEPH_SMP_NCPUS="4"
+%else
 CEPH_SMP_NCPUS=$(echo "$CEPH_MFLAGS_JOBS" | sed 's/-j//')
+%endif
 %if 0%{?__isa_bits} == 32
 # 32-bit builds can use 3G memory max, which is not enough even for -j2
 CEPH_SMP_NCPUS="1"
