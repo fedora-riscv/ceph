@@ -113,7 +113,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.1.0
-Release:	0.2.snapshot%{?dist}
+Release:	0.3.snapshot%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -168,7 +168,9 @@ BuildRequires:	cmake > 3.5
 BuildRequires:	cryptsetup
 BuildRequires:	fuse3-devel
 BuildRequires:	fmt-devel
+%if 0%{?fedora}
 BuildRequires:	rocksdb-devel
+%endif
 BuildRequires:	liburing-devel
 %if 0%{?rhel} == 7
 # devtoolset offers newer make and valgrind-devel, but the old ones are good
@@ -1213,11 +1215,7 @@ export CXXFLAGS=$(echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//g')
 
 # Parallel build settings ...
 CEPH_MFLAGS_JOBS="%{?_smp_mflags}"
-%ifarch s390 s390x
-CEPH_SMP_NCPUS="4"
-%else
 CEPH_SMP_NCPUS=$(echo "$CEPH_MFLAGS_JOBS" | sed 's/-j//')
-%endif
 %if 0%{?__isa_bits} == 32
 # 32-bit builds can use 3G memory max, which is not enough even for -j2
 CEPH_SMP_NCPUS="1"
@@ -1277,7 +1275,9 @@ cd build
     -DWITH_OCF=ON \
 %endif
     -DWITH_REENTRANT_STRSIGNAL=ON \
+%if 0%{?fedora}
     -DWITH_SYSTEM_ROCKSDB=ON \
+%endif
     -DWITH_SYSTEM_LIBURING=ON \
     -DWITH_SYSTEM_BOOST=ON \
 %if 0%{with cephfs_shell}
@@ -2426,11 +2426,14 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Thu Feb 4 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.3.snapshot
+- rocksdb not available in el8+, use bundled rocksdb
+
 * Mon Feb 1 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.2.snapshot
 - libblk.so -> libblk.a
 - libneoradostest-support.so -> libneoradostest-support.a
-- w/ liburing-devel, -DWITH_SYSTEM_LIBURING
-- w/ rocksdb-devel, -DWITH_SYSTEM_LIBURING
+- w/ liburing-devel, -DWITH_SYSTEM_LIBURING=ON
+- w/ rocksdb-devel, -DWITH_SYSTEM_ROCKSDB=ON
 
 * Fri Jan 29 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.1.snapshot
 - ceph 16.1.0 RC (ceph-16.1.0-43-g6b74fb5c)
