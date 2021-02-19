@@ -31,7 +31,6 @@
 %else
 %bcond_without tcmalloc
 %endif
-
 %if 0%{?fedora} || 0%{?rhel}
 %bcond_without selinux
 %if 0%{?rhel} >= 8
@@ -50,6 +49,7 @@
 %bcond_with amqp_endpoint
 %bcond_with cephfs_java
 %bcond_with kafka_endpoint
+%bcond_with libradosstriper
 %ifarch x86_64 aarch64 ppc64le
 %bcond_without lttng
 %else
@@ -113,7 +113,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.1.0
-Release:	0.3.snapshot%{?dist}
+Release:	0.4.snapshot%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -130,13 +130,12 @@ Group:		System/Filesystems
 %endif
 URL:		http://ceph.com/
 #Source0:	%%{?_remote_tarball_prefix}ceph-%%{version}.tar.gz
-# https://2.chacra.ceph.com/r/ceph/pacific/6b74fb5c...
-Source0:        ceph-16.1.0-43-g6b74fb5c.tar.bz2
+# https://2.chacra.ceph.com/r/ceph/pacific/abe639e639eb...
+Source0:        ceph-16.1.0-308-gabe639eb.tar.bz2
 Patch0001:	0001-src-common-crc32c_intel_fast.patch
 Patch0002:	0002-src-common-CMakeLists.txt.patch
 Patch0003:	0003-src-common-bitstr.h.patch
 Patch0004:	0004-src-CMakeLists.txt.patch
-Patch0005:	0005-src-librbd-migration.patch
 Patch0006:	0006-src-blk-CMakeLists.txt.patch
 Patch0007:	0007-src-test-neorados-CMakeLists.txt.patch
 Patch0008:	0008-cmake-modules-Finduring.cmake.patch
@@ -167,15 +166,8 @@ BuildRequires:	gperf
 BuildRequires:	cmake > 3.5
 BuildRequires:	cryptsetup
 BuildRequires:	fuse3-devel
-BuildRequires:	fmt-devel
-%if 0%{?fedora}
-BuildRequires:	rocksdb-devel
-%endif
-BuildRequires:	liburing-devel
-%if 0%{?rhel} == 7
-# devtoolset offers newer make and valgrind-devel, but the old ones are good
-# enough.
-BuildRequires:	devtoolset-9-gcc-c++ >= 9.2.1-2.3
+%if 0%{with seastar}
+BuildRequires:	gcc-toolset-9-gcc-c++ >= 9.2.1-2.3
 %else
 BuildRequires:	gcc-c++
 %endif
@@ -195,6 +187,10 @@ BuildRequires:	cryptsetup-devel
 BuildRequires:	libcurl-devel
 BuildRequires:	libcap-ng-devel
 BuildRequires:	fmt-devel >= 5.2.1
+%if 0%{?fedora}
+BuildRequires:	rocksdb-devel
+%endif
+BuildRequires:	liburing-devel
 BuildRequires:	pkgconfig(libudev)
 BuildRequires:	libnl3-devel
 BuildRequires:	liboath-devel
@@ -209,7 +205,6 @@ BuildRequires:	pkgconfig
 BuildRequires:	procps
 BuildRequires:	python%{python3_pkgversion}
 BuildRequires:	python%{python3_pkgversion}-devel
-BuildRequires:	python%{python3_pkgversion}-setuptools
 BuildRequires:	snappy-devel
 BuildRequires:	sudo
 BuildRequires:	pkgconfig(udev)
@@ -219,8 +214,8 @@ BuildRequires:	which
 BuildRequires:	xfsprogs
 BuildRequires:	xfsprogs-devel
 BuildRequires:	xmlstarlet
-BuildRequires:	lua-devel
 BuildRequires:	nasm
+BuildRequires:	lua-devel
 %if 0%{with amqp_endpoint}
 BuildRequires:	librabbitmq-devel
 %endif
@@ -446,7 +441,7 @@ BuildArch:	noarch
 Requires:	lvm2
 Requires:	python%{python3_pkgversion}
 %if 0%{?weak_deps}
-Recommends:	podman
+Recommends:	podman >= 2.0.2
 %endif
 %description -n cephadm
 Utility to bootstrap a Ceph cluster and manage Ceph daemons deployed
@@ -531,7 +526,6 @@ Requires:	ceph-mgr-modules-core = %{_epoch_prefix}%{version}-%{release}
 %if 0%{?weak_deps}
 Recommends:	ceph-mgr-dashboard = %{_epoch_prefix}%{version}-%{release}
 Recommends:	ceph-mgr-diskprediction-local = %{_epoch_prefix}%{version}-%{release}
-Recommends:	ceph-mgr-diskprediction-cloud = %{_epoch_prefix}%{version}-%{release}
 Recommends:	ceph-mgr-k8sevents = %{_epoch_prefix}%{version}-%{release}
 Recommends:	ceph-mgr-cephadm = %{_epoch_prefix}%{version}-%{release}
 Recommends:	python%{python3_pkgversion}-influxdb
@@ -1177,7 +1171,7 @@ This package provides Ceph default alerts for Prometheus.
 # common
 #################################################################################
 %prep
-%autosetup -p1 -n ceph-16.1.0-43-g6b74fb5c
+%autosetup -p1 -n ceph-16.1.0-308-gabe639eb
 %ifarch x86_64
 patch -p1 < %{SOURCE1}
 %endif
@@ -1187,8 +1181,8 @@ patch -p1 < %{SOURCE1}
 # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=48200
 %define _lto_cflags %{nil}
 
-%if 0%{with seastar} &&0%{?rhel}
-. /opt/rh/devtoolset-9/enable
+%if 0%{with seastar} && 0%{?rhel}
+. /opt/rh/gcc-toolset-9/enable
 %endif
 
 %if 0%{with cephfs_java}
@@ -1230,7 +1224,7 @@ free -h
 echo "System limits:"
 ulimit -a
 if test -n "$CEPH_SMP_NCPUS" -a "$CEPH_SMP_NCPUS" -gt 1 ; then
-    mem_per_process=2700
+    mem_per_process=2500
     max_mem=$(LANG=C free -m | sed -n "s|^Mem: *\([0-9]*\).*$|\1|p")
     max_jobs="$(($max_mem / $mem_per_process))"
     test "$CEPH_SMP_NCPUS" -gt "$max_jobs" && CEPH_SMP_NCPUS="$max_jobs" && echo "Warning: Reducing build parallelism to -j$max_jobs because of memory limits"
@@ -1351,6 +1345,7 @@ popd
 # package crimson-osd with the name of ceph-osd
 install -m 0755 %{buildroot}%{_bindir}/crimson-osd %{buildroot}%{_bindir}/ceph-osd
 %endif
+
 install -m 0644 -D src/etc-rbdmap %{buildroot}%{_sysconfdir}/ceph/rbdmap
 %if 0%{?fedora} || 0%{?rhel}
 install -m 0644 -D etc/sysconfig/ceph %{buildroot}%{_sysconfdir}/sysconfig/ceph
@@ -1509,6 +1504,7 @@ fi
 
 %postun base
 /sbin/ldconfig
+%systemd_postun ceph.target
 
 %pre -n cephadm
 getent group cephadm >/dev/null || groupadd -r cephadm
@@ -1748,6 +1744,7 @@ fi
 %{_datadir}/ceph/mgr/iostat
 %{_datadir}/ceph/mgr/localpool
 %{_datadir}/ceph/mgr/mds_autoscaler
+%{_datadir}/ceph/mgr/mirroring
 %{_datadir}/ceph/mgr/orchestrator
 %{_datadir}/ceph/mgr/osd_perf_query
 %{_datadir}/ceph/mgr/osd_support
@@ -2409,7 +2406,6 @@ if [ $1 -eq 0 ]; then
     fi
 fi
 exit 0
-
 %endif
 
 %files grafana-dashboards
