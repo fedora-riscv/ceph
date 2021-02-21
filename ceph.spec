@@ -2426,6 +2426,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Sat Feb 20 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.4.snapshot
+- ceph 16.1.0 RC (ceph-16.1.0-308-gabe639eb)
+
 * Thu Feb 4 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.3.snapshot
 - rocksdb not available in el8+, use bundled rocksdb
 
