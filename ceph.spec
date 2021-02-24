@@ -100,8 +100,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	15.2.8
-Release:	2%{?dist}
+Version:	15.2.9
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -428,6 +428,7 @@ Base is the package that includes all the files shared amongst ceph servers
 
 %package -n cephadm
 Summary:	Utility to bootstrap Ceph clusters
+BuildArch:	noarch
 Requires:	lvm2
 %if 0%{?suse_version}
 Requires:	apparmor-abstractions
@@ -491,7 +492,11 @@ Provides:	ceph-test:/usr/bin/ceph-monstore-tool
 Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
 %if 0%{?weak_deps}
 Recommends:    nvme-cli
-Recommends:    smartmontools
+%if 0%{?suse_version}
+Requires:	smartmontools
+%else
+Recommends:	smartmontools
+%endif
 %endif
 %description mon
 ceph-mon is the cluster monitor daemon for the Ceph distributed file
@@ -766,7 +771,11 @@ Requires:	libstoragemgmt
 Requires:	python%{python3_pkgversion}-ceph-common = %{_epoch_prefix}%{version}-%{release}
 %if 0%{?weak_deps}
 Recommends:    nvme-cli
-Recommends:    smartmontools
+%if 0%{?suse_version}
+Requires:	smartmontools
+%else
+Recommends:	smartmontools
+%endif
 %endif
 %description osd
 ceph-osd is the object storage daemon for the Ceph distributed file
@@ -1332,7 +1341,7 @@ ln -sf %{_sbindir}/mount.ceph %{buildroot}/sbin/mount.ceph
 install -m 0644 -D udev/50-rbd.rules %{buildroot}%{_udevrulesdir}/50-rbd.rules
 
 # sudoers.d
-install -m 0600 -D sudoers.d/ceph-osd-smartctl %{buildroot}%{_sysconfdir}/sudoers.d/ceph-osd-smartctl
+install -m 0440 -D sudoers.d/ceph-osd-smartctl %{buildroot}%{_sysconfdir}/sudoers.d/ceph-osd-smartctl
 
 %if 0%{?rhel} >= 8
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{buildroot}%{_bindir}/*
@@ -2382,8 +2391,14 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed Feb 24 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.9-1
+- ceph 15.2.9 GA
+
 * Mon Feb 1 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.8-2
 - ceph 15.2.8, w/ system rocksdb, w/ system npm
+
+* Wed Dec 23 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.8-1
+- ceph 15.2.8 GA
 
 * Wed Dec 23 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.8-1
 - ceph 15.2.8 GA
