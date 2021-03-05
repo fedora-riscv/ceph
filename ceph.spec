@@ -113,7 +113,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.1.0
-Release:	0.4.snapshot%{?dist}
+Release:	0.5.snapshot%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -189,6 +189,7 @@ BuildRequires:	libcap-ng-devel
 BuildRequires:	fmt-devel >= 5.2.1
 %if 0%{?fedora}
 BuildRequires:	rocksdb-devel
+Requires:	rocksdb
 %endif
 BuildRequires:	liburing-devel
 BuildRequires:	pkgconfig(libudev)
@@ -1273,7 +1274,6 @@ cd build
 %if 0%{with ocf}
     -DWITH_OCF=ON \
 %endif
-    -DWITH_REENTRANT_STRSIGNAL=ON \
 %if 0%{?fedora}
     -DWITH_SYSTEM_ROCKSDB=ON \
 %endif
@@ -2427,6 +2427,10 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Mar 5 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.5.snapshot
+- ceph 16.1.0 RC (ceph-16.1.0-308-gabe639eb)
+-  rpmbuild apparently unable to automatically derive 'Requires: rocksdb' from 'BuildRequires: rocksdb-devel' for librocksdb.so.6.13
+
 * Sat Feb 20 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.4.snapshot
 - ceph 16.1.0 RC (ceph-16.1.0-308-gabe639eb)
 
