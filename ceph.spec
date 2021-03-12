@@ -111,8 +111,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	14.2.16
-Release:	2%{?dist}
+Version:	14.2.17
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -302,14 +302,24 @@ BuildRequires:  pyOpenSSL%{_python_buildid}
 %else
 BuildRequires:  python%{_python_buildid}-pyOpenSSL
 %endif
+BuildRequires:	libtool-ltdl-devel
 BuildRequires:	python%{_python_buildid}-cherrypy
 BuildRequires:	python%{_python_buildid}-jwt
 BuildRequires:	python%{_python_buildid}-routes
 BuildRequires:	python%{_python_buildid}-scipy
 BuildRequires:	python%{_python_buildid}-werkzeug
 BuildRequires:  xmlsec1
+BuildRequires:	xmlsec1-devel
+BuildRequires:	xmlsec1-nss
+BuildRequires:	xmlsec1-openssl
+BuildRequires:	xmlsec1-openssl-devel
 %endif
 %if 0%{?suse_version}
+BuildRequires:	libxmlsec1-1
+BuildRequires:	libxmlsec1-nss1
+BuildRequires:	libxmlsec1-openssl1
+BuildRequires:	xmlsec1-devel
+BuildRequires:	xmlsec1-openssl-devel
 BuildRequires:	python%{_python_buildid}-CherryPy
 BuildRequires:	python%{_python_buildid}-PyJWT
 BuildRequires:	python%{_python_buildid}-Routes
@@ -320,7 +330,6 @@ BuildRequires:	python%{_python_buildid}-pecan
 BuildRequires:	python%{_python_buildid}-pyOpenSSL
 BuildRequires:	python%{_python_buildid}-tox
 BuildRequires:	rpm-build
-BuildRequires:  xmlsec1-devel
 %endif
 %endif
 # lttng and babeltrace for rbd-replay-prep
@@ -476,6 +485,7 @@ Requires:       python%{_python_buildid}-werkzeug
 %if 0%{?suse_version}
 Requires:       python%{_python_buildid}-CherryPy
 Requires:       python%{_python_buildid}-Werkzeug
+
 %endif
 %if 0%{?weak_deps}
 Recommends:	ceph-mgr-dashboard = %{_epoch_prefix}%{version}-%{release}
@@ -520,6 +530,7 @@ Requires:       python%{_python_buildid}-CherryPy
 Requires:       python%{_python_buildid}-PyJWT
 Requires:       python%{_python_buildid}-Routes
 Requires:       python%{_python_buildid}-Werkzeug
+Recommends:	python%{_python_buildid}-python3-saml
 %endif
 %if 0%{?rhel} == 7
 Requires:       pyOpenSSL
@@ -1315,7 +1326,7 @@ ln -sf %{_sbindir}/mount.ceph %{buildroot}/sbin/mount.ceph
 install -m 0644 -D udev/50-rbd.rules %{buildroot}%{_udevrulesdir}/50-rbd.rules
 
 # sudoers.d
-install -m 0600 -D sudoers.d/ceph-osd-smartctl %{buildroot}%{_sysconfdir}/sudoers.d/ceph-osd-smartctl
+install -m 0440 -D sudoers.d/ceph-osd-smartctl %{buildroot}%{_sysconfdir}/sudoers.d/ceph-osd-smartctl
 
 %if 0%{?rhel} >= 8
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{buildroot}%{_bindir}/*
@@ -2330,6 +2341,9 @@ exit 0
 %endif
 
 %changelog
+* Thu Mar 11 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.17-1
+- ceph 14.2.17 GA
+
 * Tue Feb 2 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.16-2
 - ceph 14.2.16 w/ system rocksdb, w/ npm
 
