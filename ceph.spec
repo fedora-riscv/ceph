@@ -100,7 +100,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	15.2.9
+Version:	15.2.10
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
@@ -1216,6 +1216,7 @@ cd build
 %endif
 %{cmake} .. \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DCMAKE_COLOR_MAKEFILE=OFF \
     -DBUILD_CONFIG=rpmbuild \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
@@ -2391,6 +2392,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Thu Mar 18 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.10-1
+- ceph 15.2.10 GA
+
 * Wed Feb 24 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.9-1
 - ceph 15.2.9 GA
 
