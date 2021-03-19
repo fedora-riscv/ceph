@@ -35,7 +35,11 @@
 %bcond_without selinux
 %bcond_without rbd_rwl_cache
 %bcond_without rbd_ssd_cache
+%ifarch x86_64 ppc64le
 %global _system_pmdk 1
+%else
+%global _system_pmdk 0
+%endif
 %if 0%{?rhel} >= 8
 %bcond_with cephfs_java
 %else
