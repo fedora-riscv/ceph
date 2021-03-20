@@ -266,10 +266,10 @@ BuildRequires:	nlohmann_json-devel
 %endif
 BuildRequires:	libevent-devel
 BuildRequires:	yaml-cpp-devel
+%endif
 %if 0%{?_system_pmdk}
 BuildRequires: libpmem-devel
 BuildRequires: libpmemobj-devel
-%endif
 %endif
 %if 0%{with seastar}
 BuildRequires:	c-ares-devel
