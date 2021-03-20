@@ -33,8 +33,6 @@
 %endif
 %if 0%{?fedora} || 0%{?rhel}
 %bcond_without selinux
-%bcond_without rbd_rwl_cache
-%bcond_without rbd_ssd_cache
 %if 0%{?rhel} >= 8
 %bcond_with cephfs_java
 %else
@@ -54,12 +52,8 @@
 %bcond_with libradosstriper
 %ifarch x86_64 aarch64 ppc64le
 %bcond_without lttng
-%bcond_without rbd_rwl_cache
-%bcond_without rbd_ssd_cache
 %else
 %bcond_with lttng
-%bcond_with rbd_rwl_cache
-%bcond_with rbd_ssd_cache
 %endif
 %bcond_with ocf
 %bcond_with selinux
@@ -70,6 +64,8 @@
 %endif
 %bcond_with seastar
 %bcond_with jaeger
+%bcond_with rbd_rwl_cache
+%bcond_with rbd_ssd_cache
 %if 0%{?fedora} || 0%{?suse_version} >= 1500
 # distros that ship cmd2 and/or colorama
 %bcond_without cephfs_shell
