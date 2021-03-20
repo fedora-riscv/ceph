@@ -35,11 +35,6 @@
 %bcond_without selinux
 %bcond_without rbd_rwl_cache
 %bcond_without rbd_ssd_cache
-%ifarch x86_64 ppc64le
-%global _system_pmdk 1
-%else
-%global _system_pmdk 0
-%endif
 %if 0%{?rhel} >= 8
 %bcond_with cephfs_java
 %else
@@ -59,12 +54,10 @@
 %bcond_with libradosstriper
 %ifarch x86_64 aarch64 ppc64le
 %bcond_without lttng
-%global _system_pmdk 1
 %bcond_without rbd_rwl_cache
 %bcond_without rbd_ssd_cache
 %else
 %bcond_with lttng
-%global _system_pmdk 0
 %bcond_with rbd_rwl_cache
 %bcond_with rbd_ssd_cache
 %endif
@@ -141,8 +134,8 @@ Group:		System/Filesystems
 %endif
 URL:		http://ceph.com/
 #Source0:	%%{?_remote_tarball_prefix}ceph-%%{version}.tar.gz
-# https://2.chacra.ceph.com/r/ceph/pacific/e53ee8bd1d...
-Source0:        ceph-16.1.0-944-ge53ee8bd.tar.bz2
+# https://2.chacra.ceph.com/r/ceph/pacific/abe639e639eb...
+Source0:        ceph-16.1.0-308-gabe639eb.tar.bz2
 Patch0001:	0001-src-common-crc32c_intel_fast.patch
 Patch0002:	0002-src-common-CMakeLists.txt.patch
 Patch0003:	0003-src-common-bitstr.h.patch
@@ -264,10 +257,6 @@ BuildRequires:	nlohmann_json-devel
 %endif
 BuildRequires:	libevent-devel
 BuildRequires:	yaml-cpp-devel
-%endif
-%if 0%{?_system_pmdk}
-BuildRequires:	libpmem-devel
-BuildRequires:	libpmemobj-devel
 %endif
 %if 0%{with seastar}
 BuildRequires:	c-ares-devel
@@ -1191,7 +1180,7 @@ This package provides Ceph default alerts for Prometheus.
 # common
 #################################################################################
 %prep
-%autosetup -p1 -n ceph-16.1.0-944-ge53ee8bd
+%autosetup -p1 -n ceph-16.1.0-308-gabe639eb
 %ifarch x86_64
 patch -p1 < %{SOURCE1}
 %endif
@@ -1335,9 +1324,6 @@ cd build
     -DBOOST_J=$CEPH_SMP_NCPUS \
 %if 0%{with ceph_test_package}
     -DWITH_SYSTEM_GTEST=ON \
-%endif
-%if 0%{?_system_pmdk}
-    -DWITH_SYSTEM_PMDK:BOOL=ON \
 %endif
     -DWITH_GRAFANA=ON
 
@@ -2017,8 +2003,6 @@ fi
 %{_bindir}/radosgw-token
 %{_bindir}/radosgw-es
 %{_bindir}/radosgw-object-expirer
-%{_bindir}/rgw-gap-list
-%{_bindir}/rgw-gap-list-comparator
 %{_bindir}/rgw-orphan-list
 %{_libdir}/libradosgw.so*
 %{_mandir}/man8/radosgw.8*
@@ -2453,7 +2437,7 @@ exit 0
 
 %changelog
 * Fri Mar 19 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.6.snapshot
-- 16.1.0 RC (ceph-16.1.0-922-ge6063369)
+- 16.1.0 RC (ceph-16.1.0-308-gabe639eb)
 
 * Fri Mar 5 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.5.snapshot
 - ceph 16.1.0 RC (ceph-16.1.0-308-gabe639eb)
