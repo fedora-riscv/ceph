@@ -23,17 +23,35 @@ diff --git a/src/os/bluestore/BlueFS.cc b/src/os/bluestore/BlueFS.cc
 index ea39626aef..62b9d27f58 100644
 --- a/src/os/bluestore/BlueFS.cc
 +++ b/src/os/bluestore/BlueFS.cc
-@@ -3493,6 +3493,10 @@
+@@ -3493,9 +3493,14 @@
  
  int BlueFS::readdir(const string& dirname, vector<string> *ls)
  {
++  std::string dname = dirname;
 +  // dirname may contain a trailing /
-+  if (!dirname.empty() && dirname.back() == '/') {
-+    dirname.remove_suffix(1);
++  if (!dname.empty() && dname.back() == '/') {
++    dname.pop_back();
 +  }
    std::lock_guard l(lock);
-   dout(10) << __func__ << " " << dirname << dendl;
-   if (dirname.empty()) {
+-  dout(10) << __func__ << " " << dirname << dendl;
+-  if (dirname.empty()) {
++  dout(10) << __func__ << " " << dname << dendl;
++  if (dname.empty()) {
+     // list dirs
+     ls->reserve(dir_map.size() + 2);
+     for (auto& q : dir_map) {
+@@ -3503,9 +3508,9 @@
+     }
+   } else {
+     // list files in dir
+-    map<string,DirRef>::iterator p = dir_map.find(dirname);
++    map<string,DirRef>::iterator p = dir_map.find(dname);
+     if (p == dir_map.end()) {
+-      dout(20) << __func__ << " dir " << dirname << " not found" << dendl;
++      dout(20) << __func__ << " dir " << dname << " not found" << dendl;
+       return -ENOENT;
+     }
+     DirRef dir = p->second;
 -- 
 2.26.2
 
