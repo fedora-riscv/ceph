@@ -126,7 +126,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.1.0
-Release:	0.7.snapshot%{?dist}
+Release:	0.8.snapshot%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -153,6 +153,7 @@ Patch0006:	0006-src-blk-CMakeLists.txt.patch
 Patch0007:	0007-src-test-neorados-CMakeLists.txt.patch
 Patch0008:	0008-cmake-modules-Finduring.cmake.patch
 Patch0009:	0009-librgw-notifications-initialize-kafka-and-amqp.patch
+Patch0010:	0010-os-bluestore-strip-trailing-slash-for-directory-list.patch
 Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
@@ -2454,6 +2455,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Tue Mar 23 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.8.snapshot
+- 16.1.0 RC (ceph-16.1.0-944-ge53ee8bd plus fix trailing slash bluestore)
+
 * Sat Mar 20 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.7.snapshot
 - 16.1.0 RC (ceph-16.1.0-944-ge53ee8bd)
 
