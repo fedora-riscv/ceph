@@ -126,7 +126,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.1.0
-Release:	0.8.snapshot%{?dist}
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -143,8 +143,8 @@ Group:		System/Filesystems
 %endif
 URL:		http://ceph.com/
 #Source0:	%%{?_remote_tarball_prefix}ceph-%%{version}.tar.gz
-# https://2.chacra.ceph.com/r/ceph/pacific/abe639e639eb...
-Source0:        ceph-16.1.0-944-ge53ee8bd.tar.bz2
+# https://download.ceph.com/rpm-16.1.0/el8/SRPMS/...
+Source0:        ceph-16.1.0.tar.bz2
 Patch0001:	0001-src-common-crc32c_intel_fast.patch
 Patch0002:	0002-src-common-CMakeLists.txt.patch
 Patch0003:	0003-src-common-bitstr.h.patch
@@ -1194,7 +1194,7 @@ This package provides Ceph default alerts for Prometheus.
 # common
 #################################################################################
 %prep
-%autosetup -p1 -n ceph-16.1.0-944-ge53ee8bd
+%autosetup -p1
 %ifarch x86_64
 patch -p1 < %{SOURCE1}
 %endif
@@ -2455,6 +2455,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Thu Mar 25 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-1
+- 16.1.0 RC
+
 * Tue Mar 23 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.8.snapshot
 - 16.1.0 RC (ceph-16.1.0-944-ge53ee8bd plus fix trailing slash bluestore)
 
