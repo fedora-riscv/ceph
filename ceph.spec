@@ -126,7 +126,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.1.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2455,6 +2455,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Tue Mar 30 2021 Jonathan Wakely <jwakely@redhat.com> - 2:16.1.0-2
+- Rebuilt for removed libstdc++ symbol (#1937698)
+
 * Thu Mar 25 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-1
 - 16.1.0 RC
 
