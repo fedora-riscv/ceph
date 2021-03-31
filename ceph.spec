@@ -34,13 +34,13 @@
 %if 0%{?fedora} || 0%{?rhel}
 %bcond_without selinux
 %ifarch x86_64 ppc64le
-%global _system_pmdk 1
 %bcond_without rbd_rwl_cache
 %bcond_without rbd_ssd_cache
+%global _system_pmdk 1
 %else
-%global _system_pmdk 0
 %bcond_with rbd_rwl_cache
 %bcond_with rbd_ssd_cache
+%global _system_pmdk 0
 %endif
 %if 0%{?rhel} >= 8
 %bcond_with cephfs_java
@@ -125,8 +125,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	16.1.0
-Release:	2%{?dist}
+Version:	16.2.0
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -142,9 +142,7 @@ License:	(LGPLv2.1 or LGPLv3) and CC-BY-SA-3.0 and GPLv2 and Boost-1.0 and BSD a
 Group:		System/Filesystems
 %endif
 URL:		http://ceph.com/
-#Source0:	%%{?_remote_tarball_prefix}ceph-%%{version}.tar.gz
-# https://download.ceph.com/rpm-16.1.0/el8/SRPMS/...
-Source0:        ceph-16.1.0.tar.bz2
+Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.gz
 Patch0001:	0001-src-common-crc32c_intel_fast.patch
 Patch0002:	0002-src-common-CMakeLists.txt.patch
 Patch0003:	0003-src-common-bitstr.h.patch
@@ -214,6 +212,7 @@ BuildRequires:	libtool
 BuildRequires:	libxml2-devel
 BuildRequires:	make
 BuildRequires:	ncurses-devel
+BuildRequires:	libicu-devel
 BuildRequires:	parted
 BuildRequires:	patch
 BuildRequires:	perl
@@ -222,6 +221,7 @@ BuildRequires:	procps
 BuildRequires:	python%{python3_pkgversion}
 BuildRequires:	python%{python3_pkgversion}-devel
 BuildRequires:	snappy-devel
+BuildRequires:	sqlite-devel
 BuildRequires:	sudo
 BuildRequires:	pkgconfig(udev)
 BuildRequires:	util-linux
@@ -269,8 +269,8 @@ BuildRequires:	libevent-devel
 BuildRequires:	yaml-cpp-devel
 %endif
 %if 0%{?_system_pmdk}
-BuildRequires: libpmem-devel
-BuildRequires: libpmemobj-devel
+BuildRequires:	libpmem-devel
+BuildRequires:	libpmemobj-devel
 %endif
 %if 0%{with seastar}
 BuildRequires:	c-ares-devel
@@ -543,6 +543,7 @@ Group:		System/Filesystems
 %endif
 Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
 Requires:	ceph-mgr-modules-core = %{_epoch_prefix}%{version}-%{release}
+Requires:	libcephsqlite = %{_epoch_prefix}%{version}-%{release}
 %if 0%{?weak_deps}
 Recommends:	ceph-mgr-dashboard = %{_epoch_prefix}%{version}-%{release}
 Recommends:	ceph-mgr-diskprediction-local = %{_epoch_prefix}%{version}-%{release}
@@ -909,6 +910,32 @@ Obsoletes:	python-rados < %{_epoch_prefix}%{version}-%{release}
 %description -n python%{python3_pkgversion}-rados
 This package contains Python 3 libraries for interacting with Ceph RADOS
 object store.
+
+%package -n libcephsqlite
+Summary:	SQLite3 VFS for Ceph
+%if 0%{?suse_version}
+Group:		System/Libraries
+%endif
+Requires:	librados2 = %{_epoch_prefix}%{version}-%{release}
+%description -n libcephsqlite
+A SQLite3 VFS for storing and manipulating databases stored on Ceph's RADOS
+distributed object store.
+
+%package -n libcephsqlite-devel
+Summary:	SQLite3 VFS for Ceph headers
+%if 0%{?suse_version}
+Group:		Development/Libraries/C and C++
+%endif
+Requires:	sqlite-devel
+Requires:	libcephsqlite = %{_epoch_prefix}%{version}-%{release}
+Requires:	librados-devel = %{_epoch_prefix}%{version}-%{release}
+Requires:	libradospp-devel = %{_epoch_prefix}%{version}-%{release}
+Obsoletes:	ceph-devel < %{_epoch_prefix}%{version}-%{release}
+Provides:	libcephsqlite-devel = %{_epoch_prefix}%{version}-%{release}
+Obsoletes:	libcephsqlite-devel < %{_epoch_prefix}%{version}-%{release}
+%description -n libcephsqlite-devel
+A SQLite3 VFS for storing and manipulating databases stored on Ceph's RADOS
+distributed object store.
 
 %if 0%{with libradosstriper}
 %package -n libradosstriper1
@@ -1398,7 +1425,7 @@ touch %{buildroot}%{_sharedstatedir}/cephadm/.ssh/authorized_keys
 chmod 0600 %{buildroot}%{_sharedstatedir}/cephadm/.ssh/authorized_keys
 
 # firewall templates and /sbin/mount.ceph symlink
-%if 0%{?suse_version}
+%if 0%{?suse_version} && !0%{?usrmerged}
 mkdir -p %{buildroot}/sbin
 ln -sf %{_sbindir}/mount.ceph %{buildroot}/sbin/mount.ceph
 %endif
@@ -1571,7 +1598,7 @@ exit 0
 %{_bindir}/rbd-replay-many
 %{_bindir}/rbdmap
 %{_sbindir}/mount.ceph
-%if 0%{?suse_version}
+%if 0%{?suse_version} && !0%{?usrmerged}
 /sbin/mount.ceph
 %endif
 %if %{with lttng}
@@ -2182,6 +2209,16 @@ fi
 %{python3_sitearch}/rados.cpython*.so
 %{python3_sitearch}/rados-*.egg-info
 
+%files -n libcephsqlite
+%{_libdir}/libcephsqlite.so
+
+%post -n libcephsqlite -p /sbin/ldconfig
+
+%postun -n libcephsqlite -p /sbin/ldconfig
+
+%files -n libcephsqlite-devel
+%{_includedir}/libcephsqlite.h
+
 %if 0%{with libradosstriper}
 %files -n libradosstriper1
 %{_libdir}/libradosstriper.so.*
@@ -2455,6 +2492,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed Mar 31 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.0-1
+- 16.2.0 GA
+
 * Tue Mar 30 2021 Jonathan Wakely <jwakely@redhat.com> - 2:16.1.0-2
 - Rebuilt for removed libstdc++ symbol (#1937698)
 
