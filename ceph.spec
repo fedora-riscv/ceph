@@ -126,7 +126,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -152,6 +152,8 @@ Patch0007:	0007-src-test-neorados-CMakeLists.txt.patch
 Patch0008:	0008-cmake-modules-Finduring.cmake.patch
 Patch0009:	0009-librgw-notifications-initialize-kafka-and-amqp.patch
 Patch0010:	0010-os-bluestore-strip-trailing-slash-for-directory-list.patch
+Patch0011:	0011-src-test-rgw-amqp_mock.cc.patch
+Patch0012:	0012-rgw.patch
 Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
@@ -2492,6 +2494,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Sat Apr 10 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.0-2
+- 16.2.0, libamqp_mock fix (FTBFS, #1947281), rgw fix
+
 * Wed Mar 31 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.0-1
 - 16.2.0 GA
 
