@@ -126,7 +126,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2494,6 +2494,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed Apr 14 2021 Richard W.M. Jones <rjones@redhat.com> - 2:16.2.0-3
+- Rebuild for updated liburing.
+
 * Sat Apr 10 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.0-2
 - 16.2.0, libamqp_mock fix (FTBFS, #1947281), rgw fix
 
