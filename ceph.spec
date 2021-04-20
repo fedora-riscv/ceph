@@ -125,8 +125,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	16.2.0
-Release:	3%{?dist}
+Version:	16.2.1
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -154,7 +154,7 @@ Patch0009:	0009-librgw-notifications-initialize-kafka-and-amqp.patch
 Patch0010:	0010-os-bluestore-strip-trailing-slash-for-directory-list.patch
 Patch0011:	0011-src-test-rgw-amqp_mock.cc.patch
 Patch0012:	0012-rgw.patch
-Source1:	cmake-modules-BuildBoost.cmake.noautopatch
+# Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 %if 0%{?suse_version}
@@ -1224,9 +1224,9 @@ This package provides Ceph default alerts for Prometheus.
 #################################################################################
 %prep
 %autosetup -p1
-%ifarch x86_64
-patch -p1 < %{SOURCE1}
-%endif
+# %%ifarch x86_64
+# patch -p1 < %{SOURCE1}
+# %%endif
 
 %build
 # LTO can be enabled as soon as the following GCC bug is fixed:
@@ -2494,8 +2494,8 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
-* Wed Apr 14 2021 Richard W.M. Jones <rjones@redhat.com> - 2:16.2.0-3
-- Rebuild for updated liburing.
+* Tue Apr 20 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.1-1
+- 16.2.1 GA
 
 * Sat Apr 10 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.0-2
 - 16.2.0, libamqp_mock fix (FTBFS, #1947281), rgw fix
