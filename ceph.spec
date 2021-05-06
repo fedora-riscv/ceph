@@ -26,7 +26,7 @@
 %bcond_with zbd
 %bcond_with cmake_verbose_logging
 %bcond_without ceph_test_package
-%ifarch s390 s390x
+%ifarch s390
 %bcond_with tcmalloc
 %else
 %bcond_without tcmalloc
@@ -125,7 +125,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	16.2.1
+Version:	16.2.2
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
@@ -146,14 +146,12 @@ Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.gz
 Patch0001:	0001-src-common-crc32c_intel_fast.patch
 Patch0002:	0002-src-common-CMakeLists.txt.patch
 Patch0003:	0003-src-common-bitstr.h.patch
-Patch0004:	0004-src-CMakeLists.txt.patch
 Patch0006:	0006-src-blk-CMakeLists.txt.patch
 Patch0007:	0007-src-test-neorados-CMakeLists.txt.patch
 Patch0008:	0008-cmake-modules-Finduring.cmake.patch
 Patch0009:	0009-librgw-notifications-initialize-kafka-and-amqp.patch
 Patch0010:	0010-os-bluestore-strip-trailing-slash-for-directory-list.patch
 Patch0011:	0011-src-test-rgw-amqp_mock.cc.patch
-Patch0012:	0012-rgw.patch
 # Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
@@ -188,8 +186,12 @@ BuildRequires:	gcc-c++
 %endif
 BuildRequires:	gdbm
 %if 0%{with tcmalloc}
-%if 0%{?fedora} || 0%{?rhel}
-BuildRequires:	gperftools-devel >= 2.6.1
+# libprofiler did not build on ppc64le until 2.7.90
+%if 0%{?fedora} || 0%{?rhel} >= 8
+BuildRequires:  gperftools-devel >= 2.7.90
+%endif
+%if 0%{?rhel} && 0%{?rhel} < 8
+BuildRequires:  gperftools-devel >= 2.6.1
 %endif
 %if 0%{?suse_version}
 BuildRequires:	gperftools-devel >= 2.4
@@ -347,6 +349,7 @@ BuildRequires:	lz4-devel >= 1.7
 # distro-conditional make check dependencies
 %if 0%{with make_check}
 %if 0%{?fedora} || 0%{?rhel}
+BuildRequires:	golang-github-prometheus
 BuildRequires:	libtool-ltdl-devel
 BuildRequires:	xmlsec1
 BuildRequires:	xmlsec1-devel
@@ -363,6 +366,7 @@ BuildRequires:	python%{python3_pkgversion}-werkzeug
 BuildRequires:	python%{python3_pkgversion}-pyOpenSSL
 %endif
 %if 0%{?suse_version}
+BuildRequires:	golang-github-prometheus-prometheus
 BuildRequires:	libxmlsec1-1
 BuildRequires:	libxmlsec1-nss1
 BuildRequires:	libxmlsec1-openssl1
@@ -444,7 +448,7 @@ Requires:	python%{python3_pkgversion}-setuptools
 Requires:	util-linux
 Requires:	xfsprogs
 Requires:	which
-%if 0%{?fedora} || 0%{?rhel}
+%if 0%{?rhel} && 0%{?rhel} < 8
 # The following is necessary due to tracker 36508 and can be removed once the
 # associated upstream bugs are resolved.
 %if 0%{with tcmalloc}
@@ -728,6 +732,7 @@ Summary:	Ceph daemon for immutable object cache
 %if 0%{?suse_version}
 Group:		System/Filesystems
 %endif
+Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
 Requires:	librados2 = %{_epoch_prefix}%{version}-%{release}
 %description immutable-object-cache
 Daemon for immutable object cache.
@@ -2494,6 +2499,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed May 5 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.2-1
+- 16.2.2 GA
+
 * Tue Apr 20 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.1-1
 - 16.2.1 GA
 
