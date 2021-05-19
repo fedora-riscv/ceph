@@ -126,7 +126,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2499,6 +2499,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed May 19 2021 Pete Walter <pwalter@fedoraproject.org> - 2:16.2.4-2
+- Rebuild for ICU 69
+
 * Thu May 13 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.4-1
 - 16.2.4 GA
 
