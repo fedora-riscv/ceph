@@ -126,7 +126,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.4
-Release:	2%{?dist}
+Release:	3%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -152,6 +152,7 @@ Patch0008:	0008-cmake-modules-Finduring.cmake.patch
 Patch0009:	0009-librgw-notifications-initialize-kafka-and-amqp.patch
 Patch0010:	0010-os-bluestore-strip-trailing-slash-for-directory-list.patch
 Patch0011:	0011-src-test-rgw-amqp_mock.cc.patch
+Patch0012:	0012-src-compressor-snappy-SnappyCompressor.h.patch
 # Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
@@ -2499,6 +2500,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed May 26 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.4-3
+- 16.2.4, bz 1964858, snappy::uint32
+
 * Wed May 19 2021 Pete Walter <pwalter@fedoraproject.org> - 2:16.2.4-2
 - Rebuild for ICU 69
 
