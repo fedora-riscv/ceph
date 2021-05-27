@@ -25,7 +25,7 @@
 %bcond_with make_check
 %bcond_with cmake_verbose_logging
 %bcond_without ceph_test_package
-%ifarch s390 s390x
+%ifarch s390
 %bcond_with tcmalloc
 %else
 %bcond_without tcmalloc
@@ -100,7 +100,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	15.2.12
+Version:	15.2.13
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
@@ -119,7 +119,6 @@ Group:		System/Filesystems
 URL:		http://ceph.com/
 Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.gz
 Patch0001:	0001-src-common-crc32c_intel_fast.patch
-Patch0002:	0002-src-common-CMakeLists.txt.patch
 Patch0003:	0003-src-common-bitstr.h.patch
 Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
@@ -164,7 +163,11 @@ BuildRequires:	gcc-c++
 %endif
 BuildRequires:	gdbm
 %if 0%{with tcmalloc}
-%if 0%{?fedora} || 0%{?rhel}
+# libprofiler did not build on ppc64le until 2.7.90
+%if 0%{?fedora} || 0%{?rhel} >= 8
+BuildRequires:	gperftools-devel >= 2.7.90
+%endif
+%if 0%{?rhel} && 0%{?rhel} < 8
 BuildRequires:	gperftools-devel >= 2.6.1
 %endif
 %if 0%{?suse_version}
@@ -307,6 +310,7 @@ BuildRequires:	lz4-devel >= 1.7
 # distro-conditional make check dependencies
 %if 0%{with make_check}
 %if 0%{?fedora} || 0%{?rhel}
+BuildRequires:	golang-github-prometheus
 BuildRequires:	libtool-ltdl-devel
 BuildRequires:	xmlsec1
 BuildRequires:	xmlsec1-devel
@@ -332,6 +336,7 @@ BuildRequires:	python%{python3_pkgversion}-pyOpenSSL
 %endif
 %endif
 %if 0%{?suse_version}
+BuildRequires:	golang-github-prometheus-prometheus
 BuildRequires:	libxmlsec1-1
 BuildRequires:	libxmlsec1-nss1
 BuildRequires:	libxmlsec1-openssl1
@@ -413,7 +418,7 @@ Requires:	python%{python3_pkgversion}-setuptools
 Requires:	util-linux
 Requires:	xfsprogs
 Requires:	which
-%if 0%{?fedora} || 0%{?rhel}
+%if 0%{?rhel} && 0%{?rhel} < 8
 # The following is necessary due to tracker 36508 and can be removed once the
 # associated upstream bugs are resolved.
 %if 0%{with tcmalloc}
@@ -710,6 +715,7 @@ Summary:	Ceph daemon for immutable object cache
 %if 0%{?suse_version}
 Group:		System/Filesystems
 %endif
+Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
 Requires:	librados2 = %{_epoch_prefix}%{version}-%{release}
 %description immutable-object-cache
 Daemon for immutable object cache.
@@ -737,6 +743,9 @@ Requires:	librados2 = %{_epoch_prefix}%{version}-%{release}
 Requires:	librgw2 = %{_epoch_prefix}%{version}-%{release}
 %if 0%{?rhel} || 0%{?fedora}
 Requires:	mailcap
+%endif
+%if 0%{?weak_deps}
+Recommends:	gawk
 %endif
 %description radosgw
 RADOS is a distributed object store used by the Ceph distributed
@@ -1967,6 +1976,8 @@ fi
 %{_bindir}/radosgw-token
 %{_bindir}/radosgw-es
 %{_bindir}/radosgw-object-expirer
+%{_bindir}/rgw-gap-list
+%{_bindir}/rgw-gap-list-comparator
 %{_bindir}/rgw-orphan-list
 %{_libdir}/libradosgw.so*
 %{_mandir}/man8/radosgw.8*
@@ -2392,6 +2403,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed May 26 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.13-1
+- ceph 15.2.13 GA
+
 * Thu May 13 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.12-1
 - ceph 15.2.12 GA
 
