@@ -126,7 +126,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.4
-Release:	3%{?dist}
+Release:	4%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2500,6 +2500,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Jun 04 2021 Python Maint <python-maint@redhat.com> - 2:16.2.4-4
+- Rebuilt for Python 3.10
+
 * Wed May 26 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.4-3
 - 16.2.4, bz 1964858, snappy::uint32
 
