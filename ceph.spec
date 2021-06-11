@@ -126,7 +126,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.4
-Release:	4%{?dist}
+Release:	5%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -504,6 +504,7 @@ Requires:	libradosstriper1 = %{_epoch_prefix}%{version}-%{release}
 %if 0%{?suse_version}
 Requires(pre):	pwdutils
 %endif
+Requires:	systemd-udev
 %description -n ceph-common
 Common utilities to mount and interact with a ceph storage cluster.
 Comprised of files that are common to Ceph clients and servers.
@@ -1642,7 +1643,6 @@ exit 0
 %config %{_sysconfdir}/bash_completion.d/radosgw-admin
 %config(noreplace) %{_sysconfdir}/ceph/rbdmap
 %{_unitdir}/rbdmap.service
-%dir %{_udevrulesdir}
 %{_udevrulesdir}/50-rbd.rules
 %attr(3770,ceph,ceph) %dir %{_localstatedir}/log/ceph/
 %attr(750,ceph,ceph) %dir %{_localstatedir}/lib/ceph/
@@ -2500,6 +2500,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Jun 11 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.4-5
+- https://src.fedoraproject.org/rpms/ceph/pull-request/3#
+
 * Fri Jun 04 2021 Python Maint <python-maint@redhat.com> - 2:16.2.4-4
 - Rebuilt for Python 3.10
 
