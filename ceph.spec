@@ -126,7 +126,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.4
-Release:	5%{?dist}
+Release:	6%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2500,6 +2500,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Mon Jul 05 2021 Richard Shaw <hobbes1069@gmail.com> - 2:16.2.4-6
+- Rebuild for new fmt version.
+
 * Fri Jun 11 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.4-5
 - https://src.fedoraproject.org/rpms/ceph/pull-request/3#
 
