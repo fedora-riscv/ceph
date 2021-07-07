@@ -153,6 +153,7 @@ Patch0009:	0009-librgw-notifications-initialize-kafka-and-amqp.patch
 Patch0010:	0010-os-bluestore-strip-trailing-slash-for-directory-list.patch
 Patch0011:	0011-src-test-rgw-amqp_mock.cc.patch
 Patch0012:	0012-src-compressor-snappy-SnappyCompressor.h.patch
+Patch0013:	0013-src-common-Formatter.cc.patch
 # Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
@@ -1299,7 +1300,7 @@ mkdir build
 cd build
 %{cmake} .. \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-    -DCMAKE_COLOR_MAKEFILE=OFF \
+    -DCMAKE_COLOR_MAKEFILE:BOOL=OFF \
     -DBUILD_CONFIG=rpmbuild \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
@@ -1387,6 +1388,7 @@ cat ./CMakeFiles/CMakeError.log
 
 export VERBOSE=1
 export V=1
+export GCC_COLORS=
 %cmake_build "$CEPH_MFLAGS_JOBS"
 
 
