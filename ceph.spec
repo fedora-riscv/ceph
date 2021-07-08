@@ -125,8 +125,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	16.2.4
-Release:	6%{?dist}
+Version:	16.2.5
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -150,7 +150,6 @@ Patch0006:	0006-src-blk-CMakeLists.txt.patch
 Patch0007:	0007-src-test-neorados-CMakeLists.txt.patch
 Patch0008:	0008-cmake-modules-Finduring.cmake.patch
 Patch0009:	0009-librgw-notifications-initialize-kafka-and-amqp.patch
-Patch0010:	0010-os-bluestore-strip-trailing-slash-for-directory-list.patch
 Patch0011:	0011-src-test-rgw-amqp_mock.cc.patch
 Patch0012:	0012-src-compressor-snappy-SnappyCompressor.h.patch
 Patch0013:	0013-src-common-Formatter.cc.patch
@@ -1809,6 +1808,7 @@ fi
 %{_datadir}/ceph/mgr/localpool
 %{_datadir}/ceph/mgr/mds_autoscaler
 %{_datadir}/ceph/mgr/mirroring
+%{_datadir}/ceph/mgr/nfs
 %{_datadir}/ceph/mgr/orchestrator
 %{_datadir}/ceph/mgr/osd_perf_query
 %{_datadir}/ceph/mgr/osd_support
@@ -2502,6 +2502,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Thu Jul 8 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.5-1
+- 16.2.5 GA
+
 * Mon Jul 05 2021 Richard Shaw <hobbes1069@gmail.com> - 2:16.2.4-6
 - Rebuild for new fmt version.
 
