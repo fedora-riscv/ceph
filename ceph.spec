@@ -126,7 +126,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2502,6 +2502,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Thu Jul 8 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.5-2
+- Rebuild for new fmt version.
+
 * Thu Jul 8 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.5-1
 - 16.2.5 GA
 
