@@ -126,7 +126,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.5
-Release:	3%{?dist}
+Release:	4%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -153,6 +153,7 @@ Patch0009:	0009-librgw-notifications-initialize-kafka-and-amqp.patch
 Patch0011:	0011-src-test-rgw-amqp_mock.cc.patch
 Patch0012:	0012-src-compressor-snappy-SnappyCompressor.h.patch
 Patch0013:	0013-src-common-Formatter.cc.patch
+Patch0014:	0014-src-kv-LevelDBStore.cc.patch
 # Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
@@ -2031,9 +2032,8 @@ fi
 %endif
 
 %postun immutable-object-cache
-test -n "$FIRST_ARG" || FIRST_ARG=$1
 %systemd_postun ceph-immutable-object-cache@\*.service ceph-immutable-object-cache.target
-if [ $FIRST_ARG -ge 1 ] ; then
+if [ $1 -ge 1 ] ; then
   # Restart on upgrade, but only if "CEPH_AUTO_RESTART_ON_UPGRADE" is set to
   # "yes". In any case: if units are not running, do not touch them.
   SYSCONF_CEPH=%{_sysconfdir}/sysconfig/ceph
@@ -2502,6 +2502,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Tue Aug 3 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.5-4
+- Rebuild for leveldb-1.23
+
 * Wed Jul 21 2021 Fedora Release Engineering <releng@fedoraproject.org> - 2:16.2.5-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
 
