@@ -126,7 +126,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.5
-Release:	4%{?dist}
+Release:	5%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -153,7 +153,6 @@ Patch0009:	0009-librgw-notifications-initialize-kafka-and-amqp.patch
 Patch0011:	0011-src-test-rgw-amqp_mock.cc.patch
 Patch0012:	0012-src-compressor-snappy-SnappyCompressor.h.patch
 Patch0013:	0013-src-common-Formatter.cc.patch
-Patch0014:	0014-src-kv-LevelDBStore.cc.patch
 # Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
@@ -2502,6 +2501,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Thu Aug 5 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.5-5
+- Rebuild for leveldb-1.23-3 w/ reverted -fno-rtti
+
 * Tue Aug 3 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.5-4
 - Rebuild for leveldb-1.23
 
