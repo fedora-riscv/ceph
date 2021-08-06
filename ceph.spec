@@ -126,7 +126,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.5
-Release:	5%{?dist}
+Release:	6%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2501,6 +2501,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Aug 06 2021 Jonathan Wakely <jwakely@redhat.com> - 2:16.2.5-6
+- Rebuilt for Boost 1.76
+
 * Thu Aug 5 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.5-5
 - Rebuild for leveldb-1.23-3 w/ reverted -fno-rtti
 
