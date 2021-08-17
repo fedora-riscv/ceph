@@ -126,7 +126,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.5
-Release:	7%{?dist}
+Release:	8%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -186,7 +186,6 @@ BuildRequires:	gcc-toolset-9-gcc-c++ >= 9.2.1-2.3
 %else
 BuildRequires:	gcc-c++
 %endif
-BuildRequires:	gdbm
 %if 0%{with tcmalloc}
 # libprofiler did not build on ppc64le until 2.7.90
 %if 0%{?fedora} || 0%{?rhel} >= 8
@@ -216,7 +215,8 @@ BuildRequires:	libnl3-devel
 BuildRequires:	liboath-devel
 BuildRequires:	libtool
 BuildRequires:	libxml2-devel
-BuildRequires:	make
+BuildRequires:	libzstd-devel
+BuildRequires:	ninja-build
 BuildRequires:	ncurses-devel
 BuildRequires:	libicu-devel
 BuildRequires:	parted
@@ -1299,6 +1299,7 @@ env | sort
 mkdir build
 cd build
 %{cmake} .. \
+    -GNinja \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DCMAKE_COLOR_MAKEFILE:BOOL=OFF \
     -DBUILD_CONFIG=rpmbuild \
@@ -1335,10 +1336,10 @@ cd build
     -DWITH_OCF=ON \
 %endif
 %if 0%{?fedora}
-    -DWITH_SYSTEM_ROCKSDB=ON \
+    -DWITH_SYSTEM_ROCKSDB:BOOL=ON \
 %endif
-    -DWITH_SYSTEM_LIBURING=ON \
-    -DWITH_SYSTEM_BOOST=ON \
+    -DWITH_SYSTEM_LIBURING:BOOL=ON \
+    -DWITH_SYSTEM_BOOST:BOOL=ON \
 %if 0%{with cephfs_shell}
     -DWITH_CEPHFS_SHELL=ON \
 %endif
@@ -1374,12 +1375,13 @@ cd build
 %endif
     -DBOOST_J=$CEPH_SMP_NCPUS \
 %if 0%{with ceph_test_package}
-    -DWITH_SYSTEM_GTEST=ON \
+    -DWITH_SYSTEM_GTEST:BOOL=ON \
 %endif
 %if 0%{?_system_pmdk}
     -DWITH_SYSTEM_PMDK:BOOL=ON \
 %endif
-    -DWITH_GRAFANA=ON
+    -DWITH_SYSTEM_ZSTD:BOOL=ON \
+    -DWITH_GRAFANA:BOOL=ON
 
 %if %{with cmake_verbose_logging}
 cat ./CMakeFiles/CMakeOutput.log
@@ -1389,7 +1391,7 @@ cat ./CMakeFiles/CMakeError.log
 export VERBOSE=1
 export V=1
 export GCC_COLORS=
-%cmake_build "$CEPH_MFLAGS_JOBS"
+%cmake_build
 
 
 %if 0%{with make_check}
@@ -2502,6 +2504,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Tue Aug 17 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.5-8
+- build with ninja, -DWITH_SYSTEM_ZSTD, without gdbm
+
 * Sun Aug 8 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.5-7
 - Rebuild for Boost 1.76 again
 
