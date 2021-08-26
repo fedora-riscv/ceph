@@ -126,7 +126,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.5
-Release:	8%{?dist}
+Release:	9%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2504,6 +2504,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Thu Aug 26 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.5-9
+- Rebuilt for rocksdb 6.22
+
 * Tue Aug 17 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.5-8
 - build with ninja, -DWITH_SYSTEM_ZSTD, without gdbm
 
