@@ -126,7 +126,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.5
-Release:	10%{?dist}
+Release:	11%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2505,6 +2505,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Tue Sep 14 2021 Sahana Prasad <sahana@redhat.com> - 2:16.2.5-11
+- Rebuilt with OpenSSL 3.0.0
+
 * Mon Sep 6 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.5-10
 - Rebuilt for gtest 1.11.0
 
