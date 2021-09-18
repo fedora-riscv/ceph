@@ -52,6 +52,8 @@
 %bcond_without lttng
 %bcond_without libradosstriper
 %bcond_without ocf
+%global luarocks_package_name luarocks
+%bcond_without lua_packages
 %global _remote_tarball_prefix https://download.ceph.com/tarballs/
 %endif
 %if 0%{?suse_version}
@@ -76,6 +78,21 @@
 %if ! %{defined _fillupdir}
 %global _fillupdir /var/adm/fillup-templates
 %endif
+#luarocks
+%if 0%{?is_opensuse}
+# openSUSE
+%bcond_without lua_packages
+%if 0%{?sle_version}
+# openSUSE Leap
+%global luarocks_package_name lua53-luarocks
+%else
+# openSUSE Tumbleweed
+%global luarocks_package_name lua54-luarocks
+%endif
+%else
+# SLE
+%bcond_with lua_packages
+%endif
 %endif
 %bcond_with seastar
 %bcond_with jaeger
@@ -99,19 +116,6 @@
 %endif
 %endif
 
-%if 0%{?suse_version}
-%if !0%{?is_opensuse}
-# SLE does not support luarocks
-%bcond_with lua_packages
-%else
-%global luarocks_package_name lua53-luarocks
-%bcond_without lua_packages
-%endif
-%else
-%global luarocks_package_name luarocks
-%bcond_without lua_packages
-%endif
-
 %{!?_udevrulesdir: %global _udevrulesdir /lib/udev/rules.d}
 %{!?tmpfiles_create: %global tmpfiles_create systemd-tmpfiles --create}
 %{!?python3_pkgversion: %global python3_pkgversion 3}
@@ -125,7 +129,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	16.2.5
+Version:	16.2.6
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
@@ -144,14 +148,11 @@ Group:		System/Filesystems
 URL:		http://ceph.com/
 Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.gz
 Patch0001:	0001-src-common-crc32c_intel_fast.patch
-Patch0002:	0002-src-common-CMakeLists.txt.patch
 Patch0003:	0003-src-common-bitstr.h.patch
-Patch0006:	0006-src-blk-CMakeLists.txt.patch
 Patch0007:	0007-src-test-neorados-CMakeLists.txt.patch
 Patch0008:	0008-cmake-modules-Finduring.cmake.patch
-Patch0009:	0009-librgw-notifications-initialize-kafka-and-amqp.patch
-Patch0011:	0011-src-test-rgw-amqp_mock.cc.patch
-Patch0013:	0013-src-common-Formatter.cc.patch
+Patch0014:	0014-rgw-Replace-boost-string_ref-view-with-std-string_vi.patch
+Patch0015:	0015-src-kv-rocksdb_cache.patch
 # Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
@@ -184,7 +185,6 @@ BuildRequires:	gcc-toolset-9-gcc-c++ >= 9.2.1-2.3
 %else
 BuildRequires:	gcc-c++
 %endif
-BuildRequires:	gdbm
 %if 0%{with tcmalloc}
 # libprofiler did not build on ppc64le until 2.7.90
 %if 0%{?fedora} || 0%{?rhel} >= 8
@@ -214,7 +214,8 @@ BuildRequires:	libnl3-devel
 BuildRequires:	liboath-devel
 BuildRequires:	libtool
 BuildRequires:	libxml2-devel
-BuildRequires:	make
+BuildRequires:	libzstd-devel
+BuildRequires:	ninja-build
 BuildRequires:	ncurses-devel
 BuildRequires:	libicu-devel
 BuildRequires:	parted
@@ -338,7 +339,6 @@ BuildRequires:	openldap-devel
 #BuildRequires:	krb5-devel
 BuildRequires:	openssl-devel
 BuildRequires:	CUnit-devel
-BuildRequires:	redhat-lsb-core
 BuildRequires:	python%{python3_pkgversion}-devel
 BuildRequires:	python%{python3_pkgversion}-setuptools
 BuildRequires:	python%{python3_pkgversion}-Cython
@@ -350,6 +350,7 @@ BuildRequires:	lz4-devel >= 1.7
 %if 0%{with make_check}
 %if 0%{?fedora} || 0%{?rhel}
 BuildRequires:	golang-github-prometheus
+BuildRequires:	jsonnet
 BuildRequires:	libtool-ltdl-devel
 BuildRequires:	xmlsec1
 BuildRequires:	xmlsec1-devel
@@ -367,6 +368,7 @@ BuildRequires:	python%{python3_pkgversion}-pyOpenSSL
 %endif
 %if 0%{?suse_version}
 BuildRequires:	golang-github-prometheus-prometheus
+BuildRequires:	jsonnet
 BuildRequires:	libxmlsec1-1
 BuildRequires:	libxmlsec1-nss1
 BuildRequires:	libxmlsec1-openssl1
@@ -1297,6 +1299,7 @@ env | sort
 mkdir build
 cd build
 %{cmake} .. \
+    -GNinja \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DCMAKE_COLOR_MAKEFILE:BOOL=OFF \
     -DBUILD_CONFIG=rpmbuild \
@@ -1333,10 +1336,10 @@ cd build
     -DWITH_OCF=ON \
 %endif
 %if 0%{?fedora}
-    -DWITH_SYSTEM_ROCKSDB=ON \
+    -DWITH_SYSTEM_ROCKSDB:BOOL=ON \
 %endif
-    -DWITH_SYSTEM_LIBURING=ON \
-    -DWITH_SYSTEM_BOOST=ON \
+    -DWITH_SYSTEM_LIBURING:BOOL=ON \
+    -DWITH_SYSTEM_BOOST:BOOL=ON \
 %if 0%{with cephfs_shell}
     -DWITH_CEPHFS_SHELL=ON \
 %endif
@@ -1372,12 +1375,16 @@ cd build
 %endif
     -DBOOST_J=$CEPH_SMP_NCPUS \
 %if 0%{with ceph_test_package}
-    -DWITH_SYSTEM_GTEST=ON \
+    -DWITH_SYSTEM_GTEST:BOOL=ON \
 %endif
 %if 0%{?_system_pmdk}
     -DWITH_SYSTEM_PMDK:BOOL=ON \
 %endif
-    -DWITH_GRAFANA=ON
+    -DWITH_SYSTEM_ZSTD:BOOL=ON \
+%if 0%{?rhel}
+    -DWITH_FMT_HEADER_ONLY:BOOL=ON \
+%endif
+    -DWITH_GRAFANA:BOOL=ON
 
 %if %{with cmake_verbose_logging}
 cat ./CMakeFiles/CMakeOutput.log
@@ -1387,7 +1394,7 @@ cat ./CMakeFiles/CMakeError.log
 export VERBOSE=1
 export V=1
 export GCC_COLORS=
-%cmake_build "$CEPH_MFLAGS_JOBS"
+%cmake_build
 
 
 %if 0%{with make_check}
@@ -2030,9 +2037,8 @@ fi
 %endif
 
 %postun immutable-object-cache
-test -n "$FIRST_ARG" || FIRST_ARG=$1
 %systemd_postun ceph-immutable-object-cache@\*.service ceph-immutable-object-cache.target
-if [ $FIRST_ARG -ge 1 ] ; then
+if [ $1 -ge 1 ] ; then
   # Restart on upgrade, but only if "CEPH_AUTO_RESTART_ON_UPGRADE" is set to
   # "yes". In any case: if units are not running, do not touch them.
   SYSCONF_CEPH=%{_sysconfdir}/sysconfig/ceph
@@ -2501,6 +2507,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Sep 17 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.6-1
+- 16.2.6 GA
+
 * Thu Jul 8 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.5-1
 - 16.2.5 GA
 
