@@ -130,7 +130,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.6
-Release:	2%{?dist}
+Release:	3%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2507,6 +2507,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Tue Nov 02 2021 Mamoru TASAKA <mtasaka@fedoraproject.org> - 2:16.2.6-3
+- rebuild against new liblttng-ust
+
 * Tue Oct 19 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.6-2
 - 16.2.6, rebuild with rocksdb 6.25
 
