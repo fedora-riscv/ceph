@@ -151,7 +151,6 @@ Patch0007:	0007-src-test-neorados-CMakeLists.txt.patch
 Patch0008:	0008-cmake-modules-Finduring.cmake.patch
 Patch0014:	0014-rgw-Replace-boost-string_ref-view-with-std-string_vi.patch
 Patch0015:	0015-src-kv-rocksdb_cache.patch
-Patch0016:	0016-src-tracing-patch
 # Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
@@ -2518,9 +2517,6 @@ exit 0
 %changelog
 * Tue Dec 7 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-1
 - 16.2.7 GA
-
-* Tue Sep 28 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.6-2
-- Rebuilt for rocksdb-6.22, again; forgot an override was needed
 
 * Fri Sep 17 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.6-1
 - 16.2.6 GA
