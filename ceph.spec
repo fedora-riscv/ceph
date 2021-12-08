@@ -31,12 +31,12 @@
 %else
 %bcond_without tcmalloc
 %endif
+%bcond_with system_pmdk
 %if 0%{?fedora} || 0%{?rhel}
 %bcond_without selinux
 %ifarch x86_64 ppc64le
 %bcond_without rbd_rwl_cache
 %bcond_without rbd_ssd_cache
-%global _system_pmdk 1
 %else
 %bcond_with rbd_rwl_cache
 %bcond_with rbd_ssd_cache
@@ -63,12 +63,10 @@
 %bcond_with libradosstriper
 %ifarch x86_64 aarch64 ppc64le
 %bcond_without lttng
-%global _system_pmdk 1
 %bcond_without rbd_rwl_cache
 %bcond_without rbd_ssd_cache
 %else
 %bcond_with lttng
-%global _system_pmdk 0
 %bcond_with rbd_rwl_cache
 %bcond_with rbd_ssd_cache
 %endif
@@ -129,8 +127,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	16.2.6
-Release:	2%{?dist}
+Version:	16.2.7
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -153,6 +151,7 @@ Patch0007:	0007-src-test-neorados-CMakeLists.txt.patch
 Patch0008:	0008-cmake-modules-Finduring.cmake.patch
 Patch0014:	0014-rgw-Replace-boost-string_ref-view-with-std-string_vi.patch
 Patch0015:	0015-src-kv-rocksdb_cache.patch
+Patch0016:	0016-src-tracing-patch
 # Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
@@ -273,7 +272,7 @@ BuildRequires:	nlohmann_json-devel
 BuildRequires:	libevent-devel
 BuildRequires:	yaml-cpp-devel
 %endif
-%if 0%{?_system_pmdk}
+%if 0%{with system_pmdk}
 BuildRequires:	libpmem-devel
 BuildRequires:	libpmemobj-devel
 %endif
@@ -459,6 +458,12 @@ Requires:	gperftools-libs >= 2.6.1
 %endif
 %if 0%{?weak_deps}
 Recommends:	chrony
+Recommends:	nvme-cli
+%if 0%{?suse_version}
+Requires:	smartmontools
+%else
+Recommends:	smartmontools
+%endif
 %endif
 %description base
 Base is the package that includes all the files shared amongst ceph servers
@@ -528,14 +533,6 @@ Group:		System/Filesystems
 %endif
 Provides:	ceph-test:/usr/bin/ceph-monstore-tool
 Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
-%if 0%{?weak_deps}
-Recommends:	nvme-cli
-%if 0%{?suse_version}
-Requires:	smartmontools
-%else
-Recommends:	smartmontools
-%endif
-%endif
 %if 0%{with jaeger}
 Requires:	libjaeger = %{_epoch_prefix}%{version}-%{release}
 %endif
@@ -806,14 +803,6 @@ Requires:	lvm2
 Requires:	sudo
 Requires:	libstoragemgmt
 Requires:	python%{python3_pkgversion}-ceph-common = %{_epoch_prefix}%{version}-%{release}
-%if 0%{?weak_deps}
-Recommends:	nvme-cli
-%if 0%{?suse_version}
-Requires:	smartmontools
-%else
-Recommends:	smartmontools
-%endif
-%endif
 %description osd
 ceph-osd is the object storage daemon for the Ceph distributed file
 system.  It is responsible for storing objects on a local file system
@@ -1377,7 +1366,7 @@ cd build
 %if 0%{with ceph_test_package}
     -DWITH_SYSTEM_GTEST:BOOL=ON \
 %endif
-%if 0%{?_system_pmdk}
+%if 0%{with system_pmdk}
     -DWITH_SYSTEM_PMDK:BOOL=ON \
 %endif
     -DWITH_SYSTEM_ZSTD:BOOL=ON \
@@ -1450,7 +1439,7 @@ ln -sf %{_sbindir}/mount.ceph %{buildroot}/sbin/mount.ceph
 install -m 0644 -D udev/50-rbd.rules %{buildroot}%{_udevrulesdir}/50-rbd.rules
 
 # sudoers.d
-install -m 0440 -D sudoers.d/ceph-osd-smartctl %{buildroot}%{_sysconfdir}/sudoers.d/ceph-osd-smartctl
+install -m 0440 -D sudoers.d/ceph-smartctl %{buildroot}%{_sysconfdir}/sudoers.d/ceph-smartctl
 
 %if 0%{?rhel} >= 8
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{buildroot}%{_bindir}/*
@@ -1548,6 +1537,7 @@ install -m 644 -D monitoring/prometheus/alerts/ceph_default_alerts.yml %{buildro
 %attr(750,ceph,ceph) %dir %{_localstatedir}/lib/ceph/bootstrap-mgr
 %attr(750,ceph,ceph) %dir %{_localstatedir}/lib/ceph/bootstrap-rbd
 %attr(750,ceph,ceph) %dir %{_localstatedir}/lib/ceph/bootstrap-rbd-mirror
+%{_sysconfdir}/sudoers.d/ceph-smartctl
 
 %post base
 /sbin/ldconfig
@@ -2128,7 +2118,6 @@ fi
 %{_unitdir}/ceph-volume@.service
 %attr(750,ceph,ceph) %dir %{_localstatedir}/lib/ceph/osd
 %config(noreplace) %{_sysctldir}/90-ceph-osd.conf
-%{_sysconfdir}/sudoers.d/ceph-osd-smartctl
 
 %post osd
 %if 0%{?suse_version}
@@ -2429,13 +2418,21 @@ if diff ${FILE_CONTEXT} ${FILE_CONTEXT}.pre > /dev/null 2>&1; then
    exit 0
 fi
 
+# Stop ceph.target while relabeling if CEPH_AUTO_RESTART_ON_UPGRADE=yes
+SYSCONF_CEPH=%{_sysconfdir}/sysconfig/ceph
+if [ -f $SYSCONF_CEPH -a -r $SYSCONF_CEPH ] ; then
+    source $SYSCONF_CEPH
+fi
+
 # Check whether the daemons are running
 /usr/bin/systemctl status ceph.target > /dev/null 2>&1
 STATUS=$?
 
 # Stop the daemons if they were running
 if test $STATUS -eq 0; then
-    /usr/bin/systemctl stop ceph.target > /dev/null 2>&1
+    if [ "X$CEPH_AUTO_RESTART_ON_UPGRADE" = "Xyes" ] ; then
+        /usr/bin/systemctl stop ceph.target > /dev/null 2>&1
+    fi
 fi
 
 # Relabel the files fix for first package install
@@ -2447,7 +2444,9 @@ rm -f ${FILE_CONTEXT}.pre
 
 # Start the daemons iff they were running before
 if test $STATUS -eq 0; then
-    /usr/bin/systemctl start ceph.target > /dev/null 2>&1 || :
+    if [ "X$CEPH_AUTO_RESTART_ON_UPGRADE" = "Xyes" ] ; then
+        /usr/bin/systemctl start ceph.target > /dev/null 2>&1 || :
+    fi
 fi
 exit 0
 
@@ -2467,13 +2466,21 @@ if [ $1 -eq 0 ]; then
         exit 0
     fi
 
+    # Stop ceph.target while relabeling if CEPH_AUTO_RESTART_ON_UPGRADE=yes
+    SYSCONF_CEPH=%{_sysconfdir}/sysconfig/ceph
+    if [ -f $SYSCONF_CEPH -a -r $SYSCONF_CEPH ] ; then
+        source $SYSCONF_CEPH
+    fi
+
     # Check whether the daemons are running
     /usr/bin/systemctl status ceph.target > /dev/null 2>&1
     STATUS=$?
 
     # Stop the daemons if they were running
     if test $STATUS -eq 0; then
-        /usr/bin/systemctl stop ceph.target > /dev/null 2>&1
+        if [ "X$CEPH_AUTO_RESTART_ON_UPGRADE" = "Xyes" ] ; then
+            /usr/bin/systemctl stop ceph.target > /dev/null 2>&1
+        fi
     fi
 
     /usr/sbin/fixfiles -C ${FILE_CONTEXT}.pre restore 2> /dev/null
@@ -2483,7 +2490,9 @@ if [ $1 -eq 0 ]; then
 
     # Start the daemons if they were running before
     if test $STATUS -eq 0; then
-	/usr/bin/systemctl start ceph.target > /dev/null 2>&1 || :
+        if [ "X$CEPH_AUTO_RESTART_ON_UPGRADE" = "Xyes" ] ; then
+           /usr/bin/systemctl start ceph.target > /dev/null 2>&1 || :
+        fi
     fi
 fi
 exit 0
@@ -2507,6 +2516,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Tue Dec 7 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-1
+- 16.2.7 GA
+
 * Tue Sep 28 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.6-2
 - Rebuilt for rocksdb-6.22, again; forgot an override was needed
 
