@@ -151,6 +151,7 @@ Patch0007:	0007-src-test-neorados-CMakeLists.txt.patch
 Patch0008:	0008-cmake-modules-Finduring.cmake.patch
 Patch0014:	0014-rgw-Replace-boost-string_ref-view-with-std-string_vi.patch
 Patch0015:	0015-src-kv-rocksdb_cache.patch
+Patch0016:	0016-src-tracing-patch
 # Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
