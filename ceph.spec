@@ -128,7 +128,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.7
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -139,7 +139,7 @@ Epoch:		2
 
 Summary:	User space components of the Ceph file system
 #License:	LGPL-2.1 and LGPL-3.0 and CC-BY-SA-3.0 and GPL-2.0 and BSL-1.0 and BSD-3-Clause and MIT
-License:	(LGPLv2.1 or LGPLv3) and CC-BY-SA-3.0 and GPLv2 and Boost-1.0 and BSD and MIT
+License:	(LGPLv2+ or LGPLv3) and CC-BY-SA-3.0 and GPLv2 and Boost-1.0 and BSD and MIT
 %if 0%{?suse_version}
 Group:		System/Filesystems
 %endif
@@ -2516,6 +2516,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed Dec 29 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-2
+- 16.2.7, LGPLv2.1 -> LGPLv2+, rhbz#2036035
+
 * Tue Dec 7 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-1
 - 16.2.7 GA
 
