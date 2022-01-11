@@ -128,7 +128,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.7
-Release:	2%{?dist}
+Release:	3%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2516,6 +2516,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Mon Jan 10 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-3
+- 16.2.7, rebuild with fmt-8.1.1
+
 * Wed Dec 29 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-2
 - 16.2.7, LGPLv2.1 -> LGPLv2+, rhbz#2036035
 
