@@ -128,7 +128,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.7
-Release:	3%{?dist}
+Release:	4%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2516,6 +2516,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed Jan 19 2022 Fedora Release Engineering <releng@fedoraproject.org> - 2:16.2.7-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
+
 * Mon Jan 10 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-3
 - 16.2.7, rebuild with fmt-8.1.1
 
