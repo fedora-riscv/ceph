@@ -128,7 +128,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.7
-Release:	3%{?dist}
+Release:	4%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -152,6 +152,7 @@ Patch0008:	0008-cmake-modules-Finduring.cmake.patch
 Patch0014:	0014-rgw-Replace-boost-string_ref-view-with-std-string_vi.patch
 Patch0015:	0015-src-kv-rocksdb_cache.patch
 Patch0016:	0016-src-tracing-patch
+Patch0017:	0017-gcc-12-omnibus.patch
 # Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
@@ -2516,6 +2517,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Thu Jan 20 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-4
+- 16.2.7, rebuild with gcc-12
+
 * Mon Jan 10 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-3
 - 16.2.7, rebuild with fmt-8.1.1
 
