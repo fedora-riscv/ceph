@@ -153,6 +153,7 @@ Patch0014:	0014-rgw-Replace-boost-string_ref-view-with-std-string_vi.patch
 Patch0015:	0015-src-kv-rocksdb_cache.patch
 Patch0016:	0016-src-tracing-patch
 Patch0017:	0017-gcc-12-omnibus.patch
+Patch0018:	0018-python-unsigned.patch
 # Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
@@ -1282,7 +1283,7 @@ if test -n "$CEPH_SMP_NCPUS" -a "$CEPH_SMP_NCPUS" -gt 1 ; then
     test "$CEPH_SMP_NCPUS" -le 0 && CEPH_SMP_NCPUS="1" && echo "Warning: Not using parallel build at all because of memory limits"
 fi
 export CEPH_SMP_NCPUS
-export CEPH_MFLAGS_JOBS="-j$CEPH_SMP_NCPUS"
+export CEPH_MFLAGS_JOBS="-j $CEPH_SMP_NCPUS"
 
 env | sort
 
@@ -1384,7 +1385,7 @@ cat ./CMakeFiles/CMakeError.log
 export VERBOSE=1
 export V=1
 export GCC_COLORS=
-%cmake_build
+%cmake_build "$CEPH_MFLAGS_JOBS"
 
 
 %if 0%{with make_check}
