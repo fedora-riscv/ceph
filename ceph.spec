@@ -156,7 +156,7 @@ Patch0017:	0017-gcc-12-omnibus.patch
 Patch0018:	0018-python-unsigned.patch
 # Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
-ExcludeArch:	i686 armv7hl
+ExcludeArch:	i686 armv7hl ppc64le
 %if 0%{?suse_version}
 # _insert_obs_source_lines_here
 ExclusiveArch:	x86_64 aarch64 ppc64le s390x
@@ -2519,7 +2519,7 @@ exit 0
 
 %changelog
 * Thu Jan 20 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-5
-- 16.2.7, rebuild with gcc-12
+- 16.2.7, rebuild with gcc-12, exclude ppc64le until fmt on ppc64le is fixed
 
 * Wed Jan 19 2022 Fedora Release Engineering <releng@fedoraproject.org> - 2:16.2.7-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
