@@ -34,6 +34,8 @@
 %bcond_with system_pmdk
 %if 0%{?fedora} || 0%{?rhel}
 %bcond_without selinux
+# ppc64le excluded pending resolution of
+# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=104172
 %ifarch x86_64 ppc64le
 %bcond_without rbd_rwl_cache
 %bcond_without rbd_ssd_cache
