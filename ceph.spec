@@ -130,7 +130,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.7
-Release:	5%{?dist}
+Release:	6%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -151,6 +151,9 @@ Patch0001:	0001-src-common-crc32c_intel_fast.patch
 Patch0003:	0003-src-common-bitstr.h.patch
 Patch0007:	0007-src-test-neorados-CMakeLists.txt.patch
 Patch0008:	0008-cmake-modules-Finduring.cmake.patch
+Patch0010:	0010-CET-Add-CET-marker-to-crc32c_intel_fast_zero_asm.s.patch
+Patch0011:	0011-isa-l-CET-Add-CET-marker-to-x86-64-crc32-assembly-co.patch
+Patch0012:	0012-spdk-isa-l-CET-Add-CET-marker-to-x86-64-crc32-assemb.patch
 Patch0014:	0014-rgw-Replace-boost-string_ref-view-with-std-string_vi.patch
 Patch0015:	0015-src-kv-rocksdb_cache.patch
 Patch0016:	0016-src-tracing-patch
@@ -2520,6 +2523,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Tue Jan 25 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-6
+- 16.2.7, more CET enablement, rhbz#2040091
+
 * Thu Jan 20 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-5
 - 16.2.7, rebuild with gcc-12, exclude ppc64le until fmt on ppc64le is fixed
 
