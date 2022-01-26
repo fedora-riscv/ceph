@@ -130,7 +130,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.7
-Release:	6%{?dist}
+Release:	7%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -161,7 +161,7 @@ Patch0017:	0017-gcc-12-omnibus.patch
 Patch0018:	0018-python-unsigned.patch
 # Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
-ExcludeArch:	i686 armv7hl ppc64le
+ExcludeArch:	i686 armv7hl
 %if 0%{?suse_version}
 # _insert_obs_source_lines_here
 ExclusiveArch:	x86_64 aarch64 ppc64le s390x
@@ -190,6 +190,9 @@ BuildRequires:	fuse3-devel
 BuildRequires:	gcc-toolset-9-gcc-c++ >= 9.2.1-2.3
 %else
 BuildRequires:	gcc-c++
+%endif
+%ifarch x86_64 aarch64
+BuildRequires:	mold
 %endif
 %if 0%{with tcmalloc}
 # libprofiler did not build on ppc64le until 2.7.90
@@ -2523,6 +2526,10 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Tue Jan 26 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-7
+- 16.2.7, build with modern linker (mold), x86_64 and aarch64
+- reenable ppc64le
+
 * Tue Jan 25 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-6
 - 16.2.7, more CET enablement, rhbz#2040091
 
