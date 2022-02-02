@@ -130,7 +130,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.7
-Release:	7%{?dist}
+Release:	9%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -158,7 +158,6 @@ Patch0014:	0014-rgw-Replace-boost-string_ref-view-with-std-string_vi.patch
 Patch0015:	0015-src-kv-rocksdb_cache.patch
 Patch0016:	0016-src-tracing-patch
 Patch0017:	0017-gcc-12-omnibus.patch
-Patch0018:	0018-python-unsigned.patch
 # Source1:	cmake-modules-BuildBoost.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
@@ -1383,6 +1382,9 @@ cd build
 %if 0%{?rhel}
     -DWITH_FMT_HEADER_ONLY:BOOL=ON \
 %endif
+%ifarch x86_64 aarch64
+    -DCMAKE_LINKER=%{_bindir}/ld.mold \
+%endif
     -DWITH_GRAFANA:BOOL=ON
 
 %if %{with cmake_verbose_logging}
@@ -2526,7 +2528,13 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
-* Tue Jan 26 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-7
+* Wed Feb 2 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-9
+- 16.2.7, python3.10 w/ __CHAR_UNSIGNED__ fix
+
+* Thu Jan 27 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-8
+- 16.2.7, w/ modern linker (mold), x86_64 and aarch64, this time for real
+
+* Wed Jan 26 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-7
 - 16.2.7, build with modern linker (mold), x86_64 and aarch64
 - reenable ppc64le
 
