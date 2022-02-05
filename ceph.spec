@@ -130,7 +130,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.7
-Release:	9%{?dist}
+Release:	10%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2528,6 +2528,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Sat Feb 05 2022 Jiri Vanek <jvanek@redhat.com> - 2:16.2.7-10
+- Rebuilt for java-17-openjdk as system jdk
+
 * Wed Feb 2 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-9
 - 16.2.7, python3.10 w/ __CHAR_UNSIGNED__ fix
 
