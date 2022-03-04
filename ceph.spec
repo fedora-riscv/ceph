@@ -39,7 +39,11 @@
 %global _system_pmdk 1
 %endif
 %if 0%{?fedora} || 0%{?rhel}
+%ifarch s390
+%bcond_with system_pmdk
+%else
 %bcond_without system_pmdk
+%endif
 %bcond_without selinux
 %if 0%{?rhel} >= 8
 %bcond_with cephfs_java
