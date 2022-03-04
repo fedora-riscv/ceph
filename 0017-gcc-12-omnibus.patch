@@ -70,11 +70,11 @@
    if (fs->mount() < 0) {
      cout << "mount failed" << std::endl;
      return -1;
---- ceph-16.2.7/src/s3select/include/s3select_functions.h.orig	2022-01-19 15:06:45.312783565 -0500
-+++ ceph-16.2.7/src/s3select/include/s3select_functions.h	2022-01-19 15:08:17.270087590 -0500
-@@ -142,7 +142,7 @@
+--- ceph-17.0.0-10335-gfd206722/src/s3select/include/s3select_functions.h.orig	2022-02-11 17:21:40.268627997 -0500
++++ ceph-17.0.0-10335-gfd206722/src/s3select/include/s3select_functions.h	2022-02-11 17:21:57.155325437 -0500
+@@ -466,7 +466,7 @@
  
-   virtual std::string  print(int ident)
+   std::string  print(int ident) override
    {
 -    return std::string(0);
 +    return std::string("");
