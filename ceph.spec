@@ -162,7 +162,7 @@ Epoch:		2
 
 Summary:	User space components of the Ceph file system
 #License:	LGPL-2.1 and LGPL-3.0 and CC-BY-SA-3.0 and GPL-2.0 and BSL-1.0 and BSD-3-Clause and MIT
-License:	(LGPLv2+ or LGPLv3) and CC-BY-SA-3.0 and GPLv2 and Boost-1.0 and BSD and MIT
+License:	(LGPLv2+ or LGPLv3) and CC-BY-SA-3.0 and GPLv2 and Boost and BSD and MIT
 %if 0%{?suse_version}
 Group:		System/Filesystems
 %endif
@@ -177,7 +177,8 @@ Patch0012:	0012-spdk-isa-l-CET-Add-CET-marker-to-x86-64-crc32-assemb.patch
 Patch0016:	0016-src-tracing-patch
 Patch0017:	0017-gcc-12-omnibus.patch
 Patch0018:	0018-src-rgw-store-dbstore-CMakeLists.txt.patch
-Source1:	cmake-modules-BuildBoost.cmake.noautopatch
+Patch0019:	0019-cmake-modules-CheckCxxAtomic.cmake.patch
+# Source1:	cmake-modules-CheckCxxAtomic.cmake.noautopatch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 %if 0%{?suse_version}
@@ -208,6 +209,7 @@ BuildRequires:	gcc-toolset-9-gcc-c++ >= 9.2.1-2.3
 %else
 BuildRequires:	gcc-c++
 %endif
+BuildRequires:	libatomic
 %ifarch x86_64 aarch64
 BuildRequires:	mold
 %endif
@@ -1253,9 +1255,9 @@ This package provides Ceph default alerts for Prometheus.
 #################################################################################
 %prep
 %autosetup -p1
-%ifarch x86_64
-patch -p1 < %{SOURCE1}
-%endif
+#%%ifarch x86_64
+#patch -p1 < %{SOURCE1}
+#%endif
 
 %build
 # Disable lto on systems that do not support symver attribute
@@ -1295,21 +1297,13 @@ env | sort
 %{?!_vpath_builddir:%global _vpath_builddir %{_target_platform}}
 
 # TODO: drop this step once we can use `cmake -B`
-mkdir -p %{_vpath_builddir}
 %{cmake} \
     -GNinja \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DCMAKE_COLOR_MAKEFILE:BOOL=OFF \
     -DBUILD_CONFIG=rpmbuild \
-    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-    -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
-    -DCMAKE_INSTALL_LIBEXECDIR:PATH=%{_libexecdir} \
-    -DCMAKE_INSTALL_LOCALSTATEDIR:PATH=%{_localstatedir} \
-    -DCMAKE_INSTALL_SYSCONFDIR:PATH=%{_sysconfdir} \
-    -DCMAKE_INSTALL_MANDIR:PATH=%{_mandir} \
-    -DCMAKE_INSTALL_DOCDIR:PATH=%{_docdir}/ceph \
-    -DCMAKE_INSTALL_INCLUDEDIR:PATH=%{_includedir} \
     -DSYSTEMD_SYSTEM_UNIT_DIR:PATH=%{_unitdir} \
+    -DCMAKE_INSTALL_SYSCONFDIR:PATH=%{_sysconfdir} \
     -DWITH_MANPAGE:BOOL=ON \
     -DWITH_PYTHON3:STRING=%{python3_version} \
     -DWITH_MGR_DASHBOARD_FRONTEND:BOOL=OFF \
@@ -1395,8 +1389,8 @@ mkdir -p %{_vpath_builddir}
     -DWITH_GRAFANA:BOOL=ON
 
 %if %{with cmake_verbose_logging}
-cat ./CMakeFiles/CMakeOutput.log
-cat ./CMakeFiles/CMakeError.log
+cat ./%{__cmake_builddir}/CMakeFiles/CMakeOutput.log
+cat ./%{__cmake_builddir}/CMakeFiles/CMakeError.log
 %endif
 
 export VERBOSE=1
