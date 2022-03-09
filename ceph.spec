@@ -1406,7 +1406,6 @@ export GCC_COLORS=
 
 
 %install
-pushd build
 %cmake_install
 # we have dropped sysvinit bits
 rm -f %{buildroot}/%{_sysconfdir}/init.d/ceph
