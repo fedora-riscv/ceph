@@ -151,7 +151,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.1.0
-Release:	0.1.rc1%{?dist}
+Release:	0.2.rc1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2549,6 +2549,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Mar 11 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.1.0-0.2.rc1
+- 17.1.0 RC1, #rhbz 2063071
+
 * Mon Feb 28 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.1.0-0.1.rc1
 - 17.1.0 RC1
 
