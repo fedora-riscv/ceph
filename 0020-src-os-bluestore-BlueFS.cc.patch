@@ -1,0 +1,438 @@
+diff --git a/src/common/options/global.yaml.in b/src/common/options/global.yaml.in
+index 7a4e581fbec..3a277418f73 100644
+--- a/src/common/options/global.yaml.in
++++ b/src/common/options/global.yaml.in
+@@ -3260,6 +3260,13 @@ options:
+     slow shutdown is primarilyy useful for doing memory leak checking with valgrind.
+   default: true
+   with_legacy: true
++- name: osd_fast_shutdown_timeout
++  type: int
++  level: advanced
++  desc: timeout in seconds for osd fast-shutdown (0 is unlimited)
++  default: 15
++  with_legacy: true
++  min: 0
+ - name: osd_fast_shutdown_notify_mon
+   type: bool
+   level: advanced
+@@ -4931,6 +4938,12 @@ options:
+     This setting is used only when OSD is doing ``--mkfs``.
+     Next runs of OSD retrieve sharding from disk.
+   default: m(3) p(3,0-12) O(3,0-13)=block_cache={type=binned_lru} L P
++- name: bluestore_qfsck_on_mount
++  type: bool
++  level: dev
++  desc: Run quick-fsck at mount comparing allocation-file to RocksDB allocation state
++  default: true
++  with_legacy: true
+ - name: bluestore_fsck_on_mount
+   type: bool
+   level: dev
+diff --git a/src/os/ObjectStore.h b/src/os/ObjectStore.h
+index d934d092919..44d67c26e88 100644
+--- a/src/os/ObjectStore.h
++++ b/src/os/ObjectStore.h
+@@ -288,7 +288,8 @@ public:
+   virtual bool needs_journal() = 0;  //< requires a journal
+   virtual bool wants_journal() = 0;  //< prefers a journal
+   virtual bool allows_journal() = 0; //< allows a journal
+-
++  virtual void prepare_for_fast_shutdown() {}
++  virtual bool has_null_manager() { return false; }
+   // return store min allocation size, if applicable
+   virtual uint64_t get_min_alloc_size() const {
+     return 0;
+diff --git a/src/os/bluestore/BlueFS.cc b/src/os/bluestore/BlueFS.cc
+index 0b9bb0bba8e..baae7c5ab2b 100644
+--- a/src/os/bluestore/BlueFS.cc
++++ b/src/os/bluestore/BlueFS.cc
+@@ -2507,6 +2507,9 @@ void BlueFS::_rewrite_log_and_layout_sync_LNF_LD(bool allocate_with_fallback,
+   }
+ #endif
+   _flush_bdev();
++  ++log.seq_live;
++  dirty.seq_live = log.seq_live;
++  log.t.seq = log.seq_live;
+ 
+   super.memorized_layout = layout;
+   super.log_fnode = log_file->fnode;
+diff --git a/src/os/bluestore/BlueStore.cc b/src/os/bluestore/BlueStore.cc
+index d1a0fe4897c..86062f290f0 100644
+--- a/src/os/bluestore/BlueStore.cc
++++ b/src/os/bluestore/BlueStore.cc
+@@ -7565,9 +7565,16 @@ void BlueStore::set_cache_shards(unsigned num)
+   }
+ }
+ 
++//---------------------------------------------
++bool BlueStore::has_null_manager()
++{
++  return (fm && fm->is_null_manager());
++}
++
+ int BlueStore::_mount()
+ {
+   dout(5) << __func__ << "NCB:: path " << path << dendl;
++
+   _kv_only = false;
+   if (cct->_conf->bluestore_fsck_on_mount) {
+     dout(5) << __func__ << "::NCB::calling fsck()" << dendl;
+@@ -7681,12 +7688,15 @@ int BlueStore::umount()
+ #endif
+     dout(20) << __func__ << " stopping kv thread" << dendl;
+     _kv_stop();
+-    _shutdown_cache();
++    // skip cache cleanup step on fast shutdown
++    if (likely(!m_fast_shutdown)) {
++      _shutdown_cache();
++    }
+     dout(20) << __func__ << " closing" << dendl;
+   }
+-
+   _close_db_and_around();
+-  if (cct->_conf->bluestore_fsck_on_umount) {
++  // disable fsck on fast-shutdown
++  if (cct->_conf->bluestore_fsck_on_umount && !m_fast_shutdown) {
+     int rc = fsck(cct->_conf->bluestore_fsck_on_umount_deep);
+     if (rc < 0)
+       return rc;
+@@ -10305,6 +10315,11 @@ int BlueStore::get_numa_node(
+   return 0;
+ }
+ 
++void BlueStore::prepare_for_fast_shutdown()
++{
++  m_fast_shutdown = true;
++}
++
+ int BlueStore::get_devices(set<string> *ls)
+ {
+   if (bdev) {
+@@ -10432,7 +10447,8 @@ int BlueStore::pool_statfs(uint64_t pool_id, struct store_statfs_t *buf,
+   string key_prefix;
+   _key_encode_u64(pool_id, &key_prefix);
+   *out_per_pool_omap = per_pool_omap != OMAP_BULK;
+-  if (*out_per_pool_omap) {
++  // stop calls after db was closed
++  if (*out_per_pool_omap && db) {
+     auto prefix = per_pool_omap == OMAP_PER_POOL ?
+       PREFIX_PERPOOL_OMAP :
+       PREFIX_PERPG_OMAP;
+@@ -18344,11 +18360,10 @@ int BlueStore::store_allocator(Allocator* src_allocator)
+       return -1;
+     }
+   }
+-
++  bluefs->compact_log();
+   // reuse previous file-allocation if exists
+   ret = bluefs->stat(allocator_dir, allocator_file, nullptr, nullptr);
+   bool overwrite_file = (ret == 0);
+-  //derr <<  __func__ << "bluefs->open_for_write(" << overwrite_file << ")" << dendl;
+   BlueFS::FileWriter *p_handle = nullptr;
+   ret = bluefs->open_for_write(allocator_dir, allocator_file, &p_handle, overwrite_file);
+   if (ret != 0) {
+@@ -18358,8 +18373,9 @@ int BlueStore::store_allocator(Allocator* src_allocator)
+ 
+   uint64_t file_size = p_handle->file->fnode.size;
+   uint64_t allocated = p_handle->file->fnode.get_allocated();
+-  dout(5) << "file_size=" << file_size << ", allocated=" << allocated << dendl;
++  dout(10) << "file_size=" << file_size << ", allocated=" << allocated << dendl;
+ 
++  bluefs->sync_metadata(false);
+   unique_ptr<Allocator> allocator(clone_allocator_without_bluefs(src_allocator));
+   if (!allocator) {
+     bluefs->close_writer(p_handle);
+@@ -18431,12 +18447,11 @@ int BlueStore::store_allocator(Allocator* src_allocator)
+   bluefs->fsync(p_handle);
+ 
+   utime_t duration = ceph_clock_now() - start_time;
+-  dout(5) <<"WRITE-extent_count=" << extent_count << ", file_size=" << p_handle->file->fnode.size << dendl;
++  dout(5) <<"WRITE-extent_count=" << extent_count << ", allocation_size=" << allocation_size << ", serial=" << s_serial << dendl;
+   dout(5) <<"p_handle->pos=" << p_handle->pos << " WRITE-duration=" << duration << " seconds" << dendl;
+ 
+   bluefs->close_writer(p_handle);
+   need_to_destage_allocation_file = false;
+-  dout(10) << "need_to_destage_allocation_file was clear" << dendl;
+   return 0;
+ }
+ 
+@@ -18628,7 +18643,7 @@ int BlueStore::__restore_allocator(Allocator* allocator, uint64_t *num, uint64_t
+   utime_t duration = ceph_clock_now() - start_time;
+   dout(5) << "READ--extent_count=" << extent_count << ", read_alloc_size=  "
+ 	    << read_alloc_size << ", file_size=" << file_size << dendl;
+-  dout(5) << "READ duration=" << duration << " seconds, s_serial=" << s_serial << dendl;
++  dout(5) << "READ duration=" << duration << " seconds, s_serial=" << header.serial << dendl;
+   *num   = extent_count;
+   *bytes = read_alloc_size;
+   return 0;
+@@ -18923,7 +18938,7 @@ int BlueStore::read_allocation_from_drive_on_startup()
+ 
+   utime_t            start = ceph_clock_now();
+   read_alloc_stats_t stats = {};
+-  SimpleBitmap       sbmap(cct, div_round_up(bdev->get_size(), min_alloc_size));
++  SimpleBitmap sbmap(cct, (bdev->get_size()/ min_alloc_size));
+   ret = reconstruct_allocations(&sbmap, stats);
+   if (ret != 0) {
+     return ret;
+@@ -19025,15 +19040,6 @@ int BlueStore::compare_allocators(Allocator* alloc1, Allocator* alloc2, uint64_t
+     return 0;
+   } else {
+     derr << "mismatch:: idx1=" << idx1 << " idx2=" << idx2 << dendl;
+-    std::cout << "==================================================================="  << std::endl;
+-    for (uint64_t i = 0; i < idx1; i++) {
+-      std::cout << "arr1[" << i << "]<" << arr1[i].offset << "," << arr1[i].length << "> " << std::endl;
+-    }
+-
+-    std::cout << "==================================================================="  << std::endl;
+-    for (uint64_t i = 0; i < idx2; i++) {
+-      std::cout << "arr2[" << i << "]<" << arr2[i].offset << "," << arr2[i].length << "> " << std::endl;
+-    }
+     return -1;
+   }
+ }
+@@ -19081,9 +19087,9 @@ int BlueStore::read_allocation_from_drive_for_bluestore_tool()
+   utime_t            start = ceph_clock_now();
+ 
+   auto shutdown_cache = make_scope_guard([&] {
+-    std::cout << "Allocation Recovery was completed in " << duration
+-	      << " seconds; insert_count=" << stats.insert_count
+-	      << "; extent_count=" << stats.extent_count << std::endl;
++    dout(1) << "Allocation Recovery was completed in " << duration
++	    << " seconds; insert_count=" << stats.insert_count
++	    << "; extent_count=" << stats.extent_count << dendl;
+     _shutdown_cache();
+     _close_db_and_around();
+   });
+@@ -19092,7 +19098,7 @@ int BlueStore::read_allocation_from_drive_for_bluestore_tool()
+     auto allocator = unique_ptr<Allocator>(create_bitmap_allocator(bdev->get_size()));
+     //reconstruct allocations into a temp simple-bitmap and copy into allocator
+     {
+-      SimpleBitmap sbmap(cct, div_round_up(bdev->get_size(), min_alloc_size));
++      SimpleBitmap sbmap(cct, (bdev->get_size()/ min_alloc_size));
+       ret = reconstruct_allocations(&sbmap, stats);
+       if (ret != 0) {
+ 	return ret;
+@@ -19113,14 +19119,14 @@ int BlueStore::read_allocation_from_drive_for_bluestore_tool()
+     };
+     allocator->dump(count_entries);
+     ret = compare_allocators(allocator.get(), alloc, stats.insert_count, memory_target);
+-    if (ret != 0) {
++    if (ret == 0) {
+       dout(5) << "Allocator drive - file integrity check OK" << dendl;
+     } else {
+       derr << "FAILURE. Allocator from file and allocator from metadata differ::ret=" << ret << dendl;
+     }
+   }
+ 
+-  std::cout << stats << std::endl;
++  dout(1) << stats << dendl;
+   return ret;
+ }
+ 
+diff --git a/src/os/bluestore/BlueStore.h b/src/os/bluestore/BlueStore.h
+index 72cfc2d076b..0f804595ebb 100644
+--- a/src/os/bluestore/BlueStore.h
++++ b/src/os/bluestore/BlueStore.h
+@@ -2764,7 +2764,7 @@ public:
+ 
+ private:
+   int32_t ondisk_format = 0;  ///< value detected on mount
+-
++  bool    m_fast_shutdown = false;
+   int _upgrade_super();  ///< upgrade (called during open_super)
+   uint64_t _get_ondisk_reserved() const;
+   void _prepare_ondisk_format_super(KeyValueDB::Transaction& t);
+@@ -2783,6 +2783,9 @@ public:
+   bool wants_journal() override { return false; };
+   bool allows_journal() override { return false; };
+ 
++  void prepare_for_fast_shutdown() override;
++  virtual bool has_null_manager();
++
+   uint64_t get_min_alloc_size() const override {
+     return min_alloc_size;
+   }
+diff --git a/src/osd/OSD.cc b/src/osd/OSD.cc
+index 7658fb59911..6def6621c1e 100644
+--- a/src/osd/OSD.cc
++++ b/src/osd/OSD.cc
+@@ -4245,27 +4245,44 @@ PerfCounters* OSD::create_recoverystate_perf()
+ 
+ int OSD::shutdown()
+ {
++  // vstart overwrites osd_fast_shutdown value in the conf file -> force the value here!
++  //cct->_conf->osd_fast_shutdown = true;
++
++  dout(0) << "Fast Shutdown: - cct->_conf->osd_fast_shutdown = "
++	  << cct->_conf->osd_fast_shutdown
++	  << ", null-fm = " << store->has_null_manager() << dendl;
++
++  utime_t  start_time_func = ceph_clock_now();
++
+   if (cct->_conf->osd_fast_shutdown) {
+     derr << "*** Immediate shutdown (osd_fast_shutdown=true) ***" << dendl;
+     if (cct->_conf->osd_fast_shutdown_notify_mon)
+       service.prepare_to_stop();
+-    cct->_log->flush();
+-    _exit(0);
+-  }
+ 
+-  if (!service.prepare_to_stop())
++    // There is no state we need to keep wehn running in NULL-FM moode
++    if (!store->has_null_manager()) {
++      cct->_log->flush();
++      _exit(0);
++    }
++  } else if (!service.prepare_to_stop()) {
+     return 0; // already shutting down
++  }
++
+   osd_lock.lock();
+   if (is_stopping()) {
+     osd_lock.unlock();
+     return 0;
+   }
+-  dout(0) << "shutdown" << dendl;
+ 
++  if (!cct->_conf->osd_fast_shutdown) {
++    dout(0) << "shutdown" << dendl;
++  }
++
++  // don't accept new task for this OSD
+   set_state(STATE_STOPPING);
+ 
+-  // Debugging
+-  if (cct->_conf.get_val<bool>("osd_debug_shutdown")) {
++  // Disabled debugging during fast-shutdown
++  if (!cct->_conf->osd_fast_shutdown && cct->_conf.get_val<bool>("osd_debug_shutdown")) {
+     cct->_conf.set_val("debug_osd", "100");
+     cct->_conf.set_val("debug_journal", "100");
+     cct->_conf.set_val("debug_filestore", "100");
+@@ -4274,6 +4291,45 @@ int OSD::shutdown()
+     cct->_conf.apply_changes(nullptr);
+   }
+ 
++  if (cct->_conf->osd_fast_shutdown) {
++    // first, stop new task from being taken from op_shardedwq
++    // and clear all pending tasks
++    op_shardedwq.stop_for_fast_shutdown();
++
++    utime_t  start_time_timer = ceph_clock_now();
++    tick_timer.shutdown();
++    {
++      std::lock_guard l(tick_timer_lock);
++      tick_timer_without_osd_lock.shutdown();
++    }
++
++    osd_lock.unlock();
++    utime_t  start_time_osd_drain = ceph_clock_now();
++
++    // then, wait on osd_op_tp to drain (TBD: should probably add a timeout)
++    osd_op_tp.drain();
++    osd_op_tp.stop();
++
++    utime_t  start_time_umount = ceph_clock_now();
++    store->prepare_for_fast_shutdown();
++    std::lock_guard lock(osd_lock);
++    // TBD: assert in allocator that nothing is being add
++    store->umount();
++
++    utime_t end_time = ceph_clock_now();
++    if (cct->_conf->osd_fast_shutdown_timeout) {
++      ceph_assert(end_time - start_time_func < cct->_conf->osd_fast_shutdown_timeout);
++    }
++    dout(0) <<"Fast Shutdown duration total     :" << end_time              - start_time_func       << " seconds" << dendl;
++    dout(0) <<"Fast Shutdown duration osd_drain :" << start_time_umount     - start_time_osd_drain  << " seconds" << dendl;
++    dout(0) <<"Fast Shutdown duration umount    :" << end_time              - start_time_umount     << " seconds" << dendl;
++    dout(0) <<"Fast Shutdown duration timer     :" << start_time_osd_drain  - start_time_timer      << " seconds" << dendl;
++    cct->_log->flush();
++
++    // now it is safe to exit
++    _exit(0);
++  }
++
+   // stop MgrClient earlier as it's more like an internal consumer of OSD
+   mgrc.shutdown();
+ 
+@@ -4435,6 +4491,9 @@ int OSD::shutdown()
+   hb_front_server_messenger->shutdown();
+   hb_back_server_messenger->shutdown();
+ 
++  utime_t duration = ceph_clock_now() - start_time_func;
++  dout(0) <<"Slow Shutdown duration:" << duration << " seconds" << dendl;
++
+   tracing::osd::tracer.shutdown();
+ 
+   return r;
+@@ -11058,6 +11117,11 @@ void OSD::ShardedOpWQ::_process(uint32_t thread_index, heartbeat_handle_d *hb)
+ }
+ 
+ void OSD::ShardedOpWQ::_enqueue(OpSchedulerItem&& item) {
++  if (unlikely(m_fast_shutdown) ) {
++    // stop enqueing when we are in the middle of a fast shutdown
++    return;
++  }
++
+   uint32_t shard_index =
+     item.get_ordering_token().hash_to_shard(osd->shards.size());
+ 
+@@ -11088,6 +11152,11 @@ void OSD::ShardedOpWQ::_enqueue(OpSchedulerItem&& item) {
+ 
+ void OSD::ShardedOpWQ::_enqueue_front(OpSchedulerItem&& item)
+ {
++  if (unlikely(m_fast_shutdown) ) {
++    // stop enqueing when we are in the middle of a fast shutdown
++    return;
++  }
++
+   auto shard_index = item.get_ordering_token().hash_to_shard(osd->shards.size());
+   auto& sdata = osd->shards[shard_index];
+   ceph_assert(sdata);
+@@ -11114,6 +11183,24 @@ void OSD::ShardedOpWQ::_enqueue_front(OpSchedulerItem&& item)
+   sdata->sdata_cond.notify_one();
+ }
+ 
++void OSD::ShardedOpWQ::stop_for_fast_shutdown()
++{
++  uint32_t shard_index = 0;
++  m_fast_shutdown = true;
++
++  for (; shard_index < osd->num_shards; shard_index++) {
++    auto& sdata = osd->shards[shard_index];
++    ceph_assert(sdata);
++    sdata->shard_lock.lock();
++    int work_count = 0;
++    while(! sdata->scheduler->empty() ) {
++      auto work_item = sdata->scheduler->dequeue();
++      work_count++;
++    }
++    sdata->shard_lock.unlock();
++  }
++}
++
+ namespace ceph::osd_cmds {
+ 
+ int heap(CephContext& cct, const cmdmap_t& cmdmap, Formatter& f,
+diff --git a/src/osd/OSD.h b/src/osd/OSD.h
+index 30d0b0b4aef..2da5de10aa6 100644
+--- a/src/osd/OSD.h
++++ b/src/osd/OSD.h
+@@ -1592,7 +1592,7 @@ protected:
+     : public ShardedThreadPool::ShardedWQ<OpSchedulerItem>
+   {
+     OSD *osd;
+-
++    bool m_fast_shutdown = false;
+   public:
+     ShardedOpWQ(OSD *o,
+ 		ceph::timespan ti,
+@@ -1610,6 +1610,8 @@ protected:
+     /// try to do some work
+     void _process(uint32_t thread_index, ceph::heartbeat_handle_d *hb) override;
+ 
++    void stop_for_fast_shutdown();
++
+     /// enqueue a new item
+     void _enqueue(OpSchedulerItem&& item) override;
+ 
