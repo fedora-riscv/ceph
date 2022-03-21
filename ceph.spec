@@ -151,7 +151,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.1.0
-Release:	0.4.31.g1ccf6db7%{?dist}
+Release:	0.5.56.g60fdd357%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -169,7 +169,7 @@ Group:		System/Filesystems
 URL:		http://ceph.com/
 #Source0:	https://download.ceph.com/tarballs/ceph-%{version}.tar.gz
 #Source0:	https://1.chacra.ceph.com/r/ceph/quincy/...
-Source0:	ceph-17.1.0-31-g1ccf6db7.tar.bz2
+Source0:	ceph-17.1.0-56-g60fdd357.tar.gz
 Patch0001:	0001-src-common-crc32c_intel_fast.patch
 Patch0003:	0003-src-common-bitstr.h.patch
 Patch0008:	0008-cmake-modules-Finduring.cmake.patch
@@ -180,7 +180,6 @@ Patch0016:	0016-src-tracing-patch
 Patch0017:	0017-gcc-12-omnibus.patch
 Patch0018:	0018-src-rgw-store-dbstore-CMakeLists.txt.patch
 Patch0019:	0019-cmake-modules-CheckCxxAtomic.cmake.patch
-Patch0020:	0020-src-os-bluestore-BlueFS.cc.patch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 %if 0%{?suse_version}
@@ -1256,7 +1255,7 @@ This package provides Ceph default alerts for Prometheus.
 # common
 #################################################################################
 %prep
-%autosetup -p1 -n ceph-17.1.0-31-g1ccf6db7
+%autosetup -p1 -n ceph-17.1.0-56-g60fdd357
 
 %build
 # Disable lto on systems that do not support symver attribute
@@ -2548,6 +2547,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Mon Mar 21 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.1.0-0.5.56-g60fdd357
+- 17.1.0 snapshot 56
+
 * Thu Mar 17 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.1.0-0.4.31-g1ccf6db7
 - 17.1.0 snapshot 31 plus rhbz#2064219 (ceph #53266, #54561)
 
