@@ -151,7 +151,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.1.0
-Release:	0.6.70.g06806b4d%{?dist}
+Release:	0.7.123.g14f44febd%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -169,7 +169,7 @@ Group:		System/Filesystems
 URL:		http://ceph.com/
 #Source0:	https://download.ceph.com/tarballs/ceph-%{version}.tar.gz
 #Source0:	https://1.chacra.ceph.com/r/ceph/quincy/...
-Source0:	ceph-17.1.0-70-g06806b4d.tar.bz2
+Source0:	ceph-17.1.0-123-g14f44feb.tar.bz2
 Patch0001:	0001-src-common-crc32c_intel_fast.patch
 Patch0003:	0003-src-common-bitstr.h.patch
 Patch0008:	0008-cmake-modules-Finduring.cmake.patch
@@ -1255,7 +1255,7 @@ This package provides Ceph default alerts for Prometheus.
 # common
 #################################################################################
 %prep
-%autosetup -p1 -n ceph-17.1.0-70-g06806b4d
+%autosetup -p1 -n ceph-17.1.0-123-g14f44feb
 
 %build
 # Disable lto on systems that do not support symver attribute
@@ -2547,6 +2547,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Mon Mar 28 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.1.0-0.7.123.g14f44feb
+- 17.1.0 snapshot 123
+
 * Thu Mar 24 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.1.0-0.6.70-g06806b4d
 - 17.1.0 snapshot 70
 
