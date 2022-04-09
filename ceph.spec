@@ -101,6 +101,8 @@
 # distros that do _not_ ship cmd2/colorama
 %bcond_with cephfs_shell
 %endif
+%bcond_with system_arrow
+%bcond_without system_utf8proc
 %if 0%{?fedora} || 0%{?suse_version} || 0%{?rhel} >= 8
 %global weak_deps 1
 %endif
@@ -151,7 +153,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.1.0
-Release:	0.7.123.g14f44febd%{?dist}
+Release:	0.9.175.g086c8f84%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -169,7 +171,7 @@ Group:		System/Filesystems
 URL:		http://ceph.com/
 #Source0:	https://download.ceph.com/tarballs/ceph-%{version}.tar.gz
 #Source0:	https://1.chacra.ceph.com/r/ceph/quincy/...
-Source0:	ceph-17.1.0-123-g14f44feb.tar.bz2
+Source0:	ceph-17.1.0-175-g086c8f84.tar.bz2
 Patch0001:	0001-src-common-crc32c_intel_fast.patch
 Patch0003:	0003-src-common-bitstr.h.patch
 Patch0008:	0008-cmake-modules-Finduring.cmake.patch
@@ -180,6 +182,7 @@ Patch0016:	0016-src-tracing-patch
 Patch0017:	0017-gcc-12-omnibus.patch
 Patch0018:	0018-src-rgw-store-dbstore-CMakeLists.txt.patch
 Patch0019:	0019-cmake-modules-CheckCxxAtomic.cmake.patch
+Patch0020:	0020-src-arrow-cpp-cmake_modules-ThirdpartyToolchain.cmake.patch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 %if 0%{?suse_version}
@@ -218,6 +221,7 @@ BuildRequires:	mold
 # libprofiler did not build on ppc64le until 2.7.90
 %if 0%{?fedora} || 0%{?rhel} >= 8
 BuildRequires:  gperftools-devel >= 2.7.90
+BuildRequires:  libunwind-devel
 %endif
 %if 0%{?rhel} && 0%{?rhel} < 8
 BuildRequires:  gperftools-devel >= 2.6.1
@@ -292,10 +296,11 @@ BuildRequires:	socat
 %if 0%{with zbd}
 BuildRequires:	libzbd-devel
 %endif
+BuildRequires:	thrift-devel >= 0.13.0
+BuildRequires:	re2-devel
 %if 0%{with jaeger}
 BuildRequires:	bison
 BuildRequires:	flex
-BuildRequires:	thrift-devel >= 0.13.0
 %if 0%{?fedora} || 0%{?rhel}
 BuildRequires:	json-devel
 %endif
@@ -307,6 +312,15 @@ BuildRequires:	libevent-devel
 %if 0%{with system_pmdk}
 BuildRequires:	libpmem-devel
 BuildRequires:	libpmemobj-devel
+%endif
+%if 0%{with system_arrow}
+BuildRequires:	arrow-devel
+BuildRequires:	parquet-devel
+%else
+BuildRequires:	xsimd-devel
+%endif
+%if 0%{with system_utf8proc}
+BuildRequires:	utf8proc-devel
 %endif
 %if 0%{with seastar}
 BuildRequires:	c-ares-devel
@@ -1255,7 +1269,7 @@ This package provides Ceph default alerts for Prometheus.
 # common
 #################################################################################
 %prep
-%autosetup -p1 -n ceph-17.1.0-123-g14f44feb
+%autosetup -p1 -n ceph-17.1.0-175-g086c8f84
 
 %build
 # Disable lto on systems that do not support symver attribute
@@ -1288,6 +1302,9 @@ export LDFLAGS="$RPM_LD_FLAGS"
 %if 0%{with seastar}
 # seastar uses longjmp() to implement coroutine. and this annoys longjmp_chk()
 export CXXFLAGS=$(echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//g')
+# remove from CFLAGS too because it causes the arrow submodule to fail with:
+#   warning _FORTIFY_SOURCE requires compiling with optimization (-O)
+export CFLAGS=$(echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//g')
 %endif
 
 env | sort
@@ -1298,7 +1315,6 @@ env | sort
 %{cmake} \
     -GNinja \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-    -DCMAKE_COLOR_MAKEFILE:BOOL=OFF \
     -DBUILD_CONFIG=rpmbuild \
     -DSYSTEMD_SYSTEM_UNIT_DIR:PATH=%{_unitdir} \
     -DCMAKE_INSTALL_SYSCONFDIR:PATH=%{_sysconfdir} \
@@ -1380,6 +1396,12 @@ env | sort
     -DWITH_SYSTEM_ZSTD:BOOL=ON \
 %if 0%{?rhel}
     -DWITH_FMT_HEADER_ONLY:BOOL=ON \
+%endif
+%if 0%{with system_arrow}
+    -DWITH_SYSTEM_ARROW:BOOL=ON \
+%endif
+%if 0%{with system_utf8proc}
+    -DWITH_SYSTEM_UTF8PROC:BOOL=ON \
 %endif
 %ifarch x86_64 aarch64
     -DCMAKE_LINKER=%{_bindir}/ld.mold \
@@ -2547,6 +2569,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Apr 8 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.1.0-0.9.175.g086c8f84
+- 17.1.0 snapshot 175
+
 * Mon Mar 28 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.1.0-0.7.123.g14f44feb
 - 17.1.0 snapshot 123
 
