@@ -153,7 +153,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -182,6 +182,7 @@ Patch0017:	0017-gcc-12-omnibus.patch
 Patch0018:	0018-src-rgw-store-dbstore-CMakeLists.txt.patch
 Patch0019:	0019-cmake-modules-CheckCxxAtomic.cmake.patch
 Patch0020:	0020-src-arrow-cpp-cmake_modules-ThirdpartyToolchain.cmake.patch
+Patch0021:	0021-src-rgw-CMakeLists.txt.patch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 %if 0%{?suse_version}
@@ -2568,6 +2569,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed May 4 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.0-3
+- 17.2.0 w/ -DWITH_SYSTEM_ARROW
+
 * Wed May 04 2022 Thomas Rodgers <trodgers@redhat.com> - 2:17.2.0-2
 - Rebuilt for Boost 1.78
 
