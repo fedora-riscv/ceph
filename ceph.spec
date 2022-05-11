@@ -153,7 +153,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2569,6 +2569,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed May 11 2022 Thomas Rodgers <trodgers@redhat.com> - 2:17.2.0-4
+- Rebuilt for Boost 1.78
+
 * Wed May 4 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.0-3
 - 17.2.0 w/ -DWITH_SYSTEM_ARROW
 
