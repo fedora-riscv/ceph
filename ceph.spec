@@ -141,7 +141,7 @@ Epoch:		2
 
 Summary:	User space components of the Ceph file system
 #License:	LGPL-2.1 and LGPL-3.0 and CC-BY-SA-3.0 and GPL-2.0 and BSL-1.0 and BSD-3-Clause and MIT
-License:	(LGPLv2+ or LGPLv3) and CC-BY-SA-3.0 and GPLv2 and Boost-1.0 and BSD and MIT
+License:	(LGPLv2+ or LGPLv3) and CC-BY-SA-3.0 and GPLv2 and Boost and BSD and MIT
 %if 0%{?suse_version}
 Group:		System/Filesystems
 %endif
@@ -1293,9 +1293,8 @@ export CEPH_MFLAGS_JOBS="-j $CEPH_SMP_NCPUS"
 
 env | sort
 
-mkdir build
-cd build
-%{cmake} .. \
+mkdir -p %{_vpath_builddir}
+%{cmake} \
     -GNinja \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DCMAKE_COLOR_MAKEFILE:BOOL=OFF \
@@ -1406,11 +1405,9 @@ export GCC_COLORS=
 
 
 %install
-pushd build
 %cmake_install
 # we have dropped sysvinit bits
 rm -f %{buildroot}/%{_sysconfdir}/init.d/ceph
-popd
 %if 0%{with seastar}
 # package crimson-osd with the name of ceph-osd
 install -m 0755 %{buildroot}%{_bindir}/crimson-osd %{buildroot}%{_bindir}/ceph-osd
@@ -2527,6 +2524,9 @@ exit 0
 %changelog
 * Mon May 16 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.8-1
 - 16.2.8 GA
+
+* Tue Mar 8 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-11
+- 16.2.7, Boost license name
 
 * Sat Feb 05 2022 Jiri Vanek <jvanek@redhat.com> - 2:16.2.7-10
 - Rebuilt for java-17-openjdk as system jdk
