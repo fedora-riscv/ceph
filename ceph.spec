@@ -127,8 +127,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	16.2.7
-Release:	3%{?dist}
+Version:	16.2.8
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
