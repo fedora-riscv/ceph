@@ -19,26 +19,6 @@
    }
  }
  
---- ceph-16.2.7/src/common/dout.h.orig	2022-01-18 08:58:11.805226954 -0500
-+++ ceph-16.2.7/src/common/dout.h	2022-01-19 08:06:23.987388663 -0500
-@@ -99,11 +99,15 @@
- template<typename T>
- struct dynamic_marker_t {
-   T value;
--  operator T() const { return value; }
-+  // constexpr ctor isn't needed as it's an aggregate type
-+  constexpr operator T() const { return value; }
- };
- 
- template<typename T>
--dynamic_marker_t<T> need_dynamic(T&& t) {
-+constexpr dynamic_marker_t<T> need_dynamic(T&& t) {
-+  // deprecated in C++17 but that's fine for testing
-+  static_assert(std::is_literal_type_v<T>);
-+  static_assert(std::is_literal_type_v<dynamic_marker_t<T>>);
-   return dynamic_marker_t<T>{ std::forward<T>(t) };
- }
- 
 --- ceph-16.2.7/src/test/librados/tier_cxx.cc.orig	2022-01-19 09:30:47.209459506 -0500
 +++ ceph-16.2.7/src/test/librados/tier_cxx.cc	2022-01-19 10:02:47.783240298 -0500
 @@ -114,7 +114,7 @@
