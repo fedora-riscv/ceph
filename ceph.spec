@@ -127,8 +127,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	16.2.7
-Release:	2%{?dist}
+Version:	16.2.8
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -345,10 +345,10 @@ BuildRequires:	python%{python3_pkgversion}-sphinx
 BuildRequires:	lz4-devel >= 1.7
 %endif
 # distro-conditional make check dependencies
+BuildRequires:	golang
 %if 0%{with make_check}
 %if 0%{?fedora} || 0%{?rhel}
 BuildRequires:	golang-github-prometheus
-BuildRequires:	jsonnet
 BuildRequires:	libtool-ltdl-devel
 BuildRequires:	xmlsec1
 BuildRequires:	xmlsec1-devel
@@ -366,7 +366,6 @@ BuildRequires:	python%{python3_pkgversion}-pyOpenSSL
 %endif
 %if 0%{?suse_version}
 BuildRequires:	golang-github-prometheus-prometheus
-BuildRequires:	jsonnet
 BuildRequires:	libxmlsec1-1
 BuildRequires:	libxmlsec1-nss1
 BuildRequires:	libxmlsec1-openssl1
@@ -1465,7 +1464,7 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/bootstrap-rbd
 mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/bootstrap-rbd-mirror
 
 # prometheus alerts
-install -m 644 -D monitoring/prometheus/alerts/ceph_default_alerts.yml %{buildroot}/etc/prometheus/ceph/ceph_default_alerts.yml
+install -m 644 -D monitoring/ceph-mixin/prometheus_alerts.yml %{buildroot}/etc/prometheus/ceph/ceph_default_alerts.yml
 
 %if 0%{?suse_version}
 # create __pycache__ directories and their contents
@@ -1581,7 +1580,7 @@ exit 0
 %{_mandir}/man8/cephadm.8*
 %attr(0700,cephadm,cephadm) %dir %{_sharedstatedir}/cephadm
 %attr(0700,cephadm,cephadm) %dir %{_sharedstatedir}/cephadm/.ssh
-%attr(0600,cephadm,cephadm) %{_sharedstatedir}/cephadm/.ssh/authorized_keys
+%config(noreplace) %attr(0600,cephadm,cephadm) %{_sharedstatedir}/cephadm/.ssh/authorized_keys
 
 %files common
 %dir %{_docdir}/ceph
@@ -2504,8 +2503,6 @@ exit 0
 %endif
 %attr(0755,root,root) %dir %{_sysconfdir}/grafana/dashboards/ceph-dashboard
 %config %{_sysconfdir}/grafana/dashboards/ceph-dashboard/*
-%doc monitoring/grafana/dashboards/README
-%doc monitoring/grafana/README.md
 
 %files prometheus-alerts
 %if 0%{?suse_version}
@@ -2515,6 +2512,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed May 18 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.8-1
+- 16.2.8 GA
+
 * Tue Dec 21 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-2
 - 16.2.7, rebuild with systemtap-4.6-4
 
