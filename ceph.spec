@@ -101,7 +101,7 @@
 # distros that do _not_ ship cmd2/colorama
 %bcond_with cephfs_shell
 %endif
-%bcond_with system_arrow
+%bcond_without system_arrow
 %bcond_without system_utf8proc
 %if 0%{?fedora} || 0%{?suse_version} || 0%{?rhel} >= 8
 %global weak_deps 1
@@ -183,6 +183,7 @@ Patch0018:	0018-src-rgw-store-dbstore-CMakeLists.txt.patch
 Patch0019:	0019-cmake-modules-CheckCxxAtomic.cmake.patch
 Patch0020:	0020-src-arrow-cpp-cmake_modules-ThirdpartyToolchain.cmake.patch
 Patch0021:	0021-src-rgw-CMakeLists.txt.patch
+Patch0022:	0022-src-kv-RocksDBStore.cc.patch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 %if 0%{?suse_version}
@@ -314,8 +315,8 @@ BuildRequires:	libpmem-devel
 BuildRequires:	libpmemobj-devel
 %endif
 %if 0%{with system_arrow}
-BuildRequires:	arrow-devel
-BuildRequires:	parquet-devel
+BuildRequires:	libarrow-devel
+BuildRequires:	parquet-libs-devel
 %else
 BuildRequires:	xsimd-devel
 %endif
