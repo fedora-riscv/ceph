@@ -127,7 +127,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	16.2.8
+Version:	16.2.9
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
@@ -144,7 +144,7 @@ License:	(LGPLv2.1 or LGPLv3) and CC-BY-SA-3.0 and GPLv2 and Boost-1.0 and BSD a
 Group:		System/Filesystems
 %endif
 URL:		http://ceph.com/
-Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.gz
+Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.bz2
 Patch0001:	0001-src-common-crc32c_intel_fast.patch
 Patch0003:	0003-src-common-bitstr.h.patch
 Patch0007:	0007-src-test-neorados-CMakeLists.txt.patch
@@ -2512,6 +2512,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Thu May 19 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.9-1
+- 16.2.9 GA
+
 * Wed May 18 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.8-1
 - 16.2.8 GA
 
