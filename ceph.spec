@@ -153,7 +153,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.0
-Release:	5%{?dist}
+Release:	6%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2570,6 +2570,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed Jun 15 2022 Python Maint <python-maint@redhat.com> - 2:17.2.0-6
+- Rebuilt for Python 3.11
+
 * Thu May 19 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.0-5
 - Rebuild for rocksdb 7.2.2
 
