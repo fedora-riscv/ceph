@@ -128,7 +128,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.9
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -1568,8 +1568,7 @@ exit 0
 
 %if ! 0%{?suse_version}
 %postun -n cephadm
-userdel -r cephadm || true
-exit 0
+[ $1 -ne 0 ] || userdel cephadm || :
 %endif
 
 %files -n cephadm
@@ -2509,6 +2508,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed Jun 22 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.9-2
+- 16.2.9, rhbz#2100237
+
 * Thu May 19 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.9-1
 - 16.2.9 GA
 
