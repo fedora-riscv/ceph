@@ -130,7 +130,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.9
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2522,6 +2522,10 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed Jun 22 2022 Robert-André Mauchin <zebob.m@gmail.com> - 2:16.2.9-2
+- Rebuilt for CVE-2022-1996, CVE-2022-24675, CVE-2022-28327, CVE-2022-27191,
+  CVE-2022-29526, CVE-2022-30629
+
 * Thu May 29 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.9-1
 - 16.2.9 GA
 
