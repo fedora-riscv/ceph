@@ -130,7 +130,7 @@
 #################################################################################
 Name:		ceph
 Version:	16.2.9
-Release:	2%{?dist}
+Release:	3%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -1581,8 +1581,7 @@ exit 0
 
 %if ! 0%{?suse_version}
 %postun -n cephadm
-userdel -r cephadm || true
-exit 0
+[ $1 -ne 0 ] || userdel cephadm || :
 %endif
 
 %files -n cephadm
@@ -2522,6 +2521,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed Jun 22 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.9-3
+- 16.2.9 rhbz#2100237
+
 * Wed Jun 22 2022 Robert-André Mauchin <zebob.m@gmail.com> - 2:16.2.9-2
 - Rebuilt for CVE-2022-1996, CVE-2022-24675, CVE-2022-28327, CVE-2022-27191,
   CVE-2022-29526, CVE-2022-30629
