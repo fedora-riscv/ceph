@@ -36,7 +36,6 @@
 %bcond_without rbd_rwl_cache
 %else
 %bcond_with rbd_rwl_cache
-%global _system_pmdk 1
 %endif
 %if 0%{?fedora} || 0%{?rhel}
 %ifarch s390x %{arm64}
@@ -148,12 +147,19 @@
 %endif
 %endif
 
+%if 0%{with seastar}
+# disable -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1, as gcc-toolset-{9,10}-annobin
+# do not provide gcc-annobin.so anymore, despite that they provide annobin.so. but
+# redhat-rpm-config still passes -fplugin=gcc-annobin to the compiler.
+%undefine _annotated_build
+%endif
+
 #################################################################################
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	17.2.0
-Release:	7%{?dist}
+Version:	17.2.1
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -182,8 +188,6 @@ Patch0017:	0017-gcc-12-omnibus.patch
 Patch0018:	0018-src-rgw-store-dbstore-CMakeLists.txt.patch
 Patch0019:	0019-cmake-modules-CheckCxxAtomic.cmake.patch
 Patch0020:	0020-src-arrow-cpp-cmake_modules-ThirdpartyToolchain.cmake.patch
-Patch0021:	0021-src-rgw-CMakeLists.txt.patch
-Patch0022:	0022-src-kv-RocksDBStore.cc.patch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 %if 0%{?suse_version}
@@ -286,7 +290,6 @@ BuildRequires:	hostname
 BuildRequires:	jq
 BuildRequires:	libuuid-devel
 BuildRequires:	python%{python3_pkgversion}-bcrypt
-BuildRequires:	python%{python3_pkgversion}-nose
 BuildRequires:	python%{python3_pkgversion}-pecan
 BuildRequires:	python%{python3_pkgversion}-requests
 BuildRequires:	python%{python3_pkgversion}-dateutil
@@ -297,7 +300,11 @@ BuildRequires:	socat
 %if 0%{with zbd}
 BuildRequires:	libzbd-devel
 %endif
+%if 0%{?suse_version}
+BuildRequires:	libthrift-devel >= 0.13.0
+%else
 BuildRequires:	thrift-devel >= 0.13.0
+%endif
 BuildRequires:	re2-devel
 %if 0%{with jaeger}
 BuildRequires:	bison
@@ -358,6 +365,7 @@ BuildRequires:	libbz2-devel
 BuildRequires:	mozilla-nss-devel
 BuildRequires:	keyutils-devel
 BuildRequires:	libopenssl-devel
+BuildRequires:	ninja
 BuildRequires:	lsb-release
 BuildRequires:	openldap2-devel
 #BuildRequires:	krb5
@@ -379,6 +387,7 @@ BuildRequires:	nss-devel
 BuildRequires:	keyutils-libs-devel
 BuildRequires:	libibverbs-devel
 BuildRequires:	librdmacm-devel
+BuildRequires:	ninja-build
 BuildRequires:	openldap-devel
 #BuildRequires:	krb5-devel
 BuildRequires:	openssl-devel
@@ -710,6 +719,7 @@ Group:		System/Filesystems
 %endif
 Requires:	ceph-mgr = %{_epoch_prefix}%{version}-%{release}
 Requires:	python%{python3_pkgversion}-asyncssh
+Requires:	python%{python3_pkgversion}-natsort
 Requires:	cephadm = %{_epoch_prefix}%{version}-%{release}
 %if 0%{?suse_version}
 Requires:	openssh
@@ -1599,8 +1609,7 @@ exit 0
 
 %if ! 0%{?suse_version}
 %postun -n cephadm
-userdel -r cephadm || true
-exit 0
+[ $1 -ne 0 ] || userdel cephadm || :
 %endif
 
 %files -n cephadm
@@ -1608,7 +1617,7 @@ exit 0
 %{_mandir}/man8/cephadm.8*
 %attr(0700,cephadm,cephadm) %dir %{_sharedstatedir}/cephadm
 %attr(0700,cephadm,cephadm) %dir %{_sharedstatedir}/cephadm/.ssh
-%attr(0600,cephadm,cephadm) %{_sharedstatedir}/cephadm/.ssh/authorized_keys
+%config(noreplace) %attr(0600,cephadm,cephadm) %{_sharedstatedir}/cephadm/.ssh/authorized_keys
 
 %files common
 %dir %{_docdir}/ceph
@@ -1757,6 +1766,7 @@ fi
 %dir %{_datadir}/ceph/mgr
 %{_datadir}/ceph/mgr/mgr_module.*
 %{_datadir}/ceph/mgr/mgr_util.*
+%{_datadir}/ceph/mgr/object_format.*
 %{_unitdir}/ceph-mgr@.service
 %{_unitdir}/ceph-mgr.target
 %attr(750,ceph,ceph) %dir %{_localstatedir}/lib/ceph/mgr
@@ -2570,6 +2580,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Thu Jun 23 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.1-1
+- ceph-17.2.1 GA
+
 * Fri Jun 17 2022 Robert-André Mauchin <zebob.m@gmail.com> - 2:17.2.0-7
 - Rebuilt for CVE-2022-1996, CVE-2022-24675, CVE-2022-28327, CVE-2022-27191,
   CVE-2022-29526, CVE-2022-30629
