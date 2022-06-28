@@ -159,7 +159,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -750,9 +750,9 @@ Summary:       Ceph daemon for mirroring CephFS snapshots
 %if 0%{?suse_version}
 Group:         System/Filesystems
 %endif
-Requires:      ceph-base = %{_epoch_prefix}%{version}-%{release}
-Requires:      librados2 = %{_epoch_prefix}%{version}-%{release}
-Requires:      libcephfs2 = %{_epoch_prefix}%{version}-%{release}
+Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
+Requires:	librados2 = %{_epoch_prefix}%{version}-%{release}
+Requires:	libcephfs2 = %{_epoch_prefix}%{version}-%{release}
 %description -n cephfs-mirror
 Daemon for mirroring CephFS snapshots between Ceph clusters.
 
@@ -881,15 +881,15 @@ BuildArch: noarch
 %if 0%{?suse_version}
 Group: System/Filesystems
 %endif
-Requires: ceph-osd = %{_epoch_prefix}%{version}-%{release}
-Requires: cryptsetup
-Requires: e2fsprogs
-Requires: lvm2
-Requires: parted
-Requires: util-linux
-Requires: xfsprogs
-Requires: python%{python3_pkgversion}-setuptools
-Requires: python%{python3_pkgversion}-ceph-common = %{_epoch_prefix}%{version}-%{release}
+Requires:	ceph-osd = %{_epoch_prefix}%{version}-%{release}
+Requires:	cryptsetup
+Requires:	e2fsprogs
+Requires:	lvm2
+Requires:	parted
+Requires:	util-linux
+Requires:	xfsprogs
+Requires:	python%{python3_pkgversion}-setuptools
+Requires:	python%{python3_pkgversion}-ceph-common = %{_epoch_prefix}%{version}-%{release}
 %description volume
 This package contains a tool to deploy OSD with different devices like
 lvm or physical disks, and trying to follow a predictable, and robust
@@ -2580,6 +2580,10 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Tue Jun 28 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.1-2
+- ceph-17.2.1, rhbz#2101744, rebuild with gtest, gmock 1.12.0
+- fix inconsistent tabs, spaces
+
 * Thu Jun 23 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.1-1
 - ceph-17.2.1 GA
 
