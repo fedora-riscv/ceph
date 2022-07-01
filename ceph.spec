@@ -93,7 +93,7 @@
 %endif
 %bcond_with seastar
 %bcond_with jaeger
-%if 0%{?fedora} || 0%{?suse_version} >= 1500
+%if (0%{?fedora} && 0%{?fedora} < 37) || 0%{?suse_version} >= 1500
 # distros that ship cmd2 and/or colorama
 %bcond_without cephfs_shell
 %else
@@ -2583,6 +2583,7 @@ exit 0
 * Tue Jun 28 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.1-2
 - ceph-17.2.1, rhbz#2101744, rebuild with gtest, gmock 1.12.0
 - fix inconsistent tabs, spaces
+- temporarily disable cephfs-shell until install issues (python3-11?) are resolved
 
 * Thu Jun 23 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.1-1
 - ceph-17.2.1 GA
