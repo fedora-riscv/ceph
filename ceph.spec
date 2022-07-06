@@ -93,7 +93,7 @@
 %endif
 %bcond_with seastar
 %bcond_with jaeger
-%if (0%{?fedora} && 0%{?fedora} < 37) || 0%{?suse_version} >= 1500
+%if 0%{?fedora} || 0%{?suse_version} >= 1500
 # distros that ship cmd2 and/or colorama
 %bcond_without cephfs_shell
 %else
@@ -159,7 +159,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -188,6 +188,7 @@ Patch0017:	0017-gcc-12-omnibus.patch
 Patch0018:	0018-src-rgw-store-dbstore-CMakeLists.txt.patch
 Patch0019:	0019-cmake-modules-CheckCxxAtomic.cmake.patch
 Patch0020:	0020-src-arrow-cpp-cmake_modules-ThirdpartyToolchain.cmake.patch
+Patch0021:	0021-cephfs-shell.patch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 %if 0%{?suse_version}
@@ -2580,6 +2581,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed Jul 6 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.1-3
+- enable cephfs-shell
+
 * Tue Jun 28 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.1-2
 - ceph-17.2.1, rhbz#2101744, rebuild with gtest, gmock 1.12.0
 - fix inconsistent tabs, spaces
