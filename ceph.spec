@@ -159,7 +159,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2581,6 +2581,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Sun Jul 10 2022 Mamoru TASAKA <mtasaka@fedoraproject.org> - 2:17.2.1-4
+- Rebuild for new gtest
+
 * Wed Jul 6 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.1-3
 - enable cephfs-shell
 
