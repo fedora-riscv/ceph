@@ -1,0 +1,28 @@
+From fff72cd14c58d06774cbd0274e6144b42448af03 Mon Sep 17 00:00:00 2001
+From: "Adam C. Emerson" <aemerson@redhat.com>
+Date: Mon, 7 Mar 2022 18:54:30 -0500
+Subject: [PATCH] mon: Replace deprecated use of format_to
+
+The non-deprecated version takes an explicit OutputIterator.
+
+Signed-off-by: Adam C. Emerson <aemerson@redhat.com>
+---
+ src/mon/LogMonitor.cc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/mon/LogMonitor.cc b/src/mon/LogMonitor.cc
+index 9103ddf7c5b..c196e8429fb 100644
+--- a/src/mon/LogMonitor.cc
++++ b/src/mon/LogMonitor.cc
+@@ -411,7 +411,7 @@ void LogMonitor::log_external(const LogEntry& le)
+     }
+ 
+     if (fd >= 0) {
+-      fmt::format_to(file_log_buffer, "{}\n", le);
++      fmt::format_to(std::back_inserter(file_log_buffer), "{}\n", le);
+       int err = safe_write(fd, file_log_buffer.data(), file_log_buffer.size());
+       file_log_buffer.clear();
+       if (err < 0) {
+-- 
+2.36.1
+
