@@ -159,7 +159,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.1
-Release:	6%{?dist}
+Release:	7%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2589,6 +2589,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed Jul 20 2022 Fedora Release Engineering <releng@fedoraproject.org> - 2:17.2.1-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
+
 * Mon Jul 18 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.1-6
 - Rebuild for fmt-9, src/mon/LogMonitor.cc fix
 
