@@ -127,8 +127,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	16.2.9
-Release:	3%{?dist}
+Version:	16.2.10
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -144,7 +144,7 @@ License:	(LGPLv2.1 or LGPLv3) and CC-BY-SA-3.0 and GPLv2 and Boost and BSD and M
 Group:		System/Filesystems
 %endif
 URL:		http://ceph.com/
-Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.bz2
+Source0:	%{?_remote_tarball_prefix}ceph-%{version}.tar.gz
 Patch0001:	0001-src-common-crc32c_intel_fast.patch
 Patch0003:	0003-src-common-bitstr.h.patch
 Patch0007:	0007-src-test-neorados-CMakeLists.txt.patch
@@ -2508,6 +2508,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Jul 22 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.10-1
+- 16.2.10 GA
+
 * Sun Jul 10 2022 Robert-André Mauchin <zebob.m@gmail.com> - 2:16.2.9-3
 - Rebuild for CVE-2022-{24675,28327,29526 in golang}
 
