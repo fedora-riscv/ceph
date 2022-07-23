@@ -2531,7 +2531,7 @@ exit 0
 - Rebuilt for CVE-2022-1996, CVE-2022-24675, CVE-2022-28327, CVE-2022-27191,
   CVE-2022-29526, CVE-2022-30629
 
-* Thu May 29 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.9-1
+* Thu May 19 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.9-1
 - 16.2.9 GA
 
 * Mon May 16 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.8-1
