@@ -158,7 +158,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	17.2.2
+Version:	17.2.3
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
@@ -2589,6 +2589,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Jul 29 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.3-1
+- ceph-17.2.3 GA
+
 * Fri Jul 22 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.2-1
 - ceph-17.2.2 GA
 
