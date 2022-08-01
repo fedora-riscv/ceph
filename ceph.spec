@@ -159,7 +159,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2589,6 +2589,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Mon Aug 01 2022 Frantisek Zatloukal <fzatlouk@redhat.com> - 2:17.2.3-2
+- Rebuilt for ICU 71.1
+
 * Fri Jul 29 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.3-1
 - ceph-17.2.3 GA
 
