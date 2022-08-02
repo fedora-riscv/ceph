@@ -159,7 +159,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -1314,7 +1314,7 @@ export LDFLAGS="$RPM_LD_FLAGS"
 
 	
 # Workaround to https://tracker.ceph.com/issues/56610
-%if 0%{?fedora} && 0%{?fedora} >= 37
+%if 0%{?fedora} >= 37 || 0%{?rhel} >= 10
 export CFLAGS="$RPM_OPT_FLAGS -DFMT_DEPRECATED_OSTREAM"
 export CXXFLAGS="$RPM_OPT_FLAGS -DFMT_DEPRECATED_OSTREAM"
 %endif
@@ -2589,6 +2589,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed Aug 3 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.3-3
+- ceph-17.2.3 fmt for ELN
+
 * Mon Aug 01 2022 Frantisek Zatloukal <fzatlouk@redhat.com> - 2:17.2.3-2
 - Rebuilt for ICU 71.1
 
