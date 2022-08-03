@@ -159,7 +159,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.3
-Release:	3%{?dist}
+Release:	4%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2589,6 +2589,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed Aug 3 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.3-4
+- ceph-17.2.3 rebuild with libarrow-9.0.0
+
 * Wed Aug 3 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.3-3
 - ceph-17.2.3 fmt for ELN
 
