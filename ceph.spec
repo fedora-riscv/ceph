@@ -190,6 +190,7 @@ Patch0019:	0019-cmake-modules-CheckCxxAtomic.cmake.patch
 Patch0020:	0020-src-arrow-cpp-cmake_modules-ThirdpartyToolchain.cmake.patch
 Patch0021:	0021-cephfs-shell.patch
 Patch0022:	0022-mon-Replace-deprecated-use-of-format_to.patch
+Patch0023:	0023-src-s3select-include-s3select_parquet_intrf.h.patch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 %if 0%{?suse_version}
