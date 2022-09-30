@@ -120,6 +120,8 @@
 %{!?python3_pkgversion: %global python3_pkgversion 3}
 %{!?python3_version_nodots: %global python3_version_nodots 3}
 %{!?python3_version: %global python3_version 3}
+%{!?gts_prefix: %global gts_prefix gcc-toolset-11}
+
 
 %if ! 0%{?suse_version}
 # use multi-threaded xz compression: xz level 7 using ncpus threads
@@ -147,19 +149,20 @@
 %endif
 %endif
 
-%if 0%{with seastar}
-# disable -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1, as gcc-toolset-{9,10}-annobin
+# disable -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1, as gcc-toolset-{10,11}-annobin
 # do not provide gcc-annobin.so anymore, despite that they provide annobin.so. but
 # redhat-rpm-config still passes -fplugin=gcc-annobin to the compiler.
 %undefine _annotated_build
+%if 0%{?rhel} == 8 && 0%{?enable_devtoolset11:1}
+%enable_devtoolset11
 %endif
 
 #################################################################################
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	17.2.3
-Release:	5%{?dist}
+Version:	17.2.4
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -176,7 +179,6 @@ Group:		System/Filesystems
 %endif
 URL:		http://ceph.com/
 Source0:	https://download.ceph.com/tarballs/ceph-%{version}.tar.gz
-#Source0:	https://1.chacra.ceph.com/r/ceph/quincy/...
 Patch0001:	0001-src-common-crc32c_intel_fast.patch
 Patch0003:	0003-src-common-bitstr.h.patch
 Patch0008:	0008-cmake-modules-Finduring.cmake.patch
@@ -188,8 +190,6 @@ Patch0017:	0017-gcc-12-omnibus.patch
 Patch0018:	0018-src-rgw-store-dbstore-CMakeLists.txt.patch
 Patch0019:	0019-cmake-modules-CheckCxxAtomic.cmake.patch
 Patch0020:	0020-src-arrow-cpp-cmake_modules-ThirdpartyToolchain.cmake.patch
-Patch0021:	0021-cephfs-shell.patch
-Patch0022:	0022-mon-Replace-deprecated-use-of-format_to.patch
 Patch0023:	0023-src-s3select-include-s3select_parquet_intrf.h.patch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
@@ -216,9 +216,18 @@ BuildRequires:	selinux-policy-devel
 BuildRequires:	gperf
 BuildRequires:	cmake > 3.5
 BuildRequires:	fuse3-devel
-%if 0%{with seastar} && 0%{?rhel}
-BuildRequires:	gcc-toolset-9-gcc-c++ >= 9.2.1-2.3
-%else
+%if 0%{?fedora} || 0%{?suse_version} || 0%{?rhel} == 9
+BuildRequires: gcc-c++ >= 11
+%endif
+%if 0%{?rhel} == 8
+BuildRequires: %{gts_prefix}-gcc-c++
+BuildRequires: %{gts_prefix}-build
+%ifarch aarch64
+BuildRequires: %{gts_prefix}-libatomic-devel
+%endif
+%endif
+%if 0%{?fedora} || 0%{?rhel} == 9
+BuildRequires: libatomic
 BuildRequires:	gcc-c++
 %endif
 BuildRequires:	libatomic
@@ -228,11 +237,11 @@ BuildRequires:	mold
 %if 0%{with tcmalloc}
 # libprofiler did not build on ppc64le until 2.7.90
 %if 0%{?fedora} || 0%{?rhel} >= 8
-BuildRequires:  gperftools-devel >= 2.7.90
-BuildRequires:  libunwind-devel
+BuildRequires:	gperftools-devel >= 2.7.90
+BuildRequires:	libunwind-devel
 %endif
 %if 0%{?rhel} && 0%{?rhel} < 8
-BuildRequires:  gperftools-devel >= 2.6.1
+BuildRequires:	gperftools-devel >= 2.6.1
 %endif
 %if 0%{?suse_version}
 BuildRequires:	gperftools-devel >= 2.4
@@ -299,6 +308,8 @@ BuildRequires:	python%{python3_pkgversion}-dateutil
 BuildRequires:	python%{python3_pkgversion}-coverage
 BuildRequires:	python%{python3_pkgversion}-pyOpenSSL
 BuildRequires:	socat
+BuildRequires:	python%{python3_pkgversion}-asyncssh
+BuildRequires:	python%{python3_pkgversion}-natsort
 %endif
 %if 0%{with zbd}
 BuildRequires:	libzbd-devel
@@ -344,13 +355,12 @@ BuildRequires:	systemtap-sdt-devel
 %if 0%{?fedora}
 BuildRequires:	libubsan
 BuildRequires:	libasan
-BuildRequires:	libatomic
 %endif
-%if 0%{?rhel}
-BuildRequires:	gcc-toolset-9-annobin
-BuildRequires:	gcc-toolset-9-libubsan-devel
-BuildRequires:	gcc-toolset-9-libasan-devel
-BuildRequires:	gcc-toolset-9-libatomic-devel
+%if 0%{?rhel} == 8
+BuildRequires: %{gts_prefix}-annobin
+BuildRequires: %{gts_prefix}-annobin-plugin-gcc
+BuildRequires: %{gts_prefix}-libubsan-devel
+BuildRequires: %{gts_prefix}-libasan-devel
 %endif
 %endif
 #################################################################################
@@ -381,6 +391,7 @@ BuildRequires:	rdma-core-devel
 BuildRequires:	liblz4-devel >= 1.7
 # for prometheus-alerts
 BuildRequires:	golang-github-prometheus-prometheus
+BuildRequires:	jsonnet
 %endif
 %if 0%{?fedora} || 0%{?rhel}
 Requires:	systemd
@@ -424,6 +435,7 @@ BuildRequires:	python%{python3_pkgversion}-pyOpenSSL
 %endif
 %if 0%{?suse_version}
 BuildRequires:	golang-github-prometheus-prometheus
+BuildRequires:	jsonnet
 BuildRequires:	libxmlsec1-1
 BuildRequires:	libxmlsec1-nss1
 BuildRequires:	libxmlsec1-openssl1
@@ -623,6 +635,7 @@ Group:		System/Filesystems
 Requires:	ceph-mgr = %{_epoch_prefix}%{version}-%{release}
 Requires:	ceph-grafana-dashboards = %{_epoch_prefix}%{version}-%{release}
 Requires:	ceph-prometheus-alerts = %{_epoch_prefix}%{version}-%{release}
+Requires:	python%{python3_pkgversion}-setuptools
 %if 0%{?fedora} || 0%{?rhel}
 Requires:	python%{python3_pkgversion}-cherrypy
 Requires:	python%{python3_pkgversion}-jwt
@@ -749,15 +762,24 @@ Requires:	python%{python3_pkgversion}
 FUSE based client for Ceph distributed network file system
 
 %package -n cephfs-mirror
-Summary:       Ceph daemon for mirroring CephFS snapshots
+Summary:	Ceph daemon for mirroring CephFS snapshots
 %if 0%{?suse_version}
-Group:         System/Filesystems
+Group:		System/Filesystems
 %endif
 Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
 Requires:	librados2 = %{_epoch_prefix}%{version}-%{release}
 Requires:	libcephfs2 = %{_epoch_prefix}%{version}-%{release}
 %description -n cephfs-mirror
 Daemon for mirroring CephFS snapshots between Ceph clusters.
+
+%package -n ceph-exporter
+Summary:	Daemon for exposing perf counters as Prometheus metrics
+%if 0%{?suse_version}
+Group:	System/Filesystems
+%endif
+Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
+%description -n ceph-exporter
+Daemon for exposing perf counters as Prometheus metrics
 
 %package -n rbd-fuse
 Summary:	Ceph fuse-based client
@@ -816,7 +838,7 @@ Requires:	librgw2 = %{_epoch_prefix}%{version}-%{release}
 Requires:	mailcap
 %endif
 %if 0%{?weak_deps}
-Recommends:    gawk
+Recommends:	gawk
 %endif
 %description radosgw
 RADOS is a distributed object store used by the Ceph distributed
@@ -1293,10 +1315,6 @@ This package provides Ceph default alerts for Prometheus.
 %endif
 
 
-%if 0%{with seastar} && 0%{?rhel}
-. /opt/rh/gcc-toolset-9/enable
-%endif
-
 %if 0%{with cephfs_java}
 # Find jni.h
 for i in /usr/{lib64,lib}/jvm/java/include{,/linux}; do
@@ -1313,7 +1331,12 @@ export CFLAGS="$RPM_OPT_FLAGS"
 export CXXFLAGS="$RPM_OPT_FLAGS"
 export LDFLAGS="$RPM_LD_FLAGS"
 
-	
+# Workaround to https://tracker.ceph.com/issues/56610
+%if 0%{?fedora} >= 37
+export CFLAGS="$RPM_OPT_FLAGS -DFMT_DEPRECATED_OSTREAM"
+export CXXFLAGS="$RPM_OPT_FLAGS -DFMT_DEPRECATED_OSTREAM"
+%endif
+
 # Workaround to https://tracker.ceph.com/issues/56610
 %if 0%{?fedora} >= 37 || 0%{?rhel} >= 10
 export CFLAGS="$RPM_OPT_FLAGS -DFMT_DEPRECATED_OSTREAM"
@@ -1342,6 +1365,9 @@ env | sort
     -DWITH_MANPAGE:BOOL=ON \
     -DWITH_PYTHON3:STRING=%{python3_version} \
     -DWITH_MGR_DASHBOARD_FRONTEND:BOOL=OFF \
+%if 0%{?suse_version}
+    -DWITH_RADOSGW_SELECT_PARQUET:BOOL=OFF \
+%endif
 %if 0%{without ceph_test_package}
     -DWITH_TESTS:BOOL=OFF \
 %endif
@@ -1426,6 +1452,10 @@ env | sort
 %endif
 %ifarch x86_64 aarch64
     -DCMAKE_LINKER=%{_bindir}/ld.mold \
+%endif
+%if 0%{with seastar}
+    -DWITH_SEASTAR:BOOL=ON \
+    -DWITH_JAEGER:BOOL=OFF \
 %endif
     -DWITH_GRAFANA:BOOL=ON
 
@@ -2003,6 +2033,9 @@ if [ $1 -ge 1 ] ; then
     /usr/bin/systemctl try-restart cephfs-mirror@\*.service > /dev/null 2>&1 || :
   fi
 fi
+
+%files -n ceph-exporter
+%{_bindir}/ceph-exporter
 
 %files -n rbd-fuse
 %{_bindir}/rbd-fuse
@@ -2590,6 +2623,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Sep 30 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.4-1
+- ceph-17.2.4 GA
+
 * Mon Aug 22 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.3-5
 - ceph-17.2.3 revised patch for libarrow-9.0.0
 
