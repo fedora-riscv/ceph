@@ -173,7 +173,8 @@ Epoch:		2
 
 Summary:	User space components of the Ceph file system
 #License:	LGPL-2.1 and LGPL-3.0 and CC-BY-SA-3.0 and GPL-2.0 and BSL-1.0 and BSD-3-Clause and MIT
-License:	(LGPLv2+ or LGPLv3) and CC-BY-SA-3.0 and GPLv2 and Boost and BSD and MIT
+#License:	(LGPLv2+ or LGPLv3) and CC-BY-SA-3.0 and GPLv2 and Boost and BSD and MIT
+License:	(LGPL-2.1-or-later OR LGPL-3.0-only) and CC-BY-SA-3.0 and GPL-2.0-only and BSL-1.0 and BSD-3-Clause and MIT
 %if 0%{?suse_version}
 Group:		System/Filesystems
 %endif
@@ -497,7 +498,7 @@ Summary:	Ceph Base Package
 %if 0%{?suse_version}
 Group:		System/Filesystems
 %endif
-Provides:	ceph-test:/usr/bin/ceph-kvstore-tool
+Provides:	ceph-test:/usr/bin/ceph-kvstore-tool = %{_epoch_prefix}%{version}-%{release}
 Requires:	ceph-common = %{_epoch_prefix}%{version}-%{release}
 Requires:	librbd1 = %{_epoch_prefix}%{version}-%{release}
 Requires:	librados2 = %{_epoch_prefix}%{version}-%{release}
@@ -597,7 +598,7 @@ Summary:	Ceph Monitor Daemon
 %if 0%{?suse_version}
 Group:		System/Filesystems
 %endif
-Provides:	ceph-test:/usr/bin/ceph-monstore-tool
+Provides:	ceph-test:/usr/bin/ceph-monstore-tool = %{_epoch_prefix}%{version}-%{release}
 Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
 %description mon
 ceph-mon is the cluster monitor daemon for the Ceph distributed file
@@ -874,7 +875,7 @@ Summary:	Ceph Object Storage Daemon
 %if 0%{?suse_version}
 Group:		System/Filesystems
 %endif
-Provides:	ceph-test:/usr/bin/ceph-osdomap-tool
+Provides:	ceph-test:/usr/bin/ceph-osdomap-tool = %{_epoch_prefix}%{version}-%{release}
 Requires:	ceph-base = %{_epoch_prefix}%{version}-%{release}
 Requires:	sudo
 Requires:	libstoragemgmt
@@ -1191,7 +1192,7 @@ Requires:	python%{python3_pkgversion}-colorama
 Requires:	python%{python3_pkgversion}-cephfs
 %description -n cephfs-shell
 This package contains an interactive tool that allows accessing a Ceph
-file system without mounting it  by providing a nice pseudo-shell which
+file system without mounting it by providing a nice pseudo-shell which
 works like an FTP client.
 %endif
 
@@ -2623,6 +2624,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Nov 11 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com>
+- SPDX migration
+
 * Tue Oct 18 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.5-1
 - ceph-17.2.5 GA
 
@@ -2872,15 +2876,15 @@ exit 0
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
 
 * Tue Jul 21 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-9
-- %cmake_build and %cmake_install
+- %%cmake_build and %%cmake_install
 
 * Mon Jul 20 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-8
 - see 15.2.4-4 (f33-java11) for real this time
-- and use %make_install macro
+- and use %%make_install macro
 
 * Mon Jul 20 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-7
 - see 15.2.4-3, hopefully for real this time
-- and use %make_install macro
+- and use %%make_install macro
 
 * Fri Jul 17 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-6
 - see 15.2.4-4
