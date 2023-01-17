@@ -162,7 +162,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.5
-Release:	2%{?dist}
+Release:	3%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -192,6 +192,7 @@ Patch0018:	0018-src-rgw-store-dbstore-CMakeLists.txt.patch
 Patch0019:	0019-cmake-modules-CheckCxxAtomic.cmake.patch
 Patch0020:	0020-src-arrow-cpp-cmake_modules-ThirdpartyToolchain.cmake.patch
 Patch0023:	0023-src-s3select-include-s3select_parquet_intrf.h.patch
+Patch0024:	0024-gcc-13.patch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 %if 0%{?suse_version}
@@ -2624,6 +2625,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Tue Jan 17 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.5-3
+- ceph-17.2.5, rebuild with gcc-13
+
 * Thu Dec 1 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.5-2
 - ceph-17.2.5, rebuild with libarrow-10
 
