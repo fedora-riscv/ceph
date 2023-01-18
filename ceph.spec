@@ -162,7 +162,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.5
-Release:	4%{?dist}
+Release:	5%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2625,6 +2625,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed Jan 18 2023 Fedora Release Engineering <releng@fedoraproject.org> - 2:17.2.5-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_38_Mass_Rebuild
+
 * Tue Jan 17 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.5-4
 - ceph-17.2.5, rebuild with gcc-13
 
