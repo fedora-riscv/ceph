@@ -162,7 +162,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.5
-Release:	5%{?dist}
+Release:	6%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -193,6 +193,7 @@ Patch0019:	0019-cmake-modules-CheckCxxAtomic.cmake.patch
 Patch0020:	0020-src-arrow-cpp-cmake_modules-ThirdpartyToolchain.cmake.patch
 Patch0023:	0023-src-s3select-include-s3select_parquet_intrf.h.patch
 Patch0024:	0024-gcc-13.patch
+Patch0025:	0025-selinux-prepare-for-anon-inode-controls-enablement.patch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 %if 0%{?suse_version}
@@ -1347,10 +1348,7 @@ export CXXFLAGS="$RPM_OPT_FLAGS -DFMT_DEPRECATED_OSTREAM"
 
 %if 0%{with seastar}
 # seastar uses longjmp() to implement coroutine. and this annoys longjmp_chk()
-export CXXFLAGS=$(echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//g')
-# remove from CFLAGS too because it causes the arrow submodule to fail with:
-#   warning _FORTIFY_SOURCE requires compiling with optimization (-O)
-export CFLAGS=$(echo $RPM_OPT_FLAGS | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//g')
+%undefine _fortify_level
 %endif
 
 env | sort
@@ -2625,6 +2623,12 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Jan 20 2023 Siddhesh Poyarekar <siddhesh@redhat.com> - 2:17.2.5-6
+- Use _fortify_level to disable fortification.
+
+* Thu Jan 19 2023 Ondrej Mosnacek <omosnace@redhat.com>
+- Prepare for anon inode SELinux controls enablement
+
 * Wed Jan 18 2023 Fedora Release Engineering <releng@fedoraproject.org> - 2:17.2.5-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_38_Mass_Rebuild
 
