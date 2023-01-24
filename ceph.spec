@@ -162,7 +162,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.5
-Release:	6%{?dist}
+Release:	7%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2623,6 +2623,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Tue Jan 24 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.5-7
+- ceph-17.2.5, rebuild with gtest-13 rhbz#2163823
+
 * Fri Jan 20 2023 Siddhesh Poyarekar <siddhesh@redhat.com> - 2:17.2.5-6
 - Use _fortify_level to disable fortification.
 
