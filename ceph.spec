@@ -162,7 +162,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.5
-Release:	7%{?dist}
+Release:	8%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -256,7 +256,7 @@ BuildRequires:	cryptsetup-devel
 BuildRequires:	libcurl-devel
 BuildRequires:	libcap-ng-devel
 BuildRequires:	fmt-devel >= 6.2.1
-%if 0%{?fedora}
+%if 0%{?fedora} || 0%{?rhel} >= 10
 BuildRequires:	rocksdb-devel
 Requires:	rocksdb
 %endif
@@ -1388,7 +1388,7 @@ env | sort
 %if 0%{with ocf}
     -DWITH_OCF:BOOL=ON \
 %endif
-%if 0%{?fedora}
+%if 0%{?fedora} || 0%{?rhel} >= 10
     -DWITH_SYSTEM_ROCKSDB:BOOL=ON \
 %endif
     -DWITH_SYSTEM_LIBURING:BOOL=ON \
@@ -2623,6 +2623,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Thu Jan 26 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.5-8
+- ceph-17.2.5, rocksdb on ELN
+
 * Tue Jan 24 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.5-7
 - ceph-17.2.5, rebuild with gtest-13 rhbz#2163823
 

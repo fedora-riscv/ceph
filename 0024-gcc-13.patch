@@ -90,3 +90,13 @@
  
  namespace librbd {
  
+--- ceph-17.2.5/src/rocksdb/db/compaction/compaction_iteration_stats.h.orig	2023-01-26 17:05:20.605333926 -0500
++++ ceph-17.2.5/src/rocksdb/db/compaction/compaction_iteration_stats.h	2023-01-26 17:05:46.376880846 -0500
+@@ -6,6 +6,7 @@
+ #pragma once
+ 
+ #include "rocksdb/rocksdb_namespace.h"
++#include <cstdint>
+ 
+ struct CompactionIterationStats {
+   // Compaction statistics
