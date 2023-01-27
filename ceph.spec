@@ -93,7 +93,7 @@
 %endif
 %bcond_with seastar
 %bcond_with jaeger
-%if 0%{?fedora} || 0%{?suse_version} >= 1500
+%if 0%{?fedora} || 0%{?suse_version} >= 1500 || 0%{?rhel} >= 10
 # distros that ship cmd2 and/or colorama
 %bcond_without cephfs_shell
 %else
@@ -162,7 +162,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.5
-Release:	8%{?dist}
+Release:	9%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -355,7 +355,7 @@ BuildRequires:	libpciaccess-devel
 BuildRequires:	lksctp-tools-devel
 BuildRequires:	ragel
 BuildRequires:	systemtap-sdt-devel
-%if 0%{?fedora}
+%if 0%{?fedora} || 0%{?rhel} >= 10
 BuildRequires:	libubsan
 BuildRequires:	libasan
 %endif
@@ -669,7 +669,7 @@ Group:		System/Filesystems
 %endif
 Requires:	ceph-mgr = %{_epoch_prefix}%{version}-%{release}
 Requires:	python%{python3_pkgversion}-numpy
-%if 0%{?fedora} || 0%{?suse_version}
+%if 0%{?fedora} || 0%{?suse_version} || 0%{?rhel} >= 10
 Requires:	python%{python3_pkgversion}-scikit-learn
 %endif
 Requires:	python3-scipy
@@ -1333,12 +1333,6 @@ export CPPFLAGS="$java_inc"
 export CFLAGS="$RPM_OPT_FLAGS"
 export CXXFLAGS="$RPM_OPT_FLAGS"
 export LDFLAGS="$RPM_LD_FLAGS"
-
-# Workaround to https://tracker.ceph.com/issues/56610
-%if 0%{?fedora} >= 37
-export CFLAGS="$RPM_OPT_FLAGS -DFMT_DEPRECATED_OSTREAM"
-export CXXFLAGS="$RPM_OPT_FLAGS -DFMT_DEPRECATED_OSTREAM"
-%endif
 
 # Workaround to https://tracker.ceph.com/issues/56610
 %if 0%{?fedora} >= 37 || 0%{?rhel} >= 10
@@ -2623,8 +2617,11 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Jan 27 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.5-9
+- ceph-17.2.5, more ELN (rhel 10)
+
 * Thu Jan 26 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.5-8
-- ceph-17.2.5, rocksdb on ELN
+- ceph-17.2.5, rocksdb on ELN (rhel 10)
 
 * Tue Jan 24 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.5-7
 - ceph-17.2.5, rebuild with gtest-13 rhbz#2163823
