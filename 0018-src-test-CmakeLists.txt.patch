@@ -1,0 +1,12 @@
+--- ceph-16.2.11/src/test/CMakeLists.txt.orig	2023-01-27 09:08:53.899536043 -0500
++++ ceph-16.2.11/src/test/CMakeLists.txt	2023-01-27 09:09:28.245931182 -0500
+@@ -83,6 +83,9 @@
+   if(WITH_RADOSGW_KAFKA_ENDPOINT)
+     list(APPEND rgw_libs kafka_stub)
+   endif()
++  if(WITH_RADOSGW_LUA_PACKAGES)
++    list(APPEND rgw_libs Boost::filesystem)
++  endif()
+   add_subdirectory(rgw)
+ endif(WITH_RADOSGW)
+ if(WITH_RBD AND NOT WIN32)
