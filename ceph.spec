@@ -1289,17 +1289,13 @@ CEPH_SMP_NCPUS="1"
 CEPH_MFLAGS_JOBS="%{?_smp_mflags}"
 CEPH_SMP_NCPUS=$(echo "$CEPH_MFLAGS_JOBS" | sed 's/-j//')
 %endif
-%if 0%{?__isa_bits} == 32
-# 32-bit builds can use 3G memory max, which is not enough even for -j2
-CEPH_SMP_NCPUS="1"
-%endif
 # do not eat all memory
 echo "Available memory:"
 free -h
 echo "System limits:"
 ulimit -a
 if test -n "$CEPH_SMP_NCPUS" -a "$CEPH_SMP_NCPUS" -gt 1 ; then
-    mem_per_process=2500
+    mem_per_process=3000
     max_mem=$(LANG=C free -m | sed -n "s|^Mem: *\([0-9]*\).*$|\1|p")
     max_jobs="$(($max_mem / $mem_per_process))"
     test "$CEPH_SMP_NCPUS" -gt "$max_jobs" && CEPH_SMP_NCPUS="$max_jobs" && echo "Warning: Reducing build parallelism to -j$max_jobs because of memory limits"
@@ -2542,6 +2538,9 @@ exit 0
 %changelog
 * Wed Jan 25 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.11-1
 - 16.2.11 GA
+- elide __isa_bits == 32 test, haven't done 32-bit builds for some time,
+  increase mem_per_process for ppc64le
+
 
 * Fri Jul 22 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.10-1
 - 16.2.10 GA
