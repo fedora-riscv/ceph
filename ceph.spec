@@ -162,7 +162,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.5
-Release:	11%{?dist}
+Release:	12%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2617,6 +2617,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Mon Feb 20 2023 Jonathan Wakely <jwakely@redhat.com> - 2:17.2.5-12
+- Rebuilt for Boost 1.81
+
 * Fri Feb 17 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.5-11
 - ceph-17.2.5, rebuild with libarrow-11, this time for real
 
