@@ -162,7 +162,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.5
-Release:	12%{?dist}
+Release:	13%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -1386,7 +1386,7 @@ env | sort
     -DWITH_SYSTEM_ROCKSDB:BOOL=ON \
 %endif
     -DWITH_SYSTEM_LIBURING:BOOL=ON \
-    -DWITH_SYSTEM_BOOST:BOOL=ON \
+    -DWITH_SYSTEM_BOOST:BOOL=OFF \
 %if 0%{with cephfs_shell}
     -DWITH_CEPHFS_SHELL:BOOL=ON \
 %endif
@@ -2617,6 +2617,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed Feb 22 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.5-13
+- ceph-17.2.5, rebuild with bundled boost until boost-1.81 compatible
+
 * Mon Feb 20 2023 Jonathan Wakely <jwakely@redhat.com> - 2:17.2.5-12
 - Rebuilt for Boost 1.81
 
