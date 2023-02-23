@@ -1,0 +1,99 @@
+--- ceph-17.2.5/src/boost/libs/python/src/object/enum.cpp.orig	2023-02-23 08:45:36.498595122 -0500
++++ ceph-17.2.5/src/boost/libs/python/src/object/enum.cpp	2023-02-23 08:46:11.277990890 -0500
+@@ -153,7 +153,7 @@
+   {
+       if (enum_type_object.tp_dict == 0)
+       {
+-          Py_TYPE(&enum_type_object) = incref(&PyType_Type);
++          Py_SET_TYPE(&enum_type_object, incref(&PyType_Type));
+ #if PY_VERSION_HEX >= 0x03000000
+           enum_type_object.tp_base = &PyLong_Type;
+ #else
+--- ceph-17.2.5/src/boost/libs/python/src/object/function.cpp.orig	2023-02-23 08:44:19.995920877 -0500
++++ ceph-17.2.5/src/boost/libs/python/src/object/function.cpp	2023-02-23 08:45:26.426770100 -0500
+@@ -107,7 +107,7 @@
+     PyObject* p = this;
+     if (Py_TYPE(&function_type) == 0)
+     {
+-        Py_TYPE(&function_type) = &PyType_Type;
++        Py_SET_TYPE(&function_type, &PyType_Type);
+         ::PyType_Ready(&function_type);
+     }
+     
+--- ceph-17.2.5/src/boost/libs/python/src/object/life_support.cpp.orig	2023-02-23 08:43:37.511650115 -0500
++++ ceph-17.2.5/src/boost/libs/python/src/object/life_support.cpp	2023-02-23 08:44:10.225088588 -0500
+@@ -93,7 +93,7 @@
+     
+     if (Py_TYPE(&life_support_type) == 0)
+     {
+-        Py_TYPE(&life_support_type) = &PyType_Type;
++        Py_SET_TYPE(&life_support_type, &PyType_Type);
+         PyType_Ready(&life_support_type);
+     }
+     
+--- ceph-17.2.5/src/boost/libs/python/src/object/class.cpp.orig	2023-02-23 08:46:22.394797757 -0500
++++ ceph-17.2.5/src/boost/libs/python/src/object/class.cpp	2023-02-23 10:54:56.016527900 -0500
+@@ -21,6 +21,7 @@
+ #include <boost/python/dict.hpp>
+ #include <boost/python/str.hpp>
+ #include <boost/python/ssize_t.hpp>
++#include <boost/align/detail/align.hpp>
+ #include <functional>
+ #include <vector>
+ #include <cstddef>
+@@ -208,7 +209,7 @@
+   {
+       if (static_data_object.tp_dict == 0)
+       {
+-          Py_TYPE(&static_data_object) = &PyType_Type;
++          Py_SET_TYPE(&static_data_object, &PyType_Type);
+           static_data_object.tp_base = &PyProperty_Type;
+           if (PyType_Ready(&static_data_object))
+               return 0;
+@@ -316,7 +317,7 @@
+   {
+       if (class_metatype_object.tp_dict == 0)
+       {
+-          Py_TYPE(&class_metatype_object) = &PyType_Type;
++          Py_SET_TYPE(&class_metatype_object, &PyType_Type);
+           class_metatype_object.tp_base = &PyType_Type;
+           if (PyType_Ready(&class_metatype_object))
+               return type_handle();
+@@ -374,12 +375,7 @@
+               // like, so we'll store the total size of the object
+               // there. A negative number indicates that the extra
+               // instance memory is not yet allocated to any holders.
+-#if PY_VERSION_HEX >= 0x02060000
+-              Py_SIZE(result) =
+-#else
+-              result->ob_size =
+-#endif
+-                  -(static_cast<int>(offsetof(instance<>,storage) + instance_size));
++              Py_SET_SIZE(result,-static_cast<int>(offsetof(instance<>,storage) + instance_size));
+           }
+           return (PyObject*)result;
+       }
+@@ -470,7 +466,7 @@
+   {
+       if (class_type_object.tp_dict == 0)
+       {
+-          Py_TYPE(&class_type_object) = incref(class_metatype().get());
++          Py_SET_TYPE(&class_type_object, incref(class_metatype().get()));
+           class_type_object.tp_base = &PyBaseObject_Type;
+           if (PyType_Ready(&class_type_object))
+               return type_handle();
+@@ -738,8 +734,13 @@
+         // holder_offset should at least point into the variable-sized part
+         assert(holder_offset >= offsetof(objects::instance<>,storage));
+ 
++        size_t allocated = holder_size + 8;
++        void* storage = (char*)self + holder_offset;
++        void* aligned_storage = ::boost::alignment::align(8, holder_size, storage, allocated); 
++
+         // Record the fact that the storage is occupied, noting where it starts
+-        Py_SIZE(self) = holder_offset;
++        const size_t offset = reinterpret_cast<uintptr_t>(aligned_storage) - reinterpret_cast<uintptr_t>(storage) + holder_offset;
++        Py_SET_SIZE(self, offset);
+         return (char*)self + holder_offset;
+     }
+     else

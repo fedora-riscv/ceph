@@ -194,6 +194,7 @@ Patch0020:	0020-src-arrow-cpp-cmake_modules-ThirdpartyToolchain.cmake.patch
 Patch0023:	0023-src-s3select-include-s3select_parquet_intrf.h.patch
 Patch0024:	0024-gcc-13.patch
 Patch0025:	0025-selinux-prepare-for-anon-inode-controls-enablement.patch
+Patch0026:	0026-src-boost-libs-python-src-object.patch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 %if 0%{?suse_version}
