@@ -161,7 +161,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	17.2.5
+Version:	17.2.6
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
@@ -685,6 +685,7 @@ Requires:	python%{python3_pkgversion}-pecan
 Requires:	python%{python3_pkgversion}-pyOpenSSL
 Requires:	python%{python3_pkgversion}-requests
 Requires:	python%{python3_pkgversion}-dateutil
+Requires:	python%{python3_pkgversion}-setuptools
 %if 0%{?fedora} || 0%{?rhel} >= 8
 Requires:	python%{python3_pkgversion}-cherrypy
 Requires:	python%{python3_pkgversion}-pyyaml
@@ -2623,6 +2624,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Apr 7 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.6-1
+- ceph-17.2.6 GA
+
 * Tue Oct 18 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.5-1
 - ceph-17.2.5 GA
 
