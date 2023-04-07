@@ -20,8 +20,6 @@
 # please read this for explanation of bcond syntax:
 # https://rpm-software-management.github.io/rpm/manual/conditionalbuilds.html
 #################################################################################
-%global _hardened_build 1
-
 %bcond_with make_check
 %bcond_with zbd
 %bcond_with cmake_verbose_logging
@@ -161,8 +159,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	17.2.5
-Release:	13%{?dist}
+Version:	17.2.6
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -689,6 +687,7 @@ Requires:	python%{python3_pkgversion}-pecan
 Requires:	python%{python3_pkgversion}-pyOpenSSL
 Requires:	python%{python3_pkgversion}-requests
 Requires:	python%{python3_pkgversion}-dateutil
+Requires:	python%{python3_pkgversion}-setuptools
 %if 0%{?fedora} || 0%{?rhel} >= 8
 Requires:	python%{python3_pkgversion}-cherrypy
 Requires:	python%{python3_pkgversion}-pyyaml
@@ -2618,6 +2617,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Apr 7 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.6-1
+- ceph-17.2.6 GA
+
 * Wed Feb 22 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.5-13
 - ceph-17.2.5, rebuild with bundled boost until boost-1.81 compatible
 
