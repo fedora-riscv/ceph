@@ -140,7 +140,7 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	16.2.11
+Version:	16.2.12
 Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
@@ -2536,11 +2536,13 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Thu Apr 13 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.12-1
+- 16.2.12 GA
+
 * Wed Jan 25 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.11-1
 - 16.2.11 GA
 - elide __isa_bits == 32 test, haven't done 32-bit builds for some time,
   increase mem_per_process for ppc64le
-
 
 * Fri Jul 22 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.10-1
 - 16.2.10 GA
