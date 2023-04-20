@@ -1,5 +1,5 @@
 --- ceph-17.2.6/src/kv/rocksdb_cache/ShardedCache.h.orig	2023-04-20 10:53:44.854094016 -0400
-+++ ceph-17.2.6/src/kv/rocksdb_cache/ShardedCache.h	2023-04-20 10:54:09.320659022 -0400
++++ ceph-17.2.6/src/kv/rocksdb_cache/ShardedCache.h	2023-04-20 11:39:12.847646205 -0400
 @@ -15,7 +15,7 @@
  #include <mutex>
  
@@ -9,3 +9,31 @@
  #include "include/ceph_hash.h"
  #include "common/PriorityCache.h"
  //#include "hash.h"
+@@ -68,8 +68,8 @@
+   virtual const char* Name() const override = 0;
+   virtual rocksdb::Status Insert(const rocksdb::Slice& key, void* value, size_t charge,
+                                  DeleterFn,
+-                                 rocksdb::Cache::Handle** handle, Priority priority) override;
+-  virtual rocksdb::Cache::Handle* Lookup(const rocksdb::Slice& key, rocksdb::Statistics* stats) override;
++                                 rocksdb::Cache::Handle** handle, Priority priority);
++  virtual rocksdb::Cache::Handle* Lookup(const rocksdb::Slice& key, rocksdb::Statistics* stats);
+   virtual bool Ref(rocksdb::Cache::Handle* handle) override;
+   virtual bool Release(rocksdb::Cache::Handle* handle, bool force_erase = false) override;
+   virtual void* Value(Handle* handle) override = 0;
+@@ -84,14 +84,14 @@
+   virtual size_t GetPinnedUsage() const override;
+   virtual size_t GetCharge(Handle* handle) const = 0;
+ #if (ROCKSDB_MAJOR >= 7 || (ROCKSDB_MAJOR == 6 && ROCKSDB_MINOR >= 22))
+-  virtual DeleterFn GetDeleter(Handle* handle) const override;
++  virtual DeleterFn GetDeleter(Handle* handle) const;
+ #endif
+   virtual void DisownData() override = 0;
+ #if (ROCKSDB_MAJOR >= 7 || (ROCKSDB_MAJOR == 6 && ROCKSDB_MINOR >= 22))
+   virtual void ApplyToAllEntries(
+       const std::function<void(const rocksdb::Slice& key, void* value, size_t charge,
+                                DeleterFn deleter)>& callback,
+-      const ApplyToAllEntriesOptions& opts) override;
++      const ApplyToAllEntriesOptions& opts);
+ #else
+   virtual void ApplyToAllCacheEntries(void (*callback)(void*, size_t),
+                                       bool thread_safe) override;
