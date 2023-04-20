@@ -1,0 +1,11 @@
+--- ceph-17.2.6/src/kv/rocksdb_cache/ShardedCache.h.orig	2023-04-20 10:53:44.854094016 -0400
++++ ceph-17.2.6/src/kv/rocksdb_cache/ShardedCache.h	2023-04-20 10:54:09.320659022 -0400
+@@ -15,7 +15,7 @@
+ #include <mutex>
+ 
+ #include "rocksdb/version.h"
+-#include "rocksdb/cache.h"
++#include "rocksdb/advanced_cache.h"
+ #include "include/ceph_hash.h"
+ #include "common/PriorityCache.h"
+ //#include "hash.h"
