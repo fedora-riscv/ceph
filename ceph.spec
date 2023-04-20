@@ -160,7 +160,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.6
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2617,6 +2617,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Thu Apr 20 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.6-2
+- ceph-17.2.6, rebuild with rocksdb-8.0.0
+
 * Fri Apr 7 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.6-1
 - ceph-17.2.6 GA
 
