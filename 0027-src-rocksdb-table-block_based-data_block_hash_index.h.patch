@@ -1,0 +1,40 @@
+--- ceph-17.2.6/src/rocksdb/table/block_based/data_block_hash_index.h.orig	2023-04-21 17:46:42.186339184 -0400
++++ ceph-17.2.6/src/rocksdb/table/block_based/data_block_hash_index.h	2023-04-21 17:47:01.392005151 -0400
+@@ -7,6 +7,7 @@
+ 
+ #include <string>
+ #include <vector>
++#include <cstdint>
+ 
+ #include "rocksdb/slice.h"
+ 
+--- ceph-17.2.6/src/rocksdb/util/string_util.h.orig	2023-04-21 18:13:51.060496792 -0400
++++ ceph-17.2.6/src/rocksdb/util/string_util.h	2023-04-21 18:14:06.496223220 -0400
+@@ -10,6 +10,7 @@
+ #include <string>
+ #include <unordered_map>
+ #include <vector>
++#include <cstdint>
+ 
+ #include "rocksdb/rocksdb_namespace.h"
+ 
+--- ceph-17.2.6/src/rocksdb/include/rocksdb/utilities/checkpoint.h.orig	2023-04-22 05:54:32.260798114 -0400
++++ ceph-17.2.6/src/rocksdb/include/rocksdb/utilities/checkpoint.h	2023-04-22 05:55:42.997522143 -0400
+@@ -10,6 +10,7 @@
+ 
+ #include <string>
+ #include <vector>
++#include <cstdint>
+ #include "rocksdb/status.h"
+ 
+ namespace ROCKSDB_NAMESPACE {
+--- ceph-17.2.6/src/rocksdb/third-party/folly/folly/synchronization/detail/ProxyLockable-inl.h.orig	2023-04-22 06:14:55.624679075 -0400
++++ ceph-17.2.6/src/rocksdb/third-party/folly/folly/synchronization/detail/ProxyLockable-inl.h	2023-04-22 09:18:39.424624618 -0400
+@@ -13,6 +13,7 @@
+ #include <memory>
+ #include <mutex>
+ #include <stdexcept>
++#include <system_error>
+ #include <utility>
+ 
+ namespace folly {

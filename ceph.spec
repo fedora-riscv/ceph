@@ -193,7 +193,7 @@ Patch0023:	0023-src-s3select-include-s3select_parquet_intrf.h.patch
 Patch0024:	0024-gcc-13.patch
 Patch0025:	0025-selinux-prepare-for-anon-inode-controls-enablement.patch
 Patch0026:	0026-src-boost-libs-python-src-object.patch
-Patch0027:	0027-src-kv-rocksdb_cache-ShardedCache.h.patch
+Patch0027:	0027-src-rocksdb-table-block_based-data_block_hash_index.h.patch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 %if 0%{?suse_version}
@@ -1384,7 +1384,7 @@ env | sort
     -DWITH_OCF:BOOL=ON \
 %endif
 %if 0%{?fedora} || 0%{?rhel} >= 10
-    -DWITH_SYSTEM_ROCKSDB:BOOL=ON \
+    -DWITH_SYSTEM_ROCKSDB:BOOL=OFF \
 %endif
     -DWITH_SYSTEM_LIBURING:BOOL=ON \
     -DWITH_SYSTEM_BOOST:BOOL=OFF \
@@ -2619,7 +2619,7 @@ exit 0
 
 %changelog
 * Thu Apr 20 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.6-2
-- ceph-17.2.6, rebuild with rocksdb-8.0.0
+- ceph-17.2.6, rebuild with bundled rocksdb until ready for rocksdb-8.x
 
 * Fri Apr 7 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.6-1
 - ceph-17.2.6 GA
