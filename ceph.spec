@@ -36,7 +36,7 @@
 %bcond_with rbd_rwl_cache
 %endif
 %if 0%{?fedora} || 0%{?rhel}
-%ifarch s390x %{arm64}
+%ifarch s390x %{arm64} riscv64
 %bcond_with system_pmdk
 %else
 %bcond_without system_pmdk
@@ -160,7 +160,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.6
-Release:	1%{?dist}
+Release:	1.rv64%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2617,6 +2617,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Fri Apr 23 2023 Liu Yang <Yang.Liu.sn[at]gmail.com> - 2:17.2.6-1.rv64
+- Fix build for riscv64.
+
 * Fri Apr 7 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.6-1
 - ceph-17.2.6 GA
 
