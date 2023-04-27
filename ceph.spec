@@ -160,7 +160,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.6
-Release:	2%{?dist}
+Release:	3%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -194,6 +194,7 @@ Patch0024:	0024-gcc-13.patch
 Patch0025:	0025-selinux-prepare-for-anon-inode-controls-enablement.patch
 Patch0026:	0026-src-boost-libs-python-src-object.patch
 Patch0027:	0027-src-rocksdb-table-block_based-data_block_hash_index.h.patch
+Patch0028:	0028-cmake-modules-BuildBoost.cmake.patch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 %if 0%{?suse_version}
@@ -2618,6 +2619,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Thu Apr 27 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.6-3
+- ceph-17.2.6, rebuild boost with -fcf-protection
+
 * Thu Apr 20 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.6-2
 - ceph-17.2.6, rebuild with bundled rocksdb until ready for rocksdb-8.x
 

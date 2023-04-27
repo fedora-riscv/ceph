@@ -1,0 +1,11 @@
+--- ceph-17.2.6/cmake/modules/BuildBoost.cmake.orig	2023-04-27 14:00:28.239524778 -0400
++++ ceph-17.2.6/cmake/modules/BuildBoost.cmake	2023-04-27 15:44:46.738462191 -0400
+@@ -63,7 +63,7 @@
+   else()
+     list(APPEND boost_features "address-model=32")
+   endif()
+-  set(BOOST_CXXFLAGS "-fPIC -w") # check on arm, etc <---XXX
++  set(BOOST_CXXFLAGS "-fPIC -w -fcf-protection") # check on arm, etc <---XXX
+   list(APPEND boost_features "cxxflags=${BOOST_CXXFLAGS}")
+ 
+   set(boost_with_libs)
