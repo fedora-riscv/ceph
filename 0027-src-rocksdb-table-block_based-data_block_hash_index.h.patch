@@ -38,3 +38,13 @@
  #include <utility>
  
  namespace folly {
+--- ceph-17.2.6/src/rocksdb/third-party/folly/folly/synchronization/detail/ProxyLockable-inl.h.orig	2023-04-22 06:14:55.624679075 -0400
++++ ceph-17.2.6/src/rocksdb/third-party/folly/folly/synchronization/detail/ProxyLockable-inl.h	2023-04-22 09:18:39.424624618 -0400
+@@ -13,6 +13,7 @@
+ #include <memory>
+ #include <mutex>
+ #include <stdexcept>
++#include <system_error>
+ #include <utility>
+ 
+ namespace folly {
