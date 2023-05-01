@@ -160,7 +160,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.6
-Release:	4%{?dist}
+Release:	5%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2620,11 +2620,14 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Mon May 1 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.6-5
+- ceph-17.2.6, rebuild with libarrow-12.0.0
+
 * Sun Apr 30 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.6-4
-- ceph-17.2.6, rebuild boost asm with IBT, SHSTK (librgw.so)
+- ceph-17.2.6, rebuild bundled boost asm with IBT, SHSTK (librgw.so)
 
 * Thu Apr 27 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.6-3
-- ceph-17.2.6, rebuild boost with -fcf-protection (libceph_common.so)
+- ceph-17.2.6, rebuild bundled boost with -fcf-protection (libceph_common.so)
 
 * Thu Apr 20 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.6-2
 - ceph-17.2.6, rebuild with bundled rocksdb until ready for rocksdb-8.x
