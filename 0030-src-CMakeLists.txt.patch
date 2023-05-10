@@ -1,0 +1,10 @@
+--- ceph-17.2.6/src/CMakeLists.txt.orig	2023-05-10 10:00:58.457793274 -0400
++++ ceph-17.2.6/src/CMakeLists.txt	2023-05-10 10:01:31.553198698 -0400
+@@ -809,6 +809,7 @@
+   if(WITH_KRBD)
+     add_library(krbd STATIC krbd.cc
+       $<TARGET_OBJECTS:parse_secret_objs>)
++    add_dependencies(krbd legacy-option-headers)
+     target_link_libraries(krbd keyutils::keyutils)
+   endif()
+   add_subdirectory(librbd)
