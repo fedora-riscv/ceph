@@ -160,7 +160,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.6
-Release:	6%{?dist}
+Release:	7%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -1613,7 +1613,7 @@ install -m 644 -D monitoring/ceph-mixin/prometheus_alerts.yml %{buildroot}/etc/p
 %{_sysconfdir}/sudoers.d/ceph-smartctl
 
 %post base
-/sbin/ldconfig
+%{?ldconfig}
 %if 0%{?suse_version}
 %fillup_only
 if [ $1 -eq 1 ] ; then
@@ -1636,7 +1636,7 @@ fi
 %endif
 
 %postun base
-/sbin/ldconfig
+%{?ldconfig}
 %systemd_postun ceph.target
 
 %pre -n cephadm
@@ -2142,7 +2142,7 @@ fi
 %{_unitdir}/ceph-radosgw.target
 
 %post radosgw
-/sbin/ldconfig
+%{?ldconfig}
 %if 0%{?suse_version}
 if [ $1 -eq 1 ] ; then
   /usr/bin/systemctl preset ceph-radosgw@\*.service ceph-radosgw.target >/dev/null 2>&1 || :
@@ -2164,7 +2164,7 @@ fi
 %endif
 
 %postun radosgw
-/sbin/ldconfig
+%{?ldconfig}
 %systemd_postun ceph-radosgw@\*.service ceph-radosgw.target
 if [ $1 -ge 1 ] ; then
   # Restart on upgrade, but only if "CEPH_AUTO_RESTART_ON_UPGRADE" is set to
@@ -2300,9 +2300,7 @@ fi
 %endif
 %dir %{_sysconfdir}/ceph
 
-%post -n librados2 -p /sbin/ldconfig
-
-%postun -n librados2 -p /sbin/ldconfig
+%ldconfig_scriptlets librados2
 
 %files -n librados-devel
 %dir %{_includedir}/rados
@@ -2333,9 +2331,7 @@ fi
 %files -n libcephsqlite
 %{_libdir}/libcephsqlite.so
 
-%post -n libcephsqlite -p /sbin/ldconfig
-
-%postun -n libcephsqlite -p /sbin/ldconfig
+%ldconfig_scriptlets libcephsqlite
 
 %files -n libcephsqlite-devel
 %{_includedir}/libcephsqlite.h
@@ -2344,9 +2340,7 @@ fi
 %files -n libradosstriper1
 %{_libdir}/libradosstriper.so.*
 
-%post -n libradosstriper1 -p /sbin/ldconfig
-
-%postun -n libradosstriper1 -p /sbin/ldconfig
+%ldconfig_scriptlets libradosstriper1
 
 %files -n libradosstriper-devel
 %dir %{_includedir}/radosstriper
@@ -2363,9 +2357,7 @@ fi
 %dir %{_libdir}/ceph/librbd
 %{_libdir}/ceph/librbd/libceph_*.so*
 
-%post -n librbd1 -p /sbin/ldconfig
-
-%postun -n librbd1 -p /sbin/ldconfig
+%ldconfig_scriptlets librbd1
 
 %files -n librbd-devel
 %dir %{_includedir}/rbd
@@ -2384,9 +2376,7 @@ fi
 %{_libdir}/librgw_rados_tp.so.*
 %endif
 
-%post -n librgw2 -p /sbin/ldconfig
-
-%postun -n librgw2 -p /sbin/ldconfig
+%ldconfig_scriptlets librgw2
 
 %files -n librgw-devel
 %dir %{_includedir}/rados
@@ -2410,9 +2400,7 @@ fi
 %{_libdir}/libcephfs.so.*
 %dir %{_sysconfdir}/ceph
 
-%post -n libcephfs2 -p /sbin/ldconfig
-
-%postun -n libcephfs2 -p /sbin/ldconfig
+%ldconfig_scriptlets libcephfs2
 
 %files -n libcephfs-devel
 %dir %{_includedir}/cephfs
@@ -2482,9 +2470,7 @@ fi
 %files -n libcephfs_jni1
 %{_libdir}/libcephfs_jni.so.*
 
-%post -n libcephfs_jni1 -p /sbin/ldconfig
-
-%postun -n libcephfs_jni1 -p /sbin/ldconfig
+%ldconfig_scriptlets libcephfs_jni1
 
 %files -n libcephfs_jni-devel
 %{_libdir}/libcephfs_jni.so
@@ -2620,7 +2606,10 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
-* Tue May 9 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.6-5
+* Tue May 9 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.6-7
+- ceph-17.2.6, use ldconfig and ldconfig_scriptlet macros
+
+* Tue May 9 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.6-6
 - ceph-17.2.6, log create of global_legacy_options.h
 
 * Mon May 1 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.6-5
