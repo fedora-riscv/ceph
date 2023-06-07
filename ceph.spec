@@ -35,6 +35,15 @@
 %else
 %bcond_with rbd_rwl_cache
 %endif
+%if 0%{?rhel}
+%bcond_with ld_mold
+%else
+%ifarch x86_64 aarch64
+%bcond_without ld_mold
+%else
+%bcond_with ld_mold
+%endif
+%endif
 %if 0%{?fedora} || 0%{?rhel}
 %ifarch s390x %{arm64}
 %bcond_with system_pmdk
@@ -160,7 +169,7 @@
 #################################################################################
 Name:		ceph
 Version:	17.2.6
-Release:	7%{?dist}
+Release:	8%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -236,7 +245,7 @@ BuildRequires: libatomic
 BuildRequires:	gcc-c++
 %endif
 BuildRequires:	libatomic
-%ifarch x86_64 aarch64
+%if 0%{with ld_mold}
 BuildRequires:	mold
 %endif
 %if 0%{with tcmalloc}
@@ -1447,7 +1456,7 @@ env | sort
 %if 0%{with system_utf8proc}
     -DWITH_SYSTEM_UTF8PROC:BOOL=ON \
 %endif
-%ifarch x86_64 aarch64
+%if 0%{with ld_mold}
     -DCMAKE_LINKER=%{_bindir}/ld.mold \
 %endif
 %if 0%{with seastar}
@@ -2606,6 +2615,9 @@ exit 0
 %config %{_sysconfdir}/prometheus/ceph/ceph_default_alerts.yml
 
 %changelog
+* Wed Jun 07 2023 Yaakov Selkowitz <yselkowi@redhat.com> - 2:17.2.6-8
+- Do not use mold in RHEL/ELN builds
+
 * Tue May 9 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.2.6-7
 - ceph-17.2.6, use ldconfig and ldconfig_scriptlet macros
 
