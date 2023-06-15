@@ -170,7 +170,7 @@
 #################################################################################
 Name:		ceph
 Version:	18.1.0
-Release:	0.1%{?dist}
+Release:	0.2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2652,6 +2652,9 @@ exit 0
 %{_datadir}/snmp/mibs
 
 %changelog
+* Thu Jun 15 2023 Python Maint <python-maint@redhat.com> - 2:18.1.0-0.2
+- Rebuilt for Python 3.12
+
 * Tue Jun 13 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:18.1.0-0.1
 - ceph-18.1.0 RC1
 
