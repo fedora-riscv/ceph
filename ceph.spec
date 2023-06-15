@@ -173,7 +173,7 @@
 #################################################################################
 Name:		ceph
 Version:	18.1.0
-Release:	0.3%{?dist}
+Release:	0.4%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2645,6 +2645,9 @@ exit 0
 %{_datadir}/snmp/mibs
 
 %changelog
+* Thu Jun 15 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:18.1.0-0.4
+- Rebuilt for Python 3.12
+
 * Thu Jun 15 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:18.1.0-0.3
 - remove requires for nonexistant libjaeger, rhbz#2215320
 - sync w/ upstream ceph.spec(.in), sanity check
