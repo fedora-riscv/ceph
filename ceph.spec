@@ -36,13 +36,16 @@
 %bcond_with rbd_rwl_cache
 %endif
 %if 0%{?fedora} || 0%{?rhel}
+%if 0%{?rhel} < 9
+%bcond_with system_pmdk
+%else
 %ifarch s390x %{arm64}
 %bcond_with system_pmdk
 %else
 %bcond_without system_pmdk
 %endif
+%endif
 %bcond_without selinux
-%bcond_without cephfs_java
 %bcond_without amqp_endpoint
 %bcond_without kafka_endpoint
 %bcond_without lttng
@@ -170,7 +173,7 @@
 #################################################################################
 Name:		ceph
 Version:	18.1.0
-Release:	0.2%{?dist}
+Release:	0.3%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -180,7 +183,6 @@ Epoch:		2
 %global _epoch_prefix %{?epoch:%{epoch}:}
 
 Summary:	User space components of the Ceph file system
-#License:	LGPL-2.1 and LGPL-3.0 and CC-BY-SA-3.0 and GPL-2.0 and BSL-1.0 and BSD-3-Clause and MIT
 License:	(LGPLv2+ or LGPLv3) and CC-BY-SA-3.0 and GPLv2 and Boost and BSD and MIT
 %if 0%{?suse_version}
 Group:		System/Filesystems
@@ -246,7 +248,6 @@ BuildRequires: %{gts_prefix}-libatomic-devel
 BuildRequires:	libatomic
 BuildRequires:	gcc-c++
 %endif
-BuildRequires:	libatomic
 %if 0%{?rhel}
 %bcond_with ld_mold
 %else
@@ -407,7 +408,6 @@ BuildRequires:	mozilla-nss-devel
 BuildRequires:	keyutils-devel
 BuildRequires:	libopenssl-devel
 BuildRequires:	ninja
-BuildRequires:	lsb-release
 BuildRequires:	openldap2-devel
 #BuildRequires:	krb5
 #BuildRequires:	krb5-devel
@@ -430,7 +430,6 @@ BuildRequires:	keyutils-libs-devel
 BuildRequires:	libatomic
 BuildRequires:	libibverbs-devel
 BuildRequires:	librdmacm-devel
-BuildRequires:	ninja-build
 BuildRequires:	openldap-devel
 #BuildRequires:	krb5-devel
 BuildRequires:	openssl-devel
@@ -442,7 +441,6 @@ BuildRequires:	python%{python3_pkgversion}-sphinx
 BuildRequires:	lz4-devel >= 1.7
 %endif
 # distro-conditional make check dependencies
-BuildRequires:	golang
 %if 0%{with make_check}
 BuildRequires:	golang
 %if 0%{?fedora} || 0%{?rhel}
@@ -502,7 +500,6 @@ BuildRequires:	redhat-rpm-config
 %if 0%{?fedora} || 0%{?rhel}
 BuildRequires:	cryptopp-devel
 BuildRequires:	numactl-devel
-BuildRequires:	protobuf-compiler
 %endif
 %if 0%{?suse_version}
 BuildRequires:	libcryptopp-devel
@@ -538,7 +535,6 @@ Requires:	ceph-selinux = %{_epoch_prefix}%{version}-%{release}
 Requires:	findutils
 Requires:	grep
 Requires:	logrotate
-Requires:	parted
 Requires:	psmisc
 Requires:	util-linux
 Requires:	which
@@ -589,9 +585,6 @@ Requires:	python%{python3_pkgversion}-cephfs = %{_epoch_prefix}%{version}-%{rele
 Requires:	python%{python3_pkgversion}-rgw = %{_epoch_prefix}%{version}-%{release}
 Requires:	python%{python3_pkgversion}-ceph-argparse = %{_epoch_prefix}%{version}-%{release}
 Requires:	python%{python3_pkgversion}-ceph-common = %{_epoch_prefix}%{version}-%{release}
-%if 0%{with jaeger}
-Requires:	libjaeger = %{_epoch_prefix}%{version}-%{release}
-%endif
 %if 0%{?fedora} || 0%{?rhel}
 Requires:	python%{python3_pkgversion}-prettytable
 %endif
@@ -605,7 +598,6 @@ Requires:	libradosstriper1 = %{_epoch_prefix}%{version}-%{release}
 %if 0%{?suse_version}
 Requires(pre):	pwdutils
 %endif
-Requires:	systemd-udev
 %description -n ceph-common
 Common utilities to mount and interact with a ceph storage cluster.
 Comprised of files that are common to Ceph clients and servers.
@@ -1353,7 +1345,6 @@ This package provides a Ceph MIB for SNMP traps.
  %define _lto_cflags %{nil}
 %endif
 
-
 %if 0%{with cephfs_java}
 # Find jni.h
 for i in /usr/{lib64,lib}/jvm/java/include{,/linux}; do
@@ -1513,6 +1504,7 @@ export GCC_COLORS=
 %cmake_install
 # we have dropped sysvinit bits
 rm -f %{buildroot}/%{_sysconfdir}/init.d/ceph
+
 %if 0%{with seastar}
 # package crimson-osd with the name of ceph-osd
 install -m 0755 %{buildroot}%{_bindir}/crimson-osd %{buildroot}%{_bindir}/ceph-osd
@@ -1760,6 +1752,7 @@ exit 0
 %config %{_sysconfdir}/bash_completion.d/radosgw-admin
 %config(noreplace) %{_sysconfdir}/ceph/rbdmap
 %{_unitdir}/rbdmap.service
+%dir %{_udevrulesdir}
 %{_udevrulesdir}/50-rbd.rules
 %attr(3770,ceph,ceph) %dir %{_localstatedir}/log/ceph/
 %attr(750,ceph,ceph) %dir %{_localstatedir}/lib/ceph/
@@ -2652,6 +2645,10 @@ exit 0
 %{_datadir}/snmp/mibs
 
 %changelog
+* Thu Jun 15 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:18.1.0-0.3
+- remove requires for nonexistant libjaeger, rhbz#2215320
+- sync w/ upstream ceph.spec(.in), sanity check
+
 * Thu Jun 15 2023 Python Maint <python-maint@redhat.com> - 2:18.1.0-0.2
 - Rebuilt for Python 3.12
 
@@ -2817,885 +2814,3 @@ exit 0
 * Mon Feb 28 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:17.1.0-0.1.rc1
 - 17.1.0 RC1
 
-* Sat Feb 05 2022 Jiri Vanek <jvanek@redhat.com> - 2:16.2.7-10
-- Rebuilt for java-17-openjdk as system jdk
-
-* Wed Feb 2 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-9
-- 16.2.7, python3.10 w/ __CHAR_UNSIGNED__ fix
-
-* Thu Jan 27 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-8
-- 16.2.7, w/ modern linker (mold), x86_64 and aarch64, this time for real
-
-* Wed Jan 26 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-7
-- 16.2.7, build with modern linker (mold), x86_64 and aarch64
-- reenable ppc64le
-
-* Tue Jan 25 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-6
-- 16.2.7, more CET enablement, rhbz#2040091
-
-* Thu Jan 20 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-5
-- 16.2.7, rebuild with gcc-12, exclude ppc64le until fmt on ppc64le is fixed
-
-* Wed Jan 19 2022 Fedora Release Engineering <releng@fedoraproject.org> - 2:16.2.7-4
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
-
-* Mon Jan 10 2022 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-3
-- 16.2.7, rebuild with fmt-8.1.1
-
-* Wed Dec 29 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-2
-- 16.2.7, LGPLv2.1 -> LGPLv2+, rhbz#2036035
-
-* Tue Dec 7 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.7-1
-- 16.2.7 GA
-
-* Tue Nov 02 2021 Mamoru TASAKA <mtasaka@fedoraproject.org> - 2:16.2.6-3
-- rebuild against new liblttng-ust
-
-* Tue Oct 19 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.6-2
-- 16.2.6, rebuild with rocksdb 6.25
-
-* Fri Sep 17 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.6-1
-- 16.2.6 GA
-
-* Tue Sep 14 2021 Sahana Prasad <sahana@redhat.com> - 2:16.2.5-11
-- Rebuilt with OpenSSL 3.0.0
-
-* Mon Sep 6 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.5-10
-- Rebuilt for gtest 1.11.0
-
-* Thu Aug 26 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.5-9
-- Rebuilt for rocksdb 6.22
-
-* Tue Aug 17 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.5-8
-- build with ninja, -DWITH_SYSTEM_ZSTD, without gdbm
-
-* Sun Aug 8 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.5-7
-- Rebuild for Boost 1.76 again
-
-* Fri Aug 06 2021 Jonathan Wakely <jwakely@redhat.com> - 2:16.2.5-6
-- Rebuilt for Boost 1.76
-
-* Thu Aug 5 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.5-5
-- Rebuild for leveldb-1.23-3 w/ reverted -fno-rtti
-
-* Tue Aug 3 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.5-4
-- Rebuild for leveldb-1.23
-
-* Wed Jul 21 2021 Fedora Release Engineering <releng@fedoraproject.org> - 2:16.2.5-3
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
-
-* Thu Jul 8 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.5-2
-- Rebuild for new fmt version.
-
-* Thu Jul 8 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.5-1
-- 16.2.5 GA
-
-* Mon Jul 05 2021 Richard Shaw <hobbes1069@gmail.com> - 2:16.2.4-6
-- Rebuild for new fmt version.
-
-* Fri Jun 11 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.4-5
-- https://src.fedoraproject.org/rpms/ceph/pull-request/3#
-
-* Fri Jun 04 2021 Python Maint <python-maint@redhat.com> - 2:16.2.4-4
-- Rebuilt for Python 3.10
-
-* Wed May 26 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.4-3
-- 16.2.4, bz 1964858, snappy::uint32
-
-* Wed May 19 2021 Pete Walter <pwalter@fedoraproject.org> - 2:16.2.4-2
-- Rebuild for ICU 69
-
-* Thu May 13 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.4-1
-- 16.2.4 GA
-
-* Thu May 6 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.3-1
-- 16.2.3 GA
-
-* Wed May 5 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.2-1
-- 16.2.2 GA
-
-* Tue Apr 20 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.1-1
-- 16.2.1 GA
-
-* Wed Apr 14 2021 Richard W.M. Jones <rjones@redhat.com> - 2:16.2.0-3
-- Rebuild for updated liburing.
-
-* Sat Apr 10 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.0-2
-- 16.2.0, libamqp_mock fix (FTBFS, #1947281), rgw fix
-
-* Wed Mar 31 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.2.0-1
-- 16.2.0 GA
-
-* Tue Mar 30 2021 Jonathan Wakely <jwakely@redhat.com> - 2:16.1.0-2
-- Rebuilt for removed libstdc++ symbol (#1937698)
-
-* Thu Mar 25 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-1
-- 16.1.0 RC
-
-* Tue Mar 23 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.8.snapshot
-- 16.1.0 RC (ceph-16.1.0-944-ge53ee8bd plus fix trailing slash bluestore)
-
-* Sat Mar 20 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.7.snapshot
-- 16.1.0 RC (ceph-16.1.0-944-ge53ee8bd)
-
-* Fri Mar 19 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.6.snapshot
-- 16.1.0 RC (ceph-16.1.0-308-gabe639eb)
-
-* Fri Mar 5 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.5.snapshot
-- ceph 16.1.0 RC (ceph-16.1.0-308-gabe639eb)
--  rpmbuild apparently unable to automatically derive 'Requires: rocksdb' from 'BuildRequires: rocksdb-devel' for librocksdb.so.6.13
-
-* Sat Feb 20 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.4.snapshot
-- ceph 16.1.0 RC (ceph-16.1.0-308-gabe639eb)
-
-* Thu Feb 4 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.3.snapshot
-- rocksdb not available in el8+, use bundled rocksdb
-
-* Mon Feb 1 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.2.snapshot
-- libblk.so -> libblk.a
-- libneoradostest-support.so -> libneoradostest-support.a
-- w/ liburing-devel, -DWITH_SYSTEM_LIBURING=ON
-- w/ rocksdb-devel, -DWITH_SYSTEM_ROCKSDB=ON
-
-* Fri Jan 29 2021 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:16.1.0-0.1.snapshot
-- ceph 16.1.0 RC (ceph-16.1.0-43-g6b74fb5c)
-
-* Wed Sep 16 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.5-1
-- ceph 15.2.5 GA
-
-* Wed Jul 29 2020 Richard W.M. Jones <rjones@redhat.com> - 2:15.2.4-11
-- Rebuild against fmt 7.
-
-* Mon Jul 27 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2:15.2.4-10
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
-
-* Tue Jul 21 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-9
-- %cmake_build and %cmake_install
-
-* Mon Jul 20 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-8
-- see 15.2.4-4 (f33-java11) for real this time
-- and use %make_install macro
-
-* Mon Jul 20 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-7
-- see 15.2.4-3, hopefully for real this time
-- and use %make_install macro
-
-* Fri Jul 17 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-6
-- see 15.2.4-4
-
-* Fri Jul 17 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-5
-- see 15.2.4-3
-
-* Fri Jul 17 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-4
-- Rebuilt for JDK-11, see https://fedoraproject.org/wiki/Changes/Java11
-
-* Fri Jul 17 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-3
-- use `ld -r -z ibt -z shstk...` instead of magic hackery to get CET ibt
-  and shstk. N.B. updated yasm in f33/rawhide now has support for
-  .note.gnu.properties so even this will go away in the next build
-- signal_handler.cc, use HAVE_REENTRANT_STRSIGNAL, strsignal(3)
-
-* Fri Jul 10 2020 Jiri Vanek <jvanek@redhat.com> - 2:15.2.4-2
-- Rebuilt for JDK-11, see https://fedoraproject.org/wiki/Changes/Java11
-
-* Wed Jul 1 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.4-1
-- ceph 15.2.4 GA
-
-* Tue Jun 23 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com>
-- explicit BuildRequires python3-setuptools
-
-* Mon Jun 1 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.3-1
-- ceph 15.2.3 GA
-
-* Tue May 26 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.2-3
-- ceph 15.2.2, CET enable src/common/crc32c_intel_*_asm.s; shstk, ibt
-- and other fixes
-- see https://github.com/intel/isa-l/blob/master/crc/crc32_iscsi_00.asm
-
-* Tue May 26 2020 Miro Hrončok <mhroncok@redhat.com> - 2:15.2.2-2
-- Rebuilt for Python 3.9
-
-* Mon May 18 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.2-1
-- ceph 15.2.2 GA
-
-* Mon May 18 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.1-2
-- ceph 15.2.1, gmock and gtest. (although gmock last built for f27)
-
-* Fri Apr 10 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.1-1
-- ceph 15.2.1 GA
-
-* Mon Mar 23 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.2.0-1
-- ceph 15.2.0 GA
-
-* Mon Mar 16 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.1.1-2
-- ceph 15.1.1 fmt, rhbz#1805422 again
-
-* Mon Mar 16 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.1.1-1
-- ceph 15.1.1 RC
-
-* Thu Mar 5 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.1.0-3
-- ceph 15.1.0, rhbz#1809799
-
-* Thu Feb 20 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.1.0-2
-- ceph 15.1.0, fmt, rhbz#1805422
-
-* Tue Feb 11 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:15.1.0-1
-- ceph 15.1.0 RC
-
-* Mon Feb 3 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.7-2
-- ceph 14.2.7 python3-remoto #1784216
-
-* Sat Feb 1 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.7-1
-- ceph 14.2.7 GA
-
-* Wed Jan 29 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.6-4
-- ceph 14.2.6, https://tracker.ceph.com/issues/43649
-
-* Mon Jan 27 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.6-3
-- ceph 14.2.6, (temporarily) disable unit tests
-
-* Fri Jan 24 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com>
-- ceph 14.2.6, gcc-10, missing includes
-
-* Thu Jan 9 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.6-2
-- ceph 14.2.6
-
-* Thu Jan 9 2020 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.6-1
-- ceph 14.2.6 GA
-
-* Tue Dec 10 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.5-1
-- ceph 14.2.5 GA
-
-* Mon Nov 11 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.4-3
-- ceph 14.2.4, fix typo
-
-* Tue Nov 5 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.4-2
-- ceph 14.2.4, partial fix for bz#1768017
-
-* Tue Sep 17 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.4-1
-- ceph 14.2.4 GA
-
-* Wed Sep 4 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.3-1
-- ceph 14.2.3 GA
-
-* Mon Aug 19 2019 Miro Hrončok <mhroncok@redhat.com> - 2:14.2.2-3
-- Rebuilt for Python 3.8
-
-* Wed Jul 24 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2:14.2.2-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
-
-* Fri Jul 19 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.2-1
-- ceph 14.2.2 GA
-
-* Tue May 28 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.0-2
-- numpy -> python3-numpy, bz#1712203 (and why I like to keep upstream
-  and fedora .spec files in sync)
-
-* Wed May 8 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com>
-- sync w/ upstream to minimize diffs/drift
-
-* Mon Apr 29 2019 Boris Ranto <branto@redhat.com> - 2:14.2.1-1
-- Rebase to latest upstream version (14.2.1)
-
-* Tue Mar 19 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.2.0-1
-- ceph 14.2.0 GA
-
-* Wed Mar 13 2019 Boris Ranto <branto@redhat.com> - 2:14.1.1-1
-- Rebase to latest upstream version
-
-* Thu Mar 07 2019 Adam Williamson <awilliam@redhat.com> - 2:14.1.0-3
-- Return epoch to 2, epochs cannot ever go backwards
-
-* Wed Mar 6 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:14.1.0-2
-- ceph 14.1.0 w/ static libcrc32
-
-* Wed Feb 27 2019 Boris Ranto <branto@redhat.com> - 1:14.1.0-1
-- Rebase to v14.1.0 (updated for fixes in upstream nautilus branch)
-
-* Thu Feb 21 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:14.0.1-2
-- Eliminate redundant CMAKE_* macros when using %%cmake global
-- Add CMAKE_BUILD_TYPE=RelWithDeb(ug)Info and BUILD_CONFIG=rpmbuild
-
-* Wed Feb 20 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:14.0.1-1
-- rebuild for f31/rawhide, including:
-- use the %%{cmake} %%global to get all the extra Fedora cmake options.
-  (This is Fedora, so don't care so much about rhel/rhel7 cmake3.)
-- reset epoch to 1. Note we use (have been using) epoch=1 in Fedora since
-  forever. I presume this is so that people can install Ceph RPMs from
-  ceph.com if they prefer those, which use epoch=2, and not run into issues
-  when updating.
-
-* Thu Feb 7 2019 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:14.0.1-4
-- w/ fixes for gcc9
-
-* Thu Jan 31 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2:14.0.1-3
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
-
-* Sat Dec 08 2018 Boris Ranto <branto@redhat.com> - 2:14.0.1-2
-- fix pyOpenSSL depemdency
-
-* Tue Dec 04 2018 Boris Ranto <branto@redhat.com> - 2:14.0.1-1
-- New release (2:14.0.1-1)
-- Sync with upstream
-- Drop 32-bit support
-
-* Wed Nov 21 2018 Boris Ranto <branto@redhat.com> - 2:13.2.2-1
-- New release (2:13.2.2-1)
-- Sync with upstream
-
-* Mon Oct 29 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.9-1
-- New release (1:12.2.9-1)
-
-* Wed Sep 12 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.8-2
-- Fedora 30 python3. Note ceph-mgr subpackage, ceph-detect-init, ceph-disk,
-  ceph-volume, and ceph-volume-systemd are missing in this build
-
-* Fri Aug 31 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.8-1
-- New release (1:12.2.8-1)
-
-* Wed Jul 18 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.7-1
-- New release (1:12.2.7-1)
-
-* Thu Jul 12 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1:12.2.6-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
-
-* Wed Jul 11 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.6-1
-- New release (1:12.2.6-1)
-
-* Mon Jul 2 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.5-3
-- New release (1:12.2.5-3) w/ python-3.7
-
-* Fri Jun 29 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.5-2
-- New release (1:12.2.5-2)
-
-* Fri Apr 27 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.5-1
-- New release (1:12.2.5-1)
-
-* Fri Apr 13 2018 Rafael dos Santos <rdossant@redhat.com> - 1:12.2.4-2
-- Use standard Fedora linker flags (bug #1547552)
-
-* Fri Mar 2 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.4-1
-- New release (1:12.2.4-1)
-- rhbz#1446610, rhbz#1546611, cephbz#23039
-
-* Wed Feb 21 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.3-1
-- New release (1:12.2.3-1)
-
-* Thu Feb 15 2018 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.2-3
-- no ldconfig in F28
-
-* Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1:12.2.2-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
-
-* Tue Dec 5 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.2-1
-- New release (1:12.2.2-1)
-- Fix build error on arm
-
-* Thu Oct 05 2017 Boris Ranto <branto@redhat.com> - 1:12.2.1-2
-- Obsolete ceph-libs-compat package
-
-* Wed Sep 27 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.1-1
-- New release (1:12.2.1-1)
-
-* Tue Aug 29 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.2.0-1
-- New release (1:12.2.0-1)
-
-* Thu Aug 24 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.4-5
-- libibverbs(-devel) is superceded by rdma-core(-devel), again
-
-* Thu Aug 24 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.4-4
-- libibverbs(-devel) is superceded by rdma-core(-devel)
-
-* Tue Aug 22 2017 Adam Williamson <awilliam@redhat.com> - 1:12.1.4-3
-- Disable RDMA support on 32-bit ARM (#1484155)
-
-* Thu Aug 17 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.4-2
-- fix %%epoch in comment, ppc64le lowmem_builder
-
-* Wed Aug 16 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.4-1
-- New release (1:12.1.4-1)
-
-* Sat Aug 12 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.3-1
-- New release (1:12.1.3-1)
-
-* Fri Aug 11 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.2-3
-- rebuild with librpm.so.7
-
-* Thu Aug 10 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.2-2
-- Fix 32-bit alignment
-
-* Thu Aug 3 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.2-1
-- New release (1:12.1.2-1)
-
-* Tue Aug 1 2017 Boris Ranto <branto@redhat.com> - 1:12.1.1-8
-- Fix ppc64 build
-
-* Tue Aug 1 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.1-7
-- python34 and other nits
-- still no fix for ppc64
-
-* Sun Jul 30 2017 Florian Weimer <fweimer@redhat.com> - 1:12.1.1-6
-- Reenable ppc64le, with binutils fix for ppc64le (#1475636)
-
-* Fri Jul 28 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.1-5
-- ppc64le disabled until bz #1475636 resolution
-
-* Fri Jul 28 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.1-4
-- 12.1.1 w/ hacks for armv7hl: low mem, no java jni
-- WTIH_BABELTRACE -> WITH_BABELTRACE for all archs
-- still no fix for ppc64
-
-* Wed Jul 26 2017 Fedora Release Engineering <releng@fedoraproject.org> - 1:12.1.1-3
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
-
-* Sat Jul 22 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.1-2
-- 12.1.1 w/ rocksdb patch (i686)
-
-* Sat Jul 22 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.1-1
-- New release (1:12.1.1-1)
-
-* Fri Jul 21 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:12.1.1-0
-- New release (1:12.1.1-0)
-
-* Fri Jul 21 2017 Kalev Lember <klember@redhat.com> - 1:10.2.7-3
-- Rebuilt for Boost 1.64
-
-* Mon May 15 2017 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:10.2.7-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_27_Mass_Rebuild
-
-* Mon Apr 17 2017 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 1:10.2.7-1
-- New release (1:10.2.7-1)
-
-* Wed Feb 08 2017 Boris Ranto <branto@redhat.com> - 1:10.2.5-2
-- New release (1:10.2.5-2)
-
-* Fri Jan 13 2017 Boris Ranto <branto@redhat.com> - 1:10.2.5-1
-- New release (1:10.2.5-1)
-- hack: do not test for libxfs, assume it is present
-
-* Wed Dec 14 2016 Boris Ranto <branto@redhat.com> - 1:10.2.4-2
-- New version (1:10.2.4-2)
-- This syncs up with the upstream 10.2.5
-- Doing it this way because of broken lookaside cache
-- Fix the -devel obsoletes
-
-* Thu Dec 08 2016 Boris Ranto <branto@redhat.com> - 1:10.2.4-1
-- New version (1:10.2.4-1)
-- Disable erasure_codelib neon build
-- Use newer -devel package format
-- Sync up the spec file
-
-* Wed Oct 26 2016 Ken Dreyer <ktdreyer@ktdreyer.com> - 1:10.2.3-4
-- librgw: add API version defines for librgw and rgw_file
-
-* Wed Oct 26 2016 Ken Dreyer <ktdreyer@ktdreyer.com> - 1:10.2.3-3
-- update patches style for rdopkg
-
-* Thu Sep 29 2016 Boris Ranto <branto@redhat.com> - 1:10.2.3-2
-- New release (1:10.2.3-2)
-- common: instantiate strict_si_cast<long> not
-
-* Thu Sep 29 2016 Boris Ranto <branto@redhat.com> - 1:10.2.3-1
-- New version (1:10.2.3-1)
-- Disable erasure_codelib neon build
-
-* Sun Aug 07 2016 Igor Gnatenko <ignatenko@redhat.com> - 1:10.2.2-4
-- Rebuild for LevelDB 1.18
-
-* Tue Jul 19 2016 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:10.2.2-3
-- https://fedoraproject.org/wiki/Changes/Automatic_Provides_for_Python_RPM_Packages
-
-* Tue Jun 21 2016 Boris Ranto <branto@redhat.com> - 1:10.2.2-2
-- New release (1:10.2.2-2)
-- fix tcmalloc handling in spec file
-
-* Mon Jun 20 2016 Boris Ranto <branto@redhat.com> - 1:10.2.2-1
-- New version (1:10.2.2-1)
-- Disable erasure_codelib neon build
-- Do not use -momit-leaf-frame-pointer flag
-
-* Mon May 16 2016 Boris Ranto <branto@redhat.com> - 1:10.2.1-1
-- New version (1:10.2.1-1)
-- Disable erasure_codelib neon build
-- Do not use -momit-leaf-frame-pointer flag
-
-* Fri May 06 2016 Dan Horák <dan[at]danny.cz> - 10.2.0-3
-- fix build on s390(x) - gperftools/tcmalloc not available there
-
-* Fri Apr 22 2016 Boris Ranto <branto@redhat.com> - 10.2.0-2
-- Do not use -momit-leaf-frame-pointer flag
-
-* Fri Apr 22 2016 Boris Ranto <branto@redhat.com> - -
-- Rebase to version 10.2.0
-- Disable erasure_codelib neon build
-
-* Mon Apr 11 2016 Richard W.M. Jones <rjones@redhat.com> - 1:9.2.0-5
-- Fix large startup times of processes linking to -lrbd.
-  Backport upstream commit 1c2831a2, fixes RHBZ#1319483.
-- Add workaround for XFS header brokenness.
-
-* Wed Feb 03 2016 Fedora Release Engineering <releng@fedoraproject.org> - 1:9.2.0-4
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
-
-* Thu Jan 14 2016 Jonathan Wakely <jwakely@redhat.com> - 1:9.2.0-3
-- Rebuilt for Boost 1.60
-
-* Mon Dec 14 2015 Dan Horák <dan[at]danny.cz> - 1:9.2.0-2
-- fix build on s390(x) - gperftools/tcmalloc not available there
-
-* Tue Nov 10 2015 Boris Ranto <branto@redhat.com> - 1:9.2.0-1
-- Rebase to latest stable upstream version (9.2.0 - infernalis)
-- Use upstream spec file
-
-* Tue Oct 27 2015 Boris Ranto <branto@redhat.com> - 1:0.94.5-1
-- Rebase to latest upstream version
-
-* Tue Oct 20 2015 Boris Ranto <branto@redhat.com> - 1:0.94.4-1
-- Rebase to latest upstream version
-- The rtdsc patch got merged upstream and is already present in the release
-
-* Thu Aug 27 2015 Jonathan Wakely <jwakely@redhat.com> - 1:0.94.3-2
-- Rebuilt for Boost 1.59
-
-* Thu Aug 27 2015 Boris Ranto <branto@redhat.com> - 1:0.94.3-1
-- Rebase to latest upstream version
-- The boost patch got merged upstream and is already present in the release
-
-* Fri Jul 31 2015 Richard W.M. Jones <rjones@redhat.com> - 1:0.94.2-4
-- Fix build against boost 1.58 (http://tracker.ceph.com/issues/11576).
-
-* Wed Jul 29 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:0.94.2-3
-- Rebuilt for https://fedoraproject.org/wiki/Changes/F23Boost159
-
-* Wed Jul 22 2015 David Tardon <dtardon@redhat.com> - 1:0.94.2-2
-- rebuild for Boost 1.58
-
-* Thu Jul 16 2015 Boris Ranto <branto@redhat.com> - 1:0.94.2-1
-- Rebase to latest upstream version
-
-* Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:0.94.1-5
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
-
-* Mon Jun 08 2015 Dan Horák <dan[at]danny.cz> - 1:0.94.1-4
-- fix build on s390(x) - no gperftools there
-
-* Thu May 21 2015 Boris Ranto <branto@redhat.com> - 1:0.94.1-3
-- Disable lttng support (rhbz#1223319)
-
-* Mon May 18 2015 Boris Ranto <branto@redhat.com> - 1:0.94.1-2
-- Fix arm linking issue (rhbz#1222286)
-
-* Tue Apr 14 2015 Boris Ranto <branto@redhat.com> - 1:0.94.1-1
-- Rebase to latest upstream version and sync-up the spec file
-- Add arm compilation patches
-
-* Wed Apr 01 2015 Ken Dreyer <ktdreyer@ktdreyer.com> - 1:0.87.1-3
-- add version numbers to Obsoletes (RHBZ #1193182)
-
-* Wed Mar 4 2015 Boris Ranto <branto@redhat.com> - 1:0.87.1-2
-- Perform a hardened build
-- Use git-formatted patches
-- Add patch for pthreads rwlock unlock problem
-- Do not remove conf files on uninstall
-- Remove the cleanup function, it is only necessary for f20 and f21
-
-* Wed Feb 25 2015 Boris Ranto <branto@redhat.com> - 1:0.87.1-1
-- Rebase to latest upstream
-- Remove boost patch, it is in upstream tarball
-- Build with yasm, tarball contains fix for the SELinux issue
-
-* Thu Jan 29 2015 Petr Machata <pmachata@redhat.com> - 1:0.87-2
-- Rebuild for boost 1.57.0
-- Include <boost/optional/optional_io.hpp> instead of
-  <boost/optional.hpp>.  Keep the old dumping behavior in
-  osd/ECBackend.cc (ceph-0.87-boost157.patch)
-
-* Mon Nov 3 2014 Boris Ranto <branto@redhat.com> - 1:0.87-1
-- Rebase to latest major version (firefly -> giant)
-
-* Thu Oct 16 2014 Boris Ranto <branto@redhat.com - 1:0.80.7-1
-- Rebase to latest upstream version
-
-* Sat Oct 11 2014 Boris Ranto <branto@redhat.com> - 1:0.80.6-3
-- Fix a typo in librados-devel vs librados2-devel dependency
-
-* Fri Oct 10 2014 Boris Ranto <branto@redhat.com> - 1:0.80.6-2
-- Provide empty file list for python-ceph-compat and ceph-devel-compat
-
-* Fri Oct 10 2014 Boris Ranto <branto@redhat.com> - 1:0.80.6-1
-- Rebase to 0.80.6
-- Split ceph-devel and python-ceph packages
-
-* Tue Sep 9 2014 Dan Horák <dan[at]danny.cz> - 1:0.80.5-10
-- update Requires for s390(x)
-
-* Wed Sep 3 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-9
-- Symlink librd.so.1 to /usr/lib64/qemu only on rhel6+ x86_64 (1136811)
-
-* Thu Aug 21 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-8
-- Revert the previous change
-- Fix bz 1118504, second attempt (yasm appears to be the package that caused this
-- Fix bogus dates
-
-* Wed Aug 20 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-7
-- Several more merges from file to try to fix the selinux issue (1118504)
-
-* Sun Aug 17 2014 Kalev Lember <kalevlember@gmail.com> - 1:0.80.5-6
-- Obsolete ceph-libcephfs
-
-* Sat Aug 16 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-5
-- Do not require xfsprogs/xfsprogs-devel for el6
-- Require gperftools-devel for non-ppc*/s390* architectures only
-- Do not require junit -- no need to build libcephfs-test.jar
-- Build without libxfs for el6
-- Build without tcmalloc for ppc*/s390* architectures
-- Location of mkcephfs must depend on a rhel release
-- Use epoch in the Requires fields [1130700]
-
-* Sat Aug 16 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-4
-- Use the proper version name in Obsoletes
-
-* Fri Aug 15 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1:0.80.5-3
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
-
-* Fri Aug 15 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-2
-- Add the arm pthread hack
-
-* Fri Aug 15 2014 Boris Ranto <branto@redhat.com> - 1:0.80.5-1
-- Bump the Epoch, we need to keep the latest stable, not development, ceph version in fedora
-- Use the upstream spec file with the ceph-libs split
-- Add libs-compat subpackage [1116546]
-- use fedora in rhel 7 checks
-- obsolete libcephfs [1116614]
-- depend on redhat-lsb-core for the initscript [1108696]
-
-* Wed Aug 13 2014 Kalev Lember <kalevlember@gmail.com> - 0.81.0-6
-- Add obsoletes to keep the upgrade path working (#1118510)
-
-* Mon Jul 7 2014 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 0.81.0-5
-- revert to old spec until after f21 branch
-
-* Fri Jul 4 2014 Kaleb S. KEITHLEY <kkeithle[at]redhat.com>
-- temporary exclude f21/armv7hl. N.B. it builds fine on f20/armv7hl.
-
-* Fri Jul 4 2014 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 0.81.0-4
-- upstream ceph.spec file
-
-* Tue Jul 1 2014 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 0.81.0-3
-- upstream ceph.spec file
-
-* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.81.0-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
-
-* Thu Jun 5 2014 Kaleb S. KEITHLEY <kkeithle[at]redhat.com>
-- el6 ppc64 likewise for tcmalloc, merge from origin/el6
-
-* Thu Jun 5 2014 Kaleb S. KEITHLEY <kkeithle[at]redhat.com>
-- el6 ppc64 does not have gperftools, merge from origin/el6
-
-* Thu Jun 5 2014 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 0.81.0-1
-- ceph-0.81.0
-
-* Wed Jun  4 2014 Peter Robinson <pbrobinson@fedoraproject.org> 0.80.1-5
-- gperftools now available on aarch64/ppc64
-
-* Fri May 23 2014 Petr Machata <pmachata@redhat.com> - 0.80.1-4
-- Rebuild for boost 1.55.0
-
-* Fri May 23 2014 David Tardon <dtardon@redhat.com> - 0.80.1-3
-- rebuild for boost 1.55.0
-
-* Wed May 14 2014 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 0.80.1-2
-- build epel-6
-- exclude %%{_libdir}/ceph/erasure-code in base package
-
-* Tue May 13 2014 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 0.80.1-1
-- Update to latest stable upstream release, BZ 1095201
-- PIE, _hardened_build, BZ 955174
-
-* Thu Feb 06 2014 Ken Dreyer <ken.dreyer@inktank.com> - 0.72.2-2
-- Move plugins from -devel into -libs package (#891993). Thanks Michael
-  Schwendt.
-
-* Mon Jan 06 2014 Ken Dreyer <ken.dreyer@inktank.com> 0.72.2-1
-- Update to latest stable upstream release
-- Use HTTPS for URLs
-- Submit Automake 1.12 patch upstream
-- Move unversioned shared libs from ceph-libs into ceph-devel
-
-* Wed Dec 18 2013 Marcin Juszkiewicz <mjuszkiewicz@redhat.com> 0.67.3-4
-- build without tcmalloc on aarch64 (no gperftools)
-
-* Sat Nov 30 2013 Peter Robinson <pbrobinson@fedoraproject.org> 0.67.3-3
-- gperftools not currently available on aarch64
-
-* Mon Oct 07 2013 Dan Horák <dan[at]danny.cz> - 0.67.3-2
-- fix build on non-x86_64 64-bit arches
-
-* Wed Sep 11 2013 Josef Bacik <josef@toxicpanda.com> - 0.67.3-1
-- update to 0.67.3
-
-* Wed Sep 11 2013 Michael Schwendt <mschwendt@fedoraproject.org> - 0.61.7-3
-- let base package include all its documentation files via %%doc magic,
-  so for Fedora 20 Unversioned Docdirs no files are included accidentally
-- include the sample config files again (instead of just an empty docdir
-  that has been added for #846735)
-- don't include librbd.so.1 also in -devel package (#1003202)
-- move one misplaced rados plugin from -devel into -libs package (#891993)
-- include missing directories in -devel and -libs packages
-- move librados-config into the -devel pkg where its manual page is, too
-- add %%_isa to subpackage dependencies
-- don't use %%defattr anymore
-- add V=1 to make invocation for verbose build output
-
-* Wed Jul 31 2013 Peter Robinson <pbrobinson@fedoraproject.org> 0.61.7-2
-- re-enable tmalloc on arm now gperftools is fixed
-
-* Mon Jul 29 2013 Josef Bacik <josef@toxicpanda.com> - 0.61.7-1
-- Update to 0.61.7
-
-* Sat Jul 27 2013 pmachata@redhat.com - 0.56.4-2
-- Rebuild for boost 1.54.0
-
-* Fri Mar 29 2013 Josef Bacik <josef@toxicpanda.com> - 0.56.4-1
-- Update to 0.56.4
-- Add upstream d02340d90c9d30d44c962bea7171db3fe3bfba8e to fix logrotate
-
-* Wed Feb 20 2013 Josef Bacik <josef@toxicpanda.com> - 0.56.3-1
-- Update to 0.56.3
-
-* Mon Feb 11 2013 Richard W.M. Jones <rjones@redhat.com> - 0.53-2
-- Rebuilt to try to fix boost dependency problem in Rawhide.
-
-* Thu Nov  1 2012 Josef Bacik <josef@toxicpanda.com> - 0.53-1
-- Update to 0.53
-
-* Mon Sep 24 2012 Jonathan Dieter <jdieter@lesbg.com> - 0.51-3
-- Fix automake 1.12 error
-- Rebuild after buildroot was messed up
-
-* Tue Sep 18 2012 Jonathan Dieter <jdieter@lesbg.com> - 0.51-2
-- Use system leveldb
-
-* Fri Sep 07 2012 David Nalley <david@gnsa.us> - 0.51-1
-- Updating to 0.51
-- Updated url and source url.
-
-* Wed Jul 18 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.46-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
-
-* Wed May  9 2012 Josef Bacik <josef@toxicpanda.com> - 0.46-1
-- updated to upstream 0.46
-- broke out libcephfs (rhbz# 812975)
-
-* Mon Apr 23 2012 Dan Horák <dan[at]danny.cz> - 0.45-2
-- fix detection of C++11 atomic header
-
-* Thu Apr 12 2012 Josef Bacik <josef@toxicpanda.com> - 0.45-1
-- updating to upstream 0.45
-
-* Wed Apr  4 2012 Niels de Vos <devos@fedoraproject.org> - 0.44-5
-- Add LDFLAGS=-lpthread on any ARM architecture
-- Add CFLAGS=-DAO_USE_PTHREAD_DEFS on ARMv5tel
-
-* Mon Mar 26 2012 Dan Horák <dan[at]danny.cz> 0.44-4
-- gperftools not available also on ppc
-
-* Mon Mar 26 2012 Jonathan Dieter <jdieter@lesbg.com> - 0.44-3
-- Remove unneeded patch
-
-* Sun Mar 25 2012 Jonathan Dieter <jdieter@lesbg.com> - 0.44-2
-- Update to 0.44
-- Fix build problems
-
-* Mon Mar  5 2012 Jonathan Dieter <jdieter@lesbg.com> - 0.43-1
-- Update to 0.43
-- Remove upstreamed compile fixes patch
-- Remove obsoleted dump_pop patch
-
-* Tue Feb 28 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.41-2
-- Rebuilt for c++ ABI breakage
-
-* Thu Feb 16 2012 Tom Callaway <spot@fedoraproject.org> 0.41-1
-- update to 0.41
-- fix issues preventing build
-- rebuild against gperftools
-
-* Sat Dec 03 2011 David Nalley <david@gnsa.us> 0.38-1
-- updating to upstream 0.39
-
-* Sat Nov 05 2011 David Nalley <david@gnsa.us> 0.37-1
-- create /etc/ceph - bug 745462
-- upgrading to 0.37, fixing 745460, 691033
-- fixing various logrotate bugs 748930, 747101
-
-* Fri Aug 19 2011 Dan Horák <dan[at]danny.cz> 0.31-4
-- google-perftools not available also on s390(x)
-
-* Mon Jul 25 2011 Karsten Hopp <karsten@redhat.com> 0.31-3
-- build without tcmalloc on ppc64, BR google-perftools is not available there
-
-* Tue Jul 12 2011 Josef Bacik <josef@toxicpanda.com> 0.31-2
-- Remove curl/types.h include since we don't use it anymore
-
-* Tue Jul 12 2011 Josef Bacik <josef@toxicpanda.com> 0.31-1
-- Update to 0.31
-
-* Tue Apr  5 2011 Josef Bacik <josef@toxicpanda.com> 0.26-2
-- Add the compile fix patch
-
-* Tue Apr  5 2011 Josef Bacik <josef@toxicpanda.com> 0.26
-- Update to 0.26
-
-* Tue Mar 22 2011 Josef Bacik <josef@toxicpanda.com> 0.25.1-1
-- Update to 0.25.1
-
-* Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.21.3-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
-
-* Wed Sep 29 2010 Steven Pritchard <steve@kspei.com> 0.21.3-1
-- Update to 0.21.3.
-
-* Mon Aug 30 2010 Steven Pritchard <steve@kspei.com> 0.21.2-1
-- Update to 0.21.2.
-
-* Thu Aug 26 2010 Steven Pritchard <steve@kspei.com> 0.21.1-1
-- Update to 0.21.1.
-- Sample configs moved to /usr/share/doc/ceph/.
-- Added cclass, rbd, and cclsinfo.
-- Dropped mkmonfs and rbdtool.
-- mkcephfs moved to /sbin.
-- Add libcls_rbd.so.
-
-* Tue Jul  6 2010 Josef Bacik <josef@toxicpanda.com> 0.20.2-1
-- update to 0.20.2
-
-* Wed May  5 2010 Josef Bacik <josef@toxicpanda.com> 0.20-1
-- update to 0.20
-- disable hadoop building
-- remove all the test binaries properly
-
-* Fri Apr 30 2010 Sage Weil <sage@newdream.net> 0.19.1-5
-- Remove java deps (no need to build hadoop by default)
-- Include all required librados helpers
-- Include fetch_config sample
-- Include rbdtool
-- Remove misc debugging, test binaries
-
-* Fri Apr 30 2010 Josef Bacik <josef@toxicpanda.com> 0.19.1-4
-- Add java-devel and java tricks to get hadoop to build
-
-* Mon Apr 26 2010 Josef Bacik <josef@toxicpanda.com> 0.19.1-3
-- Move the rados and cauthtool man pages into the base package
-
-* Sun Apr 25 2010 Jonathan Dieter <jdieter@lesbg.com> 0.19.1-2
-- Add missing libhadoopcephfs.so* to file list
-- Add COPYING to all subpackages
-- Fix ownership of /usr/lib[64]/ceph
-- Enhance description of fuse client
-
-* Tue Apr 20 2010 Josef Bacik <josef@toxicpanda.com> 0.19.1-1
-- Update to 0.19.1
-
-* Mon Feb  8 2010 Josef Bacik <josef@toxicpanda.com> 0.18-1
-- Initial spec file creation, based on the template provided in the ceph src
