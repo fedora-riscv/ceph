@@ -172,8 +172,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	18.1.0
-Release:	0.4%{?dist}
+Version:	18.1.1
+Release:	0.1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2645,6 +2645,9 @@ exit 0
 %{_datadir}/snmp/mibs
 
 %changelog
+* Sun Jun 18 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:18.1.1-0.1
+- ceph-18.1.1 RC2
+
 * Thu Jun 15 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:18.1.0-0.4
 - Rebuilt for Python 3.12
 
