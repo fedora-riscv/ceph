@@ -172,8 +172,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	18.1.1
-Release:	0.2%{?dist}
+Version:	18.1.2
+Release:	0.1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -201,8 +201,6 @@ Patch0017:	0017-gcc-12-omnibus.patch
 Patch0018:	0018-src-rgw-store-dbstore-CMakeLists.txt.patch
 Patch0020:	0020-src-arrow-cpp-cmake_modules-ThirdpartyToolchain.cmake.patch
 Patch0024:	0024-gcc-13.patch
-Patch0025:	0025-src-osd-scrubber-scrub_backend.h.patch
-Patch0026:	0026-src-osd-scrubber-scrub_backend.cc.patch
 Patch0029:	0029-src-rgw-rgw_amqp.cc.patch
 Patch0030:	0030-src-rgw-rgw_asio_client.cc.patch
 Patch0032:	0032-cmake-modules-BuildBoost.cmake.patch
@@ -1360,12 +1358,6 @@ export CPPFLAGS="$java_inc"
 export CFLAGS="$RPM_OPT_FLAGS"
 export CXXFLAGS="$RPM_OPT_FLAGS"
 export LDFLAGS="$RPM_LD_FLAGS"
-
-# Workaround to https://tracker.ceph.com/issues/56610
-%if 0%{?fedora} >= 37 || 0%{?rhel} >= 10
-export CFLAGS="$RPM_OPT_FLAGS -DFMT_DEPRECATED_OSTREAM"
-export CXXFLAGS="$RPM_OPT_FLAGS -DFMT_DEPRECATED_OSTREAM"
-%endif
 
 %if 0%{with seastar}
 # seastar uses longjmp() to implement coroutine. and this annoys longjmp_chk()
@@ -2645,6 +2637,9 @@ exit 0
 %{_datadir}/snmp/mibs
 
 %changelog
+* Fri Jun 30 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:18.1.2-0.1
+- ceph-18.1.2 RC3
+
 * Sun Jun 18 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:18.1.1-0.2
 - Rebuilt for Python 3.12
 
