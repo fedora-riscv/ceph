@@ -278,7 +278,7 @@ BuildRequires:	libcurl-devel
 BuildRequires:	libcap-devel
 BuildRequires:	libcap-ng-devel
 #BuildRequires:	fmt-devel >= 6.2.1
-%if 0%{?fedora} || 0%{?rhel} >= 10
+%if ! (0%{?fedora} || 0%{?rhel} >= 10)
 BuildRequires:	rocksdb-devel
 Requires:	rocksdb
 %endif
