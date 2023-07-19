@@ -173,7 +173,7 @@
 #################################################################################
 Name:		ceph
 Version:	18.1.2
-Release:	0.3%{?dist}
+Release:	0.4%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2633,6 +2633,9 @@ exit 0
 %{_datadir}/snmp/mibs
 
 %changelog
+* Wed Jul 19 2023 Fedora Release Engineering <releng@fedoraproject.org> - 2:18.1.2-0.4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_39_Mass_Rebuild
+
 * Tue Jul 11 2023 František Zatloukal <fzatlouk@redhat.com> - 2:18.1.2-0.3
 - Rebuilt for ICU 73.2
 
