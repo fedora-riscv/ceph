@@ -299,7 +299,7 @@ BuildRequires:	procps
 BuildRequires:	python%{python3_pkgversion}
 BuildRequires:	python%{python3_pkgversion}-devel
 BuildRequires:	python%{python3_pkgversion}-setuptools
-BuildRequires:	python%{python3_pkgversion}-Cython
+BuildRequires:	python3dist(cython) < 3~~
 BuildRequires:	snappy-devel
 BuildRequires:	sqlite-devel
 BuildRequires:	sudo
@@ -2633,8 +2633,10 @@ exit 0
 %{_datadir}/snmp/mibs
 
 %changelog
+
 * Wed Jul 19 2023 Fedora Release Engineering <releng@fedoraproject.org> - 2:18.1.2-0.4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_39_Mass_Rebuild
+- with python3-Cython -> python3dist(cython) < 3~~
 
 * Tue Jul 11 2023 František Zatloukal <fzatlouk@redhat.com> - 2:18.1.2-0.3
 - Rebuilt for ICU 73.2
