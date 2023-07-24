@@ -173,7 +173,7 @@
 #################################################################################
 Name:		ceph
 Version:	18.1.2
-Release:	0.4%{?dist}
+Release:	0.5%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -205,6 +205,7 @@ Patch0029:	0029-src-rgw-rgw_amqp.cc.patch
 Patch0030:	0030-src-rgw-rgw_asio_client.cc.patch
 Patch0032:	0032-cmake-modules-BuildBoost.cmake.patch
 Patch0033:	0033-boost-asm.patch
+Patch0034:	0034-src-pybind-rbd-rbd.pyx.patch
 # ceph 14.0.1 does not support 32-bit architectures, bugs #1727788, #1727787
 ExcludeArch:	i686 armv7hl
 %if 0%{?suse_version}
@@ -299,7 +300,7 @@ BuildRequires:	procps
 BuildRequires:	python%{python3_pkgversion}
 BuildRequires:	python%{python3_pkgversion}-devel
 BuildRequires:	python%{python3_pkgversion}-setuptools
-BuildRequires:	python3dist(cython) < 3~~
+BuildRequires:	python%{python3_pkgversion}-Cython
 BuildRequires:	snappy-devel
 BuildRequires:	sqlite-devel
 BuildRequires:	sudo
@@ -2633,6 +2634,10 @@ exit 0
 %{_datadir}/snmp/mibs
 
 %changelog
+
+* Fri Jul 21 2023 Fedora Release Engineering <releng@fedoraproject.org> - 2:18.1.2-0.5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_39_Mass_Rebuild
+- revert python3-Cython -> python3dist(cython) < 3~~
 
 * Wed Jul 19 2023 Fedora Release Engineering <releng@fedoraproject.org> - 2:18.1.2-0.4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_39_Mass_Rebuild
