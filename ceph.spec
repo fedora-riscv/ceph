@@ -172,8 +172,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	18.1.2
-Release:	0.5%{?dist}
+Version:	18.1.3
+Release:	0.6%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2634,6 +2634,8 @@ exit 0
 %{_datadir}/snmp/mibs
 
 %changelog
+* Wed Jul 26 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:18.1.3-0.1
+- ceph-18.1.3 RC4
 
 * Fri Jul 21 2023 Fedora Release Engineering <releng@fedoraproject.org> - 2:18.1.2-0.5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_39_Mass_Rebuild
