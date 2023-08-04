@@ -172,8 +172,8 @@
 # main package definition
 #################################################################################
 Name:		ceph
-Version:	18.1.3
-Release:	0.2%{?dist}
+Version:	18.2.0
+Release:	1%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -2634,6 +2634,9 @@ exit 0
 %{_datadir}/snmp/mibs
 
 %changelog
+* Fri Aug 4 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:18.2.0-1
+- ceph-18.2.0 GA
+
 * Tue Aug 1 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:18.1.3-0.2
 - ceph-18.1.3 RC4, rebuild with libarrow-13.0.0
 

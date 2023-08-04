@@ -9,7 +9,7 @@
      return (<object>ptr)(offset, total)
  
 -cdef int no_op_progress_callback(uint64_t offset, uint64_t total, void* ptr):
-+cdef int no_op_progress_callback(uint64_t offset, uint64_t total, void* ptr) noexcept with gil:
++cdef int no_op_progress_callback(uint64_t offset, uint64_t total, void* ptr) noexcept:
      return 0
  
  def cstr(val, name, encoding="utf-8", opt=False):
