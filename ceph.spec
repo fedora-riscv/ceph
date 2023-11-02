@@ -173,7 +173,7 @@
 #################################################################################
 Name:		ceph
 Version:	18.2.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 %if 0%{?fedora} || 0%{?rhel}
 Epoch:		2
 %endif
@@ -774,7 +774,7 @@ Summary:	Ceph fuse-based client
 %if 0%{?suse_version}
 Group:		System/Filesystems
 %endif
-Requires:	fuse
+Requires:	fuse3
 Requires:	python%{python3_pkgversion}
 %description fuse
 FUSE based client for Ceph distributed network file system
@@ -2634,6 +2634,9 @@ exit 0
 %{_datadir}/snmp/mibs
 
 %changelog
+* Wed Nov 1 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:18.2.0-2
+- ceph-18.2.0, Requires: fuse -> fuse3
+
 * Fri Aug 4 2023 Kaleb S. KEITHLEY <kkeithle[at]redhat.com> - 2:18.2.0-1
 - ceph-18.2.0 GA
 
