@@ -1,0 +1,151 @@
+--- ceph-17.2.6/src/kv/rocksdb_cache/ShardedCache.h.orig	2023-04-05 11:09:51.000000000 -0400
++++ ceph-17.2.6/src/kv/rocksdb_cache/ShardedCache.h	2023-04-21 16:22:26.665067333 -0400
+@@ -15,7 +15,7 @@
+ #include <mutex>
+ 
+ #include "rocksdb/version.h"
+-#include "rocksdb/cache.h"
++#include "rocksdb/advanced_cache.h"
+ #include "include/ceph_hash.h"
+ #include "common/PriorityCache.h"
+ //#include "hash.h"
+@@ -26,7 +26,8 @@
+ 
+ namespace rocksdb_cache {
+ 
+-using DeleterFn = void (*)(const rocksdb::Slice& key, void* value);
++// using DeleterFn = void (*)(const rocksdb::Slice& key, void* value);
++using DeleterFn = void (*)(rocksdb::Cache::ObjectPtr obj, rocksdb::MemoryAllocator* allocator);
+ 
+ // Single cache shard interface.
+ class CacheShard {
+@@ -34,11 +35,19 @@
+   CacheShard() = default;
+   virtual ~CacheShard() = default;
+ 
+-  virtual rocksdb::Status Insert(const rocksdb::Slice& key, uint32_t hash, void* value,
+-                                 size_t charge,
+-                                 DeleterFn deleter,
+-                                 rocksdb::Cache::Handle** handle, rocksdb::Cache::Priority priority) = 0;
+-  virtual rocksdb::Cache::Handle* Lookup(const rocksdb::Slice& key, uint32_t hash) = 0;
++  virtual rocksdb::Status Insert(const rocksdb::Slice& key,
++                        rockdb::ObjectPtr obj,
++                        const rocksdb::CacheItemHelper* helper,
++                        size_t charge,
++                        rocksdb:Handle** handle = nullptr,
++                        Rocksdb::Priority priority = Rocksdb::Priority::LOW)
++  virtual rocksdb::Cache::Handle* Lookup(const rocksdb::Slice& key,
++                         const rocksdb::CacheItemHelper* helper = nullptr,
++                         rocksdb::CreateContext* create_context = nullptr,
++                         rocksdb::Priority priority = rocksdb::Priority::LOW,
++                         bool wait = true,
++                         rocksdb::Statistics* stats = nullptr);
++
+   virtual bool Ref(rocksdb::Cache::Handle* handle) = 0;
+   virtual bool Release(rocksdb::Cache::Handle* handle, bool force_erase = false) = 0;
+   virtual void Erase(const rocksdb::Slice& key, uint32_t hash) = 0;
+@@ -68,8 +77,8 @@
+   virtual const char* Name() const override = 0;
+   virtual rocksdb::Status Insert(const rocksdb::Slice& key, void* value, size_t charge,
+                                  DeleterFn,
+-                                 rocksdb::Cache::Handle** handle, Priority priority) override;
+-  virtual rocksdb::Cache::Handle* Lookup(const rocksdb::Slice& key, rocksdb::Statistics* stats) override;
++                                 rocksdb::Cache::Handle** handle, Priority priority);
++  virtual rocksdb::Cache::Handle* Lookup(const rocksdb::Slice& key, rocksdb::Statistics* stats);
+   virtual bool Ref(rocksdb::Cache::Handle* handle) override;
+   virtual bool Release(rocksdb::Cache::Handle* handle, bool force_erase = false) override;
+   virtual void* Value(Handle* handle) override = 0;
+@@ -84,14 +93,17 @@
+   virtual size_t GetPinnedUsage() const override;
+   virtual size_t GetCharge(Handle* handle) const = 0;
+ #if (ROCKSDB_MAJOR >= 7 || (ROCKSDB_MAJOR == 6 && ROCKSDB_MINOR >= 22))
+-  virtual DeleterFn GetDeleter(Handle* handle) const override;
++  virtual DeleterFn GetDeleter(Handle* handle) const;
+ #endif
+   virtual void DisownData() override = 0;
+ #if (ROCKSDB_MAJOR >= 7 || (ROCKSDB_MAJOR == 6 && ROCKSDB_MINOR >= 22))
++  virtual const rocksdb::CacheItemHelper* GetCacheItemHelper(rocksdb::Cache::Handle* handle) const;
+   virtual void ApplyToAllEntries(
+-      const std::function<void(const rocksdb::Slice& key, void* value, size_t charge,
+-                               DeleterFn deleter)>& callback,
+-      const ApplyToAllEntriesOptions& opts) override;
++     const std::function<void(const rocksdb::Slice& key,
++                              rocksdb::Cache::ObjectPtr obj,
++                              size_t charge,
++                               const rocksdb::CacheItemHelper* helper)>& callback,
++      const rocksdb::ApplyToAllEntriesOptions& opts); 
+ #else
+   virtual void ApplyToAllCacheEntries(void (*callback)(void*, size_t),
+                                       bool thread_safe) override;
+--- ceph-17.2.6/src/kv/RocksDBStore.cc.orig	2023-04-05 11:09:51.000000000 -0400
++++ ceph-17.2.6/src/kv/RocksDBStore.cc	2023-04-20 16:19:29.280669881 -0400
+@@ -903,6 +903,19 @@
+ // base_name - name of column without shard suffix: "-"+number
+ // options - additional options to apply
+ // cf_opt - column family options to update
++
++rocksdb::Status GetColumnFamilyOptionsFromMap(
++    const rocksdb::ColumnFamilyOptions& base_options,
++    const std::unordered_map<std::string, std::string>& opts_map,
++    rocksdb::ColumnFamilyOptions* new_options, bool input_strings_escaped,
++    bool ignore_unknown_options) {
++  rocksdb::ConfigOptions config_options;
++  config_options.ignore_unknown_options = ignore_unknown_options;
++  config_options.input_strings_escaped = input_strings_escaped;
++  return rocksdb::GetColumnFamilyOptionsFromMap(config_options, base_options, opts_map,
++                                       new_options);
++}
++
+ int RocksDBStore::update_column_family_options(const std::string& base_name,
+ 					       const std::string& more_options,
+ 					       rocksdb::ColumnFamilyOptions* cf_opt)
+@@ -916,7 +929,7 @@
+ 	    << " options=" << more_options << dendl;
+     return r;
+   }
+-  status = rocksdb::GetColumnFamilyOptionsFromMap(*cf_opt, options_map, cf_opt);
++  status = GetColumnFamilyOptionsFromMap(*cf_opt, options_map, cf_opt, false, false);
+   if (!status.ok()) {
+     dout(5) << __func__ << " invalid column family optionsp; column family="
+ 	    << base_name << " options=" << more_options << dendl;
+@@ -937,6 +950,20 @@
+   return 0;
+ }
+ 
++rocksdb::Status GetBlockBasedTableOptionsFromMap(
++    const rocksdb::BlockBasedTableOptions& table_options,
++    const std::unordered_map<std::string, std::string>& opts_map,
++    rocksdb::BlockBasedTableOptions* new_table_options, bool input_strings_escaped,
++    bool ignore_unknown_options) {
++  rocksdb::ConfigOptions config_options;
++  config_options.input_strings_escaped = input_strings_escaped;
++  config_options.ignore_unknown_options = ignore_unknown_options;
++  config_options.invoke_prepare_options = false;
++
++  return rocksdb::GetBlockBasedTableOptionsFromMap(config_options, table_options,
++                                          opts_map, new_table_options);
++}
++
+ int RocksDBStore::apply_block_cache_options(const std::string& column_name,
+ 					    const std::string& block_cache_opt,
+ 					    rocksdb::ColumnFamilyOptions* cf_opt)
+@@ -981,7 +1008,7 @@
+   }
+ 
+   rocksdb::BlockBasedTableOptions column_bbt_opts;
+-  status = GetBlockBasedTableOptionsFromMap(bbt_opts, cache_options_map, &column_bbt_opts);
++  status = GetBlockBasedTableOptionsFromMap(bbt_opts, cache_options_map, &column_bbt_opts, false, false);
+   if (!status.ok()) {
+     dout(5) << __func__ << " invalid block cache options; column=" << column_name
+ 	    << " options=" << block_cache_opt << dendl;
+--- ceph-17.2.6/src/kv/rocksdb_cache/BinnedLRUCache.h.orig	2023-04-21 10:11:00.180387609 -0400
++++ ceph-17.2.6/src/kv/rocksdb_cache/BinnedLRUCache.h	2023-04-21 10:17:15.527816193 -0400
+@@ -121,7 +121,7 @@
+   void Free() {
+     ceph_assert((refs == 1 && InCache()) || (refs == 0 && !InCache()));
+     if (deleter) {
+-      (*deleter)(key(), value);
++      (*deleter)(this, nullptr);
+     }
+     delete[] key_data;
+     delete this;
